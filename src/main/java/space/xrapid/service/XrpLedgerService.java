@@ -38,6 +38,7 @@ public class XrpLedgerService {
             if (hasNext) {
                 url = urlWithMarker.replace("{MARKER}", response.getBody().getMarker());
             }
+
             submitXrpLedgerPayments.submit(response.getBody().getPayments());
         }
     }

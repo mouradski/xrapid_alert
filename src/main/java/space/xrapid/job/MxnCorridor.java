@@ -67,12 +67,12 @@ public class MxnCorridor {
     }
 
     private void notify(ExchangeToExchangePayment payment) {
+        System.out.println(payment);
         messagingTemplate.convertAndSend("/topic/payments", payment);
     }
 
     private boolean isXrapidCandidate(Payment payment) {
-        return !payment.getDestination().equals(payment.getSource())
-                && allExchangeAddresses.contains(payment.getDestination()) && allExchangeAddresses.contains(payment.getSource());
+        return allExchangeAddresses.contains(payment.getDestination()) && allExchangeAddresses.contains(payment.getSource());
     }
 
     private void submit(List<Payment> payments) {
@@ -95,20 +95,14 @@ public class MxnCorridor {
     private boolean mxnXrpToMxnBidExist(ExchangeToExchangePayment exchangeToExchangePayment) {
         return bitsoBids.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
-                .filter(p -> amountEquals(exchangeToExchangePayment.getAmount(), Double.valueOf(p.getAmount())))
+                .filter(p -> exchangeToExchangePayment.getAmount().equals(Double.valueOf(p.getAmount())))
                 .findAny().isPresent();
-    }
-
-    private boolean amountEquals(double a1, double a2) {
-        double diff = Math.abs(a1-a2);
-        //trx fee included in ammount ????
-        return diff < 0.5;
     }
 
     private ExchangeToExchangePayment mapPayment(Payment payment) {
         try {
             return ExchangeToExchangePayment.builder()
-                    .amount(Double.valueOf(payment.getAmount()))
+                    .amount(Double.valueOf(payment.getDeliveredAmount()))
                     .destination(Exchange.byAddress(payment.getDestination()))
                     .source(Exchange.byAddress(payment.getSource()))
                     .transactionHash(payment.getTxHash())
