@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
-import space.xrapid.domain.bitso.Bid;
+import space.xrapid.domain.bitso.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.repository.XrapidPaymentRepository;
 import space.xrapid.service.BitsoService;
@@ -51,7 +51,7 @@ public class MxnCorridor {
 
     private List<String> allExchangeAddresses;
 
-    private List<Bid> bitsoBids = new ArrayList<>();
+    private List<Trade> bitsoBids = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -59,15 +59,14 @@ public class MxnCorridor {
                 .collect(Collectors.toList());
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 60000)
     public void updateExchangeToExchangePayments() {
         updatePaymentsWindows();
-        bitsoBids = bitsoService.fetchPayments();
-        xrpLedgerService.fetchPayments(windowStart.plusMinutes(-2), windowEnd, this::submit);
+        bitsoBids = bitsoService.fetchPayments(windowStart);
+        xrpLedgerService.fetchPayments(windowStart, windowEnd, this::submit);
     }
 
     private void notify(ExchangeToExchangePayment payment) {
-        System.out.println(payment);
         messagingTemplate.convertAndSend("/topic/payments", payment);
     }
 
@@ -87,6 +86,7 @@ public class MxnCorridor {
                 .map(this::mapPayment)
                 .filter(this::mxnXrpToMxnBidExist)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
+                .peek(System.out::println)
                 .peek(this::notify)
                 .peek(xrapidPaymentRepository::fill)
                 .collect(Collectors.toList());
@@ -95,6 +95,7 @@ public class MxnCorridor {
     private boolean mxnXrpToMxnBidExist(ExchangeToExchangePayment exchangeToExchangePayment) {
         return bitsoBids.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
+                .peek(p -> log.debug("{} ?== {}", exchangeToExchangePayment.getAmount(), p.getAmount()))
                 .filter(p -> exchangeToExchangePayment.getAmount().equals(Double.valueOf(p.getAmount())))
                 .findAny().isPresent();
     }

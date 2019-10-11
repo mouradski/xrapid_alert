@@ -3,19 +3,20 @@ package space.xrapid.domain.bitso;
 import com.fasterxml.jackson.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
 "success",
-"payload"
+"payment"
 })
-public class BitsoResponse {
+public class BitsoPayments {
 
 @JsonProperty("success")
 private Boolean success;
 @JsonProperty("payload")
-private Payload payload;
+private List<Trade> payment = null;
 @JsonIgnore
 private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -30,13 +31,13 @@ this.success = success;
 }
 
 @JsonProperty("payload")
-public Payload getPayload() {
-return payload;
+public List<Trade> getPayment() {
+return payment;
 }
 
-@JsonProperty("payload")
-public void setPayload(Payload payload) {
-this.payload = payload;
+@JsonProperty("payment")
+public void setPayment(List<Trade> payment) {
+this.payment = payment;
 }
 
 @JsonAnyGetter
