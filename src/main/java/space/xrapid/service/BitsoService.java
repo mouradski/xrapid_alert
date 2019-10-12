@@ -25,8 +25,6 @@ public class BitsoService {
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-    private Integer marker;
-
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         List<Trade> payments = new ArrayList<>();
         List<Trade> currentPayments = new ArrayList<>();
@@ -36,9 +34,7 @@ public class BitsoService {
         headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
         HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 
-        String getUrl = marker != null ? url + "&marker=" + marker : url;
-
-        ResponseEntity<BitsoPayments> response = restTemplate.exchange(getUrl,
+        ResponseEntity<BitsoPayments> response = restTemplate.exchange(url,
                 HttpMethod.GET, entity, BitsoPayments.class);
 
 
@@ -48,13 +44,14 @@ public class BitsoService {
             payments.addAll(currentPayments);
         }
 
+        Integer marker;
+
         while (currentPayments.size() == 100) {
             marker = getMarker(begin, response);
 
-            if (marker == null || response.getBody().getPayment().size() < 100) {
+            if (marker == null) {
                 break;
             }
-
             response = restTemplate.exchange(url + "&marker=" + marker,
                     HttpMethod.GET, entity, BitsoPayments.class);
 

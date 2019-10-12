@@ -59,11 +59,11 @@ public class MxnCorridor {
                 .collect(Collectors.toList());
     }
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 30000)
     public void updateExchangeToExchangePayments() {
         updatePaymentsWindows();
         bitsoBids = bitsoService.fetchTrades(windowStart);
-        xrpLedgerService.fetchPayments(windowStart, windowEnd, this::submit);
+        xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd, this::submit);
     }
 
     private void notify(ExchangeToExchangePayment payment) {
@@ -96,7 +96,6 @@ public class MxnCorridor {
     private boolean mxnXrpToMxnBidExist(ExchangeToExchangePayment exchangeToExchangePayment) {
         return bitsoBids.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
-                .peek(p -> log.debug("{} ?== {}", exchangeToExchangePayment.getAmount(), p.getAmount()))
                 .filter(p -> exchangeToExchangePayment.getAmount().equals(Double.valueOf(p.getAmount())))
                 .findAny().isPresent();
     }
@@ -117,7 +116,7 @@ public class MxnCorridor {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-400);
+        windowStart = windowEnd.plusMinutes(-800);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
