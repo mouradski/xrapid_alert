@@ -54,7 +54,7 @@ $(function () {
         var message = JSON.parse(payload.body);
         var msg = document.createElement('div');
         msg.className = 'message';
-        msg.innerText = message.dateAsString + " : " + message.amount + " XRP from " + message.source + " to " + message.destination;
+        msg.innerText = message.dateAsString + ", Xrapid Transaction spoted : " + message.amount + " XRP from " + message.source + " to " + message.destination;
         scroller.insertBefore(msg, anchor);
     }
 

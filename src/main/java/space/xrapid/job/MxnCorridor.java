@@ -62,11 +62,12 @@ public class MxnCorridor {
     @Scheduled(fixedDelay = 60000)
     public void updateExchangeToExchangePayments() {
         updatePaymentsWindows();
-        bitsoBids = bitsoService.fetchPayments(windowStart);
+        bitsoBids = bitsoService.fetchTrades(windowStart);
         xrpLedgerService.fetchPayments(windowStart, windowEnd, this::submit);
     }
 
     private void notify(ExchangeToExchangePayment payment) {
+        log.info("Xrapid payment {} ", payment);
         messagingTemplate.convertAndSend("/topic/payments", payment);
     }
 
@@ -116,7 +117,7 @@ public class MxnCorridor {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-3);
+        windowStart = windowEnd.plusMinutes(-400);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

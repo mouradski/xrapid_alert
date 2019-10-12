@@ -27,7 +27,7 @@ public class BitsoService {
 
     private Integer marker;
 
-    public List<Trade> fetchPayments(OffsetDateTime begin) {
+    public List<Trade> fetchTrades(OffsetDateTime begin) {
         List<Trade> payments = new ArrayList<>();
         List<Trade> currentPayments = new ArrayList<>();
 
@@ -71,7 +71,6 @@ public class BitsoService {
 
     private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoPayments> response) {
         return response.getBody().getPayment().stream()
-                .filter(p -> "sell".equals(p.getMakerSide()))
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .map(Trade::getTid)
                 .sorted()
@@ -81,7 +80,6 @@ public class BitsoService {
 
     private List<Trade> getPayments(OffsetDateTime begin, ResponseEntity<BitsoPayments> response) {
         return response.getBody().getPayment().stream()
-                .filter(p -> "sell".equals(p.getMakerSide()))
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .sorted(Comparator.comparing(Trade::getCreatedAt))
                 .peek(System.out::println)
