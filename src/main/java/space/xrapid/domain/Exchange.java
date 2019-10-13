@@ -36,6 +36,15 @@ public enum Exchange {
     COIN_PH("coin.ph", PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
     
     COINBENE("coinbene", BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
+    
+    BITHUMB("bithumb", KRW,
+            "rPMM1dRp7taeRkbT74Smx2a25kTAHdr4N5",
+            "rNTkgxs5WG5mU5Sz26YoDVrHim5Y5ohC7",
+            "r9hUMZBc3MWRc4YdsdZgNCW5Qef8wNSXpb",
+            "rD7XQw67JWBXuo2WPX2gZRsGKNsDUGTbx5",
+            "r9LHiNDZvpLoWPoKnbH2JWjFET8zoYT4Y5",
+            "rBF3GWchod3QL8TEYicwSeMu6sjXqKFaQ2"),
+           
 
 
     //TODO
