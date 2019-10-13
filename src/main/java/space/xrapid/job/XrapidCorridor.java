@@ -89,7 +89,7 @@ public abstract class XrapidCorridor {
     private boolean mxnXrpToCurrencyTradeExist(ExchangeToExchangePayment exchangeToExchangePayment) {
         return xrpTrades.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
-                .filter(p -> exchangeToExchangePayment.getAmount().equals(Double.valueOf(p.getAmount())))
+                .filter(p -> exchangeToExchangePayment.getAmount().equals(p.getAmount()))
                 .findAny().isPresent();
     }
 
