@@ -4,5 +4,7 @@ public enum Currency {
     USD,
     EUR,
     MXN,
-    PHP
+    PHP,
+    YEN,
+    BRL
 }

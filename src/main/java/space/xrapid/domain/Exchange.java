@@ -22,7 +22,7 @@ public enum Exchange {
             "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
 
-    SBI_VC("sbi_vc", null,
+    SBI_VC("sbi_vc", YEN,
             "rHtqTcp3SvjxbhpTYMFTUWX5B1mny9KWeE",
             "rwB2UA47taZQCfi4po3tw8vwBpt6Y6eioZ",
             "rJLEjF9wbrHU2H5YSJKn6S7hyyq8gne7su",
@@ -36,44 +36,12 @@ public enum Exchange {
     COIN_PH("coin.ph", PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
 
-    BINANCE("binance", null, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh");
+    //TODO
+//    BRAZILIEX("braziliex", BRL,
+//            "__UNKNOW__"),
 
-//    MCX("mcx", null, "rs2dgzYeqYqsk8bvkQR5YPyqsXYcA24MP2"),
-//
-//    KUCOIN("kucoin", null,
-//            "rUW9toSjQkLY6EspdnBJP2paG4hWKmNbMh",
-//            "r4pxv9txfQTyVkQUetNmyJqDy7s5fPPVfB",
-//            "rhKrvXY8zRvVyDLT4nfXB86HyhqQyvcr4c"),
-//
-//
-//    UPBIT("upbit", null,
-//            "rNzT5xopUaJK8L7mHbThUGKaHoct62dNBC",
-//            "rN9qNpgnBaZwqCg8CvUZRPqCcPPY7wfWep",
-//            "rJYQKfsTi8XCLZ1vGSf9CxiL4prz5bvbtz",
-//            "rBszWJzYpNoqoY4xKuGUpN23b6EBT41ocF"),
-//
-//
-//    CATEX("catex", null, "rp953pKrFqc8NLa2z5dqcpgh6z4ZdBskPp"),
-//
-//    ZB("zb", null,
-//            "r4hYwnBsNH764iTfhRSopu4M3Ct5gMkCGD",
-//            "rKm6XqTFgJUpwwHhuXoPdGPtcbEhtj3Sza"),
-//
-//    BITRUE("bitrue", null, "raLPjTYeGezfdb6crXZzcC8RkLBEwbBHJ5"),
-//
-//    KRAKEN("kraken", null, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-//
-//    BITREX("bitrex", null,
-//            "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
-//
-//    BITFINEX("bitfinex", null,
-//            "rLW9gnQo7BQhU6igk5keqYnH3TVrCxGRzm",
-//            "rE3hWEGquaixF2XwirNbA1ds4m55LxNZPk"),
-//
-//
-//    COINBASE("coinbase", null,
-//            "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
-//            "rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg");
+    BITREX("bitrex", USD,
+            "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy");
 
     private String name;
     private Currency localFiat;
