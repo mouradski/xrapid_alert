@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.Exchange;
+import space.xrapid.domain.XrpTrade;
 import space.xrapid.domain.bitso.BitsoPayments;
 import space.xrapid.domain.bitso.Trade;
 
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class BitsoService {
+public class BitsoService implements TradeService {
 
     private String url = "https://api.bitso.com/v3/trades/?book=xrp_mxn&sort=desc&limit=100";
 
@@ -25,9 +27,9 @@ public class BitsoService {
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-    public List<Trade> fetchTrades(OffsetDateTime begin) {
-        List<Trade> payments = new ArrayList<>();
-        List<Trade> currentPayments = new ArrayList<>();
+    public List<XrpTrade> fetchTrades(OffsetDateTime begin) {
+        List<XrpTrade> payments = new ArrayList<>();
+        List<XrpTrade> currentPayments = new ArrayList<>();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -59,7 +61,6 @@ public class BitsoService {
                 currentPayments = getPayments(begin, response);
                 payments.addAll(currentPayments);
             }
-
         }
 
         return payments;
@@ -75,12 +76,17 @@ public class BitsoService {
                 .orElse(null);
     }
 
-    private List<Trade> getPayments(OffsetDateTime begin, ResponseEntity<BitsoPayments> response) {
+    private List<XrpTrade> getPayments(OffsetDateTime begin, ResponseEntity<BitsoPayments> response) {
         return response.getBody().getPayment().stream()
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .sorted(Comparator.comparing(Trade::getCreatedAt))
                 .peek(System.out::println)
+                .map(this::mapTrade)
                 .collect(Collectors.toList());
+    }
+
+    private XrpTrade mapTrade(Trade trade) {
+        return XrpTrade.builder().amount(Double.valueOf(trade.getAmount())).target(Exchange.BITSO).build();
     }
 
 }
