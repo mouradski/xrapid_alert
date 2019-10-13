@@ -11,7 +11,7 @@ import java.util.Map;
 "success",
 "payment"
 })
-public class BitsoPayments {
+public class BitsoXrpTrades {
 
 @JsonProperty("success")
 private Boolean success;

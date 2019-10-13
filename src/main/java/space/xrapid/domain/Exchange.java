@@ -35,10 +35,12 @@ public enum Exchange {
 
     COIN_PH("coin.ph", PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
+    COINBENE("coinbene", BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
+
 
     //TODO
-//    BRAZILIEX("braziliex", BRL,
-//            "__UNKNOW__"),
+    BRAZILIEX("braziliex", BRL,
+            "__UNKNOW__"),
 
     BITREX("bitrex", USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy");

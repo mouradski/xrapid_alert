@@ -55,7 +55,9 @@ public abstract class XrapidCorridor {
     @Scheduled(fixedDelay = 30000)
     public void updateExchangeToExchangePayments() {
         updatePaymentsWindows();
+
         xrpTrades = getTradeService().fetchTrades(windowStart);
+
         xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd, this::submit);
     }
 

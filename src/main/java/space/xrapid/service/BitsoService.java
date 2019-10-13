@@ -1,18 +1,19 @@
 package space.xrapid.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.XrpTrade;
-import space.xrapid.domain.bitso.BitsoPayments;
+import space.xrapid.domain.bitso.BitsoXrpTrades;
 import space.xrapid.domain.bitso.Trade;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,13 +32,10 @@ public class BitsoService implements TradeService {
         List<XrpTrade> payments = new ArrayList<>();
         List<XrpTrade> currentPayments = new ArrayList<>();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<BitsoPayments> response = restTemplate.exchange(url,
-                HttpMethod.GET, entity, BitsoPayments.class);
+        ResponseEntity<BitsoXrpTrades> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, BitsoXrpTrades.class);
 
 
         if (response.getBody().getSuccess() && response.getBody() != null) {
@@ -55,7 +53,7 @@ public class BitsoService implements TradeService {
                 break;
             }
             response = restTemplate.exchange(url + "&marker=" + marker,
-                    HttpMethod.GET, entity, BitsoPayments.class);
+                    HttpMethod.GET, entity, BitsoXrpTrades.class);
 
             if (response.getBody().getSuccess() && response.getBody() != null) {
                 currentPayments = getPayments(begin, response);
@@ -67,7 +65,7 @@ public class BitsoService implements TradeService {
 
     }
 
-    private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoPayments> response) {
+    private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .map(Trade::getTid)
@@ -76,7 +74,7 @@ public class BitsoService implements TradeService {
                 .orElse(null);
     }
 
-    private List<XrpTrade> getPayments(OffsetDateTime begin, ResponseEntity<BitsoPayments> response) {
+    private List<XrpTrade> getPayments(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .sorted(Comparator.comparing(Trade::getCreatedAt))
