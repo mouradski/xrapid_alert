@@ -34,6 +34,8 @@ public enum Exchange {
             "r9x4D7c2nfa3UJefLR4fpN31zZQvByHSLQ"),
 
     COIN_PH("coin.ph", PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
+    
+    COINBENE("coinbene", BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
 
     //TODO
