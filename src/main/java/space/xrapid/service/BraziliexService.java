@@ -29,10 +29,10 @@ public class BraziliexService implements TradeService {
         ResponseEntity<Trade[]> response = restTemplate.exchange(urlGet,
                 HttpMethod.GET, getEntity(), Trade[].class);
 
-        return getPayments(begin, response);
+        return getTrades(begin, response);
     }
 
-    private List<XrpTrade> getPayments(OffsetDateTime begin, ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
+    private List<XrpTrade> getTrades(OffsetDateTime begin, ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
         long beginTimestamp = begin.toEpochSecond() * 1000;
         return Arrays.stream(response.getBody())
                 .filter(p -> beginTimestamp < p.getTimestamp())

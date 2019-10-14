@@ -39,7 +39,7 @@ public class BitsoService implements TradeService {
 
 
         if (response.getBody().getSuccess() && response.getBody() != null) {
-            currentPayments = getPayments(begin, response);
+            currentPayments = getTrades(begin, response);
 
             payments.addAll(currentPayments);
         }
@@ -56,7 +56,7 @@ public class BitsoService implements TradeService {
                     HttpMethod.GET, entity, BitsoXrpTrades.class);
 
             if (response.getBody().getSuccess() && response.getBody() != null) {
-                currentPayments = getPayments(begin, response);
+                currentPayments = getTrades(begin, response);
                 payments.addAll(currentPayments);
             }
         }
@@ -74,7 +74,7 @@ public class BitsoService implements TradeService {
                 .orElse(null);
     }
 
-    private List<XrpTrade> getPayments(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
+    private List<XrpTrade> getTrades(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .sorted(Comparator.comparing(Trade::getCreatedAt))

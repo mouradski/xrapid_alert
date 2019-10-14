@@ -10,7 +10,7 @@ import space.xrapid.service.TradeService;
 @Slf4j
 @EnableScheduling
 @Component
-public class MxnCorridor extends XrapidCorridor {
+public class MxnCorridors extends XrapidCorridors {
 
     @Autowired
     private BitsoService bitsoService;

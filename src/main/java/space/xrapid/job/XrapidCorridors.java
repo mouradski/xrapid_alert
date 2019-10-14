@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class XrapidCorridor {
+public abstract class XrapidCorridors {
 
     @Autowired
     private XrapidPaymentRepository xrapidPaymentRepository;
