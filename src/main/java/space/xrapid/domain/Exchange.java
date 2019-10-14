@@ -37,6 +37,8 @@ public enum Exchange {
 
     COINBENE("coinbene", BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
+    BITTREX("bittrex", USD "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
+
 
     //TODO
     BRAZILIEX("braziliex", BRL,
