@@ -38,7 +38,7 @@ $(function () {
         console.log(payment);
         var msg = document.createElement('div');
         msg.className = 'message';
-        msg.innerText = payment.dateAsString + " : " + payment.amount + " XRP from " + payment.source + " to " + payment.destination;
+        msg.innerText = payment.dateAsString + ", Xrapid Transaction spoted : " + payment.amount + " XRP from " + payment.source + "(" + payment.sourceAddress + ")" + " to " + payment.destination + ", Destination Fiat : " + payment.destinationCurrencry + ", Buy Order : " + payment.convertionOrderIdOnDestinationExchange + ", Rate : " + payment.destinationCurrencyRate;
         scroller.insertBefore(msg, anchor);
     }
 
@@ -54,7 +54,7 @@ $(function () {
         var message = JSON.parse(payload.body);
         var msg = document.createElement('div');
         msg.className = 'message';
-        msg.innerText = message.dateAsString + ", Xrapid Transaction spoted : " + message.amount + " XRP from " + message.source + " to " + message.destination;
+        msg.innerText = message.dateAsString + ", Xrapid Transaction spoted : " + message.amount + " XRP from " + message.source + "(" + message.sourceAddress + ")" + " to " + message.destination + ", Destination Fiat : " + message.destinationCurrencry + ", Buy Order : " + message.convertionOrderIdOnDestinationExchange + ", Rate : " + message.destinationCurrencyRate;
         scroller.insertBefore(msg, anchor);
     }
 

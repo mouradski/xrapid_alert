@@ -8,6 +8,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class XrpTrade {
+    private Long timestamp;
     private Double amount;
     private Exchange target;
+    private String orderId;
+    private double rate;
 }

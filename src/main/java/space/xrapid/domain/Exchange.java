@@ -22,6 +22,8 @@ public enum Exchange {
             "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
 
+    PAYEER("payeer", null, "rshvnxLDE9Jsm8sJxPxct425HhQC2tk5CV"),
+    KUCOIN("kucoin", null, "rhKrvXY8zRvVyDLT4nfXB86HyhqQyvcr4c"),
     SBI_VC("sbi_vc", YEN,
             "rHtqTcp3SvjxbhpTYMFTUWX5B1mny9KWeE",
             "rwB2UA47taZQCfi4po3tw8vwBpt6Y6eioZ",
@@ -39,10 +41,10 @@ public enum Exchange {
 
     BITTREX("bittrex", USD, "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
 
-
-    //TODO
     BRAZILIEX("braziliex", BRL,
             "__UNKNOW__"),
+
+    BINANCE("Binance", null, "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy"),
 
     BITREX("bitrex", USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy");

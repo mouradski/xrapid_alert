@@ -18,10 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,8 +63,9 @@ public abstract class XrapidCorridors {
         messagingTemplate.convertAndSend("/topic/payments", payment);
     }
 
+    //TODO Exchange property by corridor inbound
     private boolean isXrapidCandidate(Payment payment) {
-        return allExchangeAddresses.contains(payment.getDestination()) && allExchangeAddresses.contains(payment.getSource());
+        return allExchangeAddresses.contains(payment.getDestination());
     }
 
     private void submit(List<Payment> payments) {
@@ -89,10 +87,19 @@ public abstract class XrapidCorridors {
     }
 
     private boolean mxnXrpToCurrencyTradeExist(ExchangeToExchangePayment exchangeToExchangePayment) {
-        return xrpTrades.stream()
+        XrpTrade xrpTrade = xrpTrades.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
                 .filter(p -> exchangeToExchangePayment.getAmount().equals(p.getAmount()))
-                .findAny().isPresent();
+                .findAny().orElse(null);
+
+        if (xrpTrade == null) {
+            return false;
+        }
+        exchangeToExchangePayment.setConvertionOrderIdOnDestinationExchange(xrpTrade.getOrderId());
+        exchangeToExchangePayment.setDestinationCurrencyRate(xrpTrade.getRate());
+        exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
+
+        return true;
     }
 
     private ExchangeToExchangePayment mapPayment(Payment payment) {
@@ -101,6 +108,7 @@ public abstract class XrapidCorridors {
                     .amount(Double.valueOf(payment.getDeliveredAmount()))
                     .destination(Exchange.byAddress(payment.getDestination()))
                     .source(Exchange.byAddress(payment.getSource()))
+                    .sourceAddress(payment.getSource())
                     .transactionHash(payment.getTxHash())
                     .timestamp(dateFormat.parse(payment.getExecutedTime()).getTime())
                     .build();
@@ -111,7 +119,7 @@ public abstract class XrapidCorridors {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-800);
+        windowStart = windowEnd.plusMinutes(-1000);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
