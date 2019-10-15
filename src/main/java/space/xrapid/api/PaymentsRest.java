@@ -21,7 +21,7 @@ public class PaymentsRest {
     @Produces("application/json")
     public List<ExchangeToExchangePayment> getLasts() {
         return repository.getLasts().stream()
-                .limit(5).collect(Collectors.toList()).stream()
+                .limit(10).collect(Collectors.toList()).stream()
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
                 .collect(Collectors.toList());
     }

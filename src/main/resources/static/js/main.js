@@ -38,7 +38,7 @@ $(function () {
         console.log(payment);
         var msg = document.createElement('div');
         msg.className = 'message';
-        msg.innerText = payment.dateAsString + ", Xrapid Transaction spoted : " + payment.amount + " XRP from " + payment.source + "(" + payment.sourceAddress + ")" + " to " + payment.destination + ", Destination Fiat : " + payment.destinationCurrencry + ", Buy Order : " + payment.convertionOrderIdOnDestinationExchange + ", Rate : " + payment.destinationCurrencyRate;
+        msg.innerText = payment.dateTime + ", Xrapid Transaction spoted : " + payment.amount + " XRP from " + payment.source + "(" + payment.sourceAddress + ")" + " to " + payment.destination + ", Destination Fiat : " + payment.destinationCurrencry + ", Buy Order : " + payment.toFiatTrade.orderId + ", executedAt : " + payment.toFiatTradedateTime + ", Rate : " + payment.toFiatTrade.rate;
         scroller.insertBefore(msg, anchor);
     }
 
@@ -52,9 +52,10 @@ $(function () {
 
     function onMessageReceived(payload) {
         var message = JSON.parse(payload.body);
+        console.log(message);
         var msg = document.createElement('div');
         msg.className = 'message';
-        msg.innerText = message.dateAsString + ", Xrapid Transaction spoted : " + message.amount + " XRP from " + message.source + "(" + message.sourceAddress + ")" + " to " + message.destination + ", Destination Fiat : " + message.destinationCurrencry + ", Buy Order : " + message.convertionOrderIdOnDestinationExchange + ", Rate : " + message.destinationCurrencyRate;
+        msg.innerText = message.dateTime + ", Xrapid Transaction spoted : " + message.amount + " XRP from " + message.source + "(" + message.sourceAddress + ")" + " to " + message.destination + ", Destination Fiat : " + message.destinationCurrencry + ", Buy Order : " + message.toFiatTrade.orderId + ", executedAt : " + message.toFiatTrade.dateTime + ", Rate : " + message.toFiatTrade.rate;
         scroller.insertBefore(msg, anchor);
     }
 

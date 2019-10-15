@@ -18,7 +18,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -79,7 +84,7 @@ public abstract class XrapidCorridors {
         paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::mxnXrpToCurrencyTradeExist)
-                .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
+                .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .peek(System.out::println)
                 .peek(this::notify)
                 .peek(xrapidPaymentRepository::fill)
@@ -90,13 +95,15 @@ public abstract class XrapidCorridors {
         XrpTrade xrpTrade = xrpTrades.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
                 .filter(p -> exchangeToExchangePayment.getAmount().equals(p.getAmount()))
-                .findAny().orElse(null);
+                .filter(p -> zonedDateTimeDifference(exchangeToExchangePayment.getDateTime(), p.getDateTime(), ChronoUnit.MINUTES) < 10)
+                .peek(p -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), p.getDateTime() ))
+                .findFirst().orElse(null);
 
         if (xrpTrade == null) {
             return false;
         }
-        exchangeToExchangePayment.setConvertionOrderIdOnDestinationExchange(xrpTrade.getOrderId());
-        exchangeToExchangePayment.setDestinationCurrencyRate(xrpTrade.getRate());
+
+        exchangeToExchangePayment.setToFiatTrade(xrpTrade);
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
 
         return true;
@@ -111,6 +118,7 @@ public abstract class XrapidCorridors {
                     .sourceAddress(payment.getSource())
                     .transactionHash(payment.getTxHash())
                     .timestamp(dateFormat.parse(payment.getExecutedTime()).getTime())
+                    .dateTime(OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                     .build();
         } catch (ParseException e) {
             return null;
@@ -129,4 +137,8 @@ public abstract class XrapidCorridors {
     }
 
     protected abstract TradeService getTradeService();
+
+    static long zonedDateTimeDifference(OffsetDateTime d1, OffsetDateTime d2, ChronoUnit unit){
+        return unit.between(d1, d2);
+    }
 }

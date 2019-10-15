@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 
 @Builder
 @AllArgsConstructor
@@ -14,6 +15,7 @@ public class ExchangeToExchangePayment extends Payment {
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
 
+    private OffsetDateTime dateTime;
     private Long timestamp;
     private Exchange source;
     private String sourceAddress;
@@ -21,9 +23,9 @@ public class ExchangeToExchangePayment extends Payment {
     private Double amount;
     private String transactionHash;
     private String trxHash;
+    private XrpTrade toFiatTrade;
+
     private Currency destinationCurrencry;
-    private double destinationCurrencyRate;
-    private String convertionOrderIdOnDestinationExchange;
 
     public String getDateAsString() {
         return dateFormat.format(timestamp);
@@ -39,8 +41,6 @@ public class ExchangeToExchangePayment extends Payment {
         sb.append("Destination : ").append(this.destination).append(", ");
         sb.append("Trx Hash : ").append(this.destination).append(", ");
 
-        sb.append("Fiat rate : ").append(this.destinationCurrencyRate).append(", ");
-        sb.append("Fiat buy Order : ").append(this.convertionOrderIdOnDestinationExchange).append(", ");
 
         return sb.toString();
     }
