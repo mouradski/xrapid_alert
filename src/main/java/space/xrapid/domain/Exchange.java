@@ -11,7 +11,8 @@ public enum Exchange {
             "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
             "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
             "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD"),
+            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
+            "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
 
     BITSO("bitso", MXN,
             "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
@@ -44,7 +45,9 @@ public enum Exchange {
     BRAZILIEX("braziliex", BRL,
             "__UNKNOW__"),
 
-    BINANCE("Binance", null, "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy"),
+    BINANCE("Binance", null,
+            "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy",
+            "r4DymtkgUAh2wqRxVfdd3Xtswzim6eC6c5"),
 
     BITREX("bitrex", USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy");
