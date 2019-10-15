@@ -20,6 +20,10 @@ public enum Exchange {
             "rGfGdVYLDSbji5mqfMvdpx4c8JyyfqVFgf",
             "rfEu1Wnr7LxStoFx8DBdzgr8M16FBUbH3K",
             "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
+    
+    COINBASE("coinbase", USD,
+            "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+            "rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg"),
 
 
     SBI_VC("sbi_vc", YEN,
