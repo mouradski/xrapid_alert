@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MercadoBitcoinService implements TradeService {
 
-    private String apiUrl = "https://www.mercadobitcoin.net/api/BTC/trades/{FROM}/{TO}/";
+    private String apiUrl = "https://www.mercadobitcoin.net/api/XRP/trades/{FROM}/{TO}/";
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -35,7 +35,10 @@ public class MercadoBitcoinService implements TradeService {
                 HttpMethod.GET, entity, Trade[].class);
 
 
-        return Arrays.stream(response.getBody()).map(this::mapTrade).collect(Collectors.toList());
+        return Arrays.stream(response.getBody())
+                .map(this::mapTrade)
+                .peek(System.out::println)
+                .collect(Collectors.toList());
     }
 
 

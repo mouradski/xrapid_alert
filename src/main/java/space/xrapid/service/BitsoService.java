@@ -78,8 +78,8 @@ public class BitsoService implements TradeService {
         return response.getBody().getPayment().stream()
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .sorted(Comparator.comparing(Trade::getCreatedAt))
-                .peek(System.out::println)
                 .map(this::mapTrade)
+                .peek(System.out::println)
                 .collect(Collectors.toList());
     }
 

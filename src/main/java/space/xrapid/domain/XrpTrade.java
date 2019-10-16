@@ -3,12 +3,14 @@ package space.xrapid.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 
 @Getter
 @Setter
 @Builder
+@ToString
 public class XrpTrade {
     private OffsetDateTime dateTime;
     private Long timestamp;
