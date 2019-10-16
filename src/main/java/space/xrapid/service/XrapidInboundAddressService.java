@@ -1,5 +1,6 @@
 package space.xrapid.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import space.xrapid.domain.XrapidInboundAddress;
 import space.xrapid.repository.XrapidInboundAddressRepository;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class XrapidInboundAddressService {
 
@@ -30,6 +32,7 @@ public class XrapidInboundAddressService {
 
     @Transactional
     public void add(String address, Long tag) {
+        log.info("Persistance tag xrapid : {}:{}", address, tag );
         add(XrapidInboundAddress.builder().address(address).tag(tag).build());
     }
 

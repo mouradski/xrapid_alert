@@ -40,14 +40,14 @@ public enum Exchange {
 
     COINBENE("coinbene", BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
-    BITTREX("bittrex", USD, "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
+    BITTREX("bittrex", USD, "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy", "rK7LSKygRUu9y9xcuhkWbcMRKRF5HVWwVL"),
 
     BRAZILIEX("braziliex", BRL,
             "__UNKNOW__"),
 
     BINANCE("Binance", null,
             "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy",
-            "r4DymtkgUAh2wqRxVfdd3Xtswzim6eC6c5"),
+            "r4DymtkgUAh2wqRxVfdd3Xtswzim6eC6c5","rLZh28YgxC712oPJYjYvU6Wa8146ycxkBM"),
 
     BITREX("bitrex", USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy");

@@ -100,13 +100,14 @@ public abstract class XrapidCorridors {
         boolean destinationIdentifiedAsXrapid = xrapidInboundAddressService.isXrapidInbound(exchangeToExchangePayment.getSourceAddress(), exchangeToExchangePayment.getTag());
 
         if (destinationIdentifiedAsXrapid) {
+            log.info("destinationIdentifiedAsXrapid :)");
             return true;
         }
 
         XrpTrade xrpTrade = xrpTrades.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
                 .filter(p -> exchangeToExchangePayment.getAmount().equals(p.getAmount()))
-                .filter(p -> zonedDateTimeDifference(exchangeToExchangePayment.getDateTime(), p.getDateTime(), ChronoUnit.MINUTES) < 10)
+                .filter(p -> zonedDateTimeDifference(exchangeToExchangePayment.getDateTime(), p.getDateTime(), ChronoUnit.SECONDS) < 60)
                 .peek(p -> xrapidInboundAddressService.add(exchangeToExchangePayment))
                 .peek(p -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), p.getDateTime() ))
                 .findFirst().orElse(null);
@@ -140,7 +141,7 @@ public abstract class XrapidCorridors {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-1000);
+        windowStart = windowEnd.plusMinutes(-2500);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

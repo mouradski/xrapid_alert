@@ -38,7 +38,7 @@ $(function () {
         console.log(payment);
         var msg = document.createElement('div');
         msg.className = 'message';
-        msg.innerText = payment.dateTime + ", Xrapid Transaction spoted : " + payment.amount + " XRP from " + payment.source + "(" + payment.sourceAddress + ")" + " to " + payment.destination + ", TrxHash : " + payment.transactionHash +  ", Destination Fiat : " + payment.destinationCurrencry + ", Buy Order : " + payment.toFiatTrade.orderId + ", executedAt : " + payment.toFiatTrade.dateTime + ", Rate : " + payment.toFiatTrade.rate;
+        msg.innerText = payment.dateTime + ", Xrapid Transaction spoted : " + payment.amount + " XRP from " + payment.source + "(" + payment.sourceAddress + ")" + " to " + payment.destination + ", TrxHash : " + payment.transactionHash +  ", Destination Fiat : " + payment.destinationCurrencry;
         scroller.insertBefore(msg, anchor);
     }
 
@@ -55,7 +55,7 @@ $(function () {
         console.log(message);
         var msg = document.createElement('div');
         msg.className = 'message';
-        msg.innerText = message.dateTime + ", Xrapid Transaction spoted : " + message.amount + " XRP from " + message.source + "(" + message.sourceAddress + ")" + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry + ", Buy Order : " + message.toFiatTrade.orderId + ", executedAt : " + message.toFiatTrade.dateTime + ", Rate : " + message.toFiatTrade.rate;
+        msg.innerText = message.dateTime + ", Xrapid Transaction spoted : " + message.amount + " XRP from " + message.source + "(" + message.sourceAddress + ")" + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry;
         scroller.insertBefore(msg, anchor);
     }
 
