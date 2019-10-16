@@ -43,12 +43,6 @@ public abstract class XrapidCorridors {
     @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
 
-
-    //test
-
-    @Autowired
-    private MercadoBitcoinService mercadoBitcoinService;
-
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
@@ -67,13 +61,7 @@ public abstract class XrapidCorridors {
 
     @Scheduled(fixedDelay = 30000)
     public void updateExchangeToExchangePayments() {
-
-
-
         updatePaymentsWindows();
-
-
-        mercadoBitcoinService.fetchTrades(windowStart);
 
         xrpTrades = getTradeService().fetchTrades(windowStart);
 
@@ -111,6 +99,8 @@ public abstract class XrapidCorridors {
     private boolean mxnXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
         boolean destinationIdentifiedAsXrapid = xrapidInboundAddressService.isXrapidInbound(exchangeToExchangePayment.getSourceAddress(), exchangeToExchangePayment.getTag());
 
+        exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
+
         if (destinationIdentifiedAsXrapid) {
             log.info("destinationIdentifiedAsXrapid :)");
             return true;
@@ -129,7 +119,6 @@ public abstract class XrapidCorridors {
         }
 
         exchangeToExchangePayment.setToFiatTrade(xrpTrade);
-        exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
 
         return true;
     }
