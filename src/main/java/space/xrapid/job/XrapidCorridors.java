@@ -9,6 +9,7 @@ import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.XrpTrade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.repository.XrapidPaymentRepository;
+import space.xrapid.service.MercadoBitcoinService;
 import space.xrapid.service.TradeService;
 import space.xrapid.service.XrapidInboundAddressService;
 import space.xrapid.service.XrpLedgerService;
@@ -42,6 +43,12 @@ public abstract class XrapidCorridors {
     @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
 
+
+    //test
+
+    @Autowired
+    private MercadoBitcoinService mercadoBitcoinService;
+
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
@@ -60,7 +67,13 @@ public abstract class XrapidCorridors {
 
     @Scheduled(fixedDelay = 30000)
     public void updateExchangeToExchangePayments() {
+
+
+
         updatePaymentsWindows();
+
+
+        mercadoBitcoinService.fetchTrades(windowStart);
 
         xrpTrades = getTradeService().fetchTrades(windowStart);
 
@@ -72,9 +85,8 @@ public abstract class XrapidCorridors {
         messagingTemplate.convertAndSend("/topic/payments", payment);
     }
 
-    //TODO Exchange property by corridor inbound
     private boolean isXrapidCandidate(Payment payment) {
-        return allExchangeAddresses.contains(payment.getDestination());
+        return allExchangeAddresses.contains(payment.getDestination()) && allExchangeAddresses.contains(payment.getSource());
     }
 
     private void submit(List<Payment> payments) {

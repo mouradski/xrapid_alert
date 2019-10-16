@@ -23,8 +23,6 @@ public enum Exchange {
             "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
 
-    PAYEER("payeer", null, "rshvnxLDE9Jsm8sJxPxct425HhQC2tk5CV"),
-    KUCOIN("kucoin", null, "rhKrvXY8zRvVyDLT4nfXB86HyhqQyvcr4c"),
     SBI_VC("sbi_vc", YEN,
             "rHtqTcp3SvjxbhpTYMFTUWX5B1mny9KWeE",
             "rwB2UA47taZQCfi4po3tw8vwBpt6Y6eioZ",
@@ -39,18 +37,19 @@ public enum Exchange {
     COIN_PH("coin.ph", PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
     COINBENE("coinbene", BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
+    COINBASE("coinbase",USD, "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w","rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg"),
 
     BITTREX("bittrex", USD, "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy", "rK7LSKygRUu9y9xcuhkWbcMRKRF5HVWwVL"),
+
+    MERCADO("mercado", BRL, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
 
     BRAZILIEX("braziliex", BRL,
             "__UNKNOW__"),
 
-    BINANCE("Binance", null,
-            "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy",
-            "r4DymtkgUAh2wqRxVfdd3Xtswzim6eC6c5","rLZh28YgxC712oPJYjYvU6Wa8146ycxkBM"),
 
     BITREX("bitrex", USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy");
+
 
     private String name;
     private Currency localFiat;

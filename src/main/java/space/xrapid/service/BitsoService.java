@@ -86,7 +86,7 @@ public class BitsoService implements TradeService {
     private XrpTrade mapTrade(Trade trade) {
         return XrpTrade.builder().amount(Double.valueOf(trade.getAmount()))
                 .target(Exchange.BITSO).timestamp(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter).toEpochSecond() * 1000)
-                .target(Exchange.BITSO).dateTime(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
+                .dateTime(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
 
                 .orderId(trade.getTid().toString())
                 .rate(Double.valueOf(trade.getPrice()))
