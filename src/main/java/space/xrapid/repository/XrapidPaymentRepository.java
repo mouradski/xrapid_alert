@@ -1,8 +1,8 @@
 package space.xrapid.repository;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import space.xrapid.domain.ExchangeToExchangePayment;
 
-@Component
+@Repository
 public class XrapidPaymentRepository extends AbstractRepository<ExchangeToExchangePayment> {
 }
