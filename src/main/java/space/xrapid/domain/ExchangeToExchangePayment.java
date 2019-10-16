@@ -24,6 +24,7 @@ public class ExchangeToExchangePayment extends Payment {
     private String transactionHash;
     private String trxHash;
     private XrpTrade toFiatTrade;
+    private Long tag;
 
     private Currency destinationCurrencry;
 

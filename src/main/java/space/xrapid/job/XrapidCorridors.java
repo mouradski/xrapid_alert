@@ -10,6 +10,7 @@ import space.xrapid.domain.XrpTrade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.repository.XrapidPaymentRepository;
 import space.xrapid.service.TradeService;
+import space.xrapid.service.XrapidInboundAddressService;
 import space.xrapid.service.XrpLedgerService;
 
 import javax.annotation.PostConstruct;
@@ -37,6 +38,9 @@ public abstract class XrapidCorridors {
 
     @Autowired
     private XrpLedgerService xrpLedgerService;
+
+    @Autowired
+    private XrapidInboundAddressService xrapidInboundAddressService;
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
@@ -83,7 +87,7 @@ public abstract class XrapidCorridors {
 
         paymentsToProcess.stream()
                 .map(this::mapPayment)
-                .filter(this::mxnXrpToCurrencyTradeExist)
+                .filter(this::mxnXrpToCurrencyTradeExistOrAddressIdentified)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .peek(System.out::println)
                 .peek(this::notify)
@@ -91,11 +95,19 @@ public abstract class XrapidCorridors {
                 .collect(Collectors.toList());
     }
 
-    private boolean mxnXrpToCurrencyTradeExist(ExchangeToExchangePayment exchangeToExchangePayment) {
+
+    private boolean mxnXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
+        boolean destinationIdentifiedAsXrapid = xrapidInboundAddressService.isXrapidInbound(exchangeToExchangePayment.getSourceAddress(), exchangeToExchangePayment.getTag());
+
+        if (destinationIdentifiedAsXrapid) {
+            return true;
+        }
+
         XrpTrade xrpTrade = xrpTrades.stream()
                 .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
                 .filter(p -> exchangeToExchangePayment.getAmount().equals(p.getAmount()))
                 .filter(p -> zonedDateTimeDifference(exchangeToExchangePayment.getDateTime(), p.getDateTime(), ChronoUnit.MINUTES) < 10)
+                .peek(p -> xrapidInboundAddressService.add(exchangeToExchangePayment))
                 .peek(p -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), p.getDateTime() ))
                 .findFirst().orElse(null);
 
@@ -117,6 +129,7 @@ public abstract class XrapidCorridors {
                     .source(Exchange.byAddress(payment.getSource()))
                     .sourceAddress(payment.getSource())
                     .transactionHash(payment.getTxHash())
+                    .tag(payment.getDestinationTag())
                     .timestamp(dateFormat.parse(payment.getExecutedTime()).getTime())
                     .dateTime(OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                     .build();
