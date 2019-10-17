@@ -79,7 +79,6 @@ public class BitsoService implements TradeService {
                 .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
                 .sorted(Comparator.comparing(Trade::getCreatedAt))
                 .map(this::mapTrade)
-                .peek(System.out::println)
                 .collect(Collectors.toList());
     }
 

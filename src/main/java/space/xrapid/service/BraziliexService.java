@@ -37,7 +37,6 @@ public class BraziliexService implements TradeService {
         return Arrays.stream(response.getBody())
                 .filter(p -> beginTimestamp < p.getTimestamp())
                 .sorted(Comparator.comparing(Trade::getTimestamp))
-                .peek(System.out::println)
                 .map(this::mapTrade)
                 .collect(Collectors.toList());
     }

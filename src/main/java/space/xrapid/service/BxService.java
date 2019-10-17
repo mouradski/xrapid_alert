@@ -32,14 +32,13 @@ public class BxService implements TradeService {
 
     @Override
     public List<XrpTrade> fetchTrades(OffsetDateTime begin) {
-        HttpEntity<Response> entity = getEntity();
+        HttpEntity<String> entity = getEntity();
 
         ResponseEntity<Response> response = restTemplate.exchange(apiUrl,
                 HttpMethod.GET, entity, Response.class);
 
         return response.getBody().getTrades().stream()
                 .map(this::mapTrade)
-                .peek(System.out::println)
                 .collect(Collectors.toList());
     }
 
