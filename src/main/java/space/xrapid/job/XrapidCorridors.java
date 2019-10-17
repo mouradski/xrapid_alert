@@ -74,7 +74,7 @@ public abstract class XrapidCorridors {
     }
 
     private void submit(List<Payment> payments) {
-        List<Payment> paymentsToProcess =  payments.stream()
+        List<Payment> paymentsToProcess = payments.stream()
                 .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
         if (paymentsToProcess.isEmpty()) {
@@ -85,10 +85,11 @@ public abstract class XrapidCorridors {
                 .map(this::mapPayment)
                 .filter(this::mxnXrpToCurrencyTradeExistOrAddressIdentified)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(System.out::println)
-                .peek(this::notify)
-                .peek(this::persistPayment)
-                .collect(Collectors.toList());
+                .forEach(p -> {
+                    persistPayment(p);
+                    log.info("Xrapid Trx Spotted : {}", p);
+                    notify(p);
+                });
     }
 
 
@@ -112,7 +113,7 @@ public abstract class XrapidCorridors {
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 0)
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
                 .peek(trade -> xrapidInboundAddressService.add(exchangeToExchangePayment))
-                .peek(trade -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), trade.getDateTime() ))
+                .peek(trade -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), trade.getDateTime()))
                 .findFirst().orElse(null);
 
         if (xrpTrade == null) {
