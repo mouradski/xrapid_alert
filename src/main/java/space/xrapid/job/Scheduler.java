@@ -18,6 +18,6 @@ public class Scheduler {
 
     @Scheduled(fixedDelay = 30000)
     public void process() {
-        corridors.forEach(c -> c.updateExchangeToExchangePayments());
+        corridors.forEach(c -> c.searchXrapidPayments());
     }
 }

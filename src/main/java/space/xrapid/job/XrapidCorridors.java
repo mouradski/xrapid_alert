@@ -40,7 +40,7 @@ public abstract class XrapidCorridors {
 
     @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
-    
+
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
@@ -57,7 +57,7 @@ public abstract class XrapidCorridors {
                 .collect(Collectors.toList());
     }
 
-    public void updateExchangeToExchangePayments() {
+    public void searchXrapidPayments() {
         updatePaymentsWindows();
 
         xrpTrades = getTradeService().fetchTrades(windowStart);
