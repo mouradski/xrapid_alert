@@ -39,6 +39,7 @@ public class BxService implements TradeService {
 
         return response.getBody().getTrades().stream()
                 .map(this::mapTrade)
+                .filter(p -> begin.isBefore(p.getDateTime()))
                 .collect(Collectors.toList());
     }
 

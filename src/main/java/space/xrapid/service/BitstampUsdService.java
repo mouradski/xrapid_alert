@@ -30,7 +30,10 @@ public class BitstampUsdService implements TradeService {
         ResponseEntity<Trade[]> response = restTemplate.exchange(apiUrl,
                 HttpMethod.GET, entity, Trade[].class);
 
-        return Arrays.stream(response.getBody()).map(this::mapTrade).collect(Collectors.toList());
+        return Arrays.stream(response.getBody())
+                .map(this::mapTrade)
+                .filter(p -> begin.isBefore(p.getDateTime()))
+                .collect(Collectors.toList());
     }
 
     private XrpTrade mapTrade(Trade trade) {
