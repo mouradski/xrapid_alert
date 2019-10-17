@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.XrpTrade;
@@ -21,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -42,9 +40,7 @@ public abstract class XrapidCorridors {
 
     @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
-
-    private MultiKeyMap<String, Integer> tagAsXrapidAttempts = new MultiKeyMap<>();
-
+    
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
@@ -116,7 +112,6 @@ public abstract class XrapidCorridors {
                 .filter(trade -> exchangeToExchangePayment.getAmount().equals(trade.getAmount()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 0)
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
-                .filter(trade-> tryToTagAsXrapidDestination(exchangeToExchangePayment.getDestinationAddress(), exchangeToExchangePayment.getTag().toString()))
                 .peek(trade -> xrapidInboundAddressService.add(exchangeToExchangePayment))
                 .peek(trade -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), trade.getDateTime() ))
                 .findFirst().orElse(null);
@@ -161,23 +156,4 @@ public abstract class XrapidCorridors {
 
     protected abstract TradeService getTradeService();
 
-    static long zonedDateTimeDifference(OffsetDateTime d1, OffsetDateTime d2, ChronoUnit unit){
-        return unit.between(d1, d2);
-    }
-
-    private boolean tryToTagAsXrapidDestination(String address, String tag) {
-        return true;
-//        if (tagAsXrapidAttempts.containsKey(address, tag)) {
-//            if (tagAsXrapidAttempts.get(address, tag) > 2) {
-//                tagAsXrapidAttempts.remove(address, tag);
-//                return true;
-//            } else {
-//                tagAsXrapidAttempts.put(address, tag, tagAsXrapidAttempts.get(address, tag) + 1);
-//            }
-//        } else {
-//            tagAsXrapidAttempts.put(address, tag, 1);
-//        }
-//
-//        return false;
-    }
 }

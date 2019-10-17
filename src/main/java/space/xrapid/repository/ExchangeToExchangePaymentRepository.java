@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface ExchangeToExchangePaymentRepository extends JpaRepository<ExchangeToExchangePayment, String> {
 
-    @Query(value = "SELECT * FROM EXCHANGE_PAYMENT ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
+    @Query(value = "SELECT * FROM exchange_payment ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
     List<ExchangeToExchangePayment> findTop(int limit);
 
     boolean existsByTransactionHash(String transactionHash);
