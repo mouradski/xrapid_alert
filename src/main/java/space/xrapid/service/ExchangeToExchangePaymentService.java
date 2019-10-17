@@ -22,12 +22,7 @@ public class ExchangeToExchangePaymentService {
             return false;
         }
 
-        try {
-            repository.save(exchangeToExchangePayment);
-        } catch (Exception e) {
-            System.out.println("tt");
-        }
-
+        repository.save(exchangeToExchangePayment);
 
         return true;
     }

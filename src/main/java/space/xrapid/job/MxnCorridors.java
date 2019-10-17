@@ -2,6 +2,7 @@ package space.xrapid.job;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import space.xrapid.domain.Exchange;
 import space.xrapid.service.BitsoService;
 import space.xrapid.service.TradeService;
 
@@ -14,5 +15,10 @@ public class MxnCorridors extends XrapidCorridors {
     @Override
     protected TradeService getTradeService() {
         return bitsoService;
+    }
+
+    @Override
+    protected Exchange getDestinationExchange() {
+        return Exchange.BITSO;
     }
 }

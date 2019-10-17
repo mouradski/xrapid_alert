@@ -108,7 +108,7 @@ public abstract class XrapidCorridors {
         }
 
         XrpTrade xrpTrade = xrpTrades.stream()
-                .filter(trade -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
+                .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> exchangeToExchangePayment.getAmount().equals(trade.getAmount()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 0)
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
@@ -155,5 +155,7 @@ public abstract class XrapidCorridors {
     }
 
     protected abstract TradeService getTradeService();
+
+    protected abstract Exchange getDestinationExchange();
 
 }
