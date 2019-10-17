@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
-import space.xrapid.repository.XrapidPaymentRepository;
+import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
 public class XrapidService {
 
     @Autowired
-    private XrapidPaymentRepository xrapidPaymentRepository;
+    private ExchangeToExchangePaymentRepository exchangeToExchangePaymentRepository;
 
 
     List<ExchangeToExchangePayment> findXrapidToExchangePayments(Exchange source, Exchange destination) {

@@ -2,6 +2,7 @@ package space.xrapid.domain;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
@@ -11,9 +12,14 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Data
+@Entity(name = "EXCHANGE_PAYMENT")
 public class ExchangeToExchangePayment extends Payment {
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     private OffsetDateTime dateTime;
     private Long timestamp;
@@ -22,9 +28,13 @@ public class ExchangeToExchangePayment extends Payment {
     private String destinationAddress;
     private Exchange destination;
     private Double amount;
+
+    @Column(unique=true)
     private String transactionHash;
-    private String trxHash;
+
+    @Transient
     private XrpTrade toFiatTrade;
+
     private Long tag;
 
     private Currency destinationCurrencry;

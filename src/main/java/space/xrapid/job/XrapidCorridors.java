@@ -9,7 +9,7 @@ import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.XrpTrade;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.repository.XrapidPaymentRepository;
+import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradeService;
 import space.xrapid.service.XrapidInboundAddressService;
 import space.xrapid.service.XrpLedgerService;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public abstract class XrapidCorridors {
 
     @Autowired
-    private XrapidPaymentRepository xrapidPaymentRepository;
+    private ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
@@ -61,13 +61,12 @@ public abstract class XrapidCorridors {
                 .collect(Collectors.toList());
     }
 
-    @Scheduled(fixedDelay = 30000)
     public void updateExchangeToExchangePayments() {
         updatePaymentsWindows();
 
         xrpTrades = getTradeService().fetchTrades(windowStart);
 
-        xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd, this::submit);
+        xrpLedgerService.fetchPayments(windowStart, windowEnd, this::submit);
     }
 
     private void notify(ExchangeToExchangePayment payment) {
@@ -93,10 +92,14 @@ public abstract class XrapidCorridors {
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .peek(System.out::println)
                 .peek(this::notify)
-                .peek(xrapidPaymentRepository::fill)
+                .peek(this::persistPayment)
                 .collect(Collectors.toList());
     }
 
+
+    private void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
+        exchangeToExchangePaymentService.save(exchangeToFiatPayment);
+    }
 
     private boolean mxnXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
         boolean destinationIdentifiedAsXrapid = xrapidInboundAddressService.isXrapidInbound(exchangeToExchangePayment.getDestinationAddress(), exchangeToExchangePayment.getTag());
@@ -109,12 +112,13 @@ public abstract class XrapidCorridors {
         }
 
         XrpTrade xrpTrade = xrpTrades.stream()
-                .filter(p -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
-                .filter(p -> exchangeToExchangePayment.getAmount().equals(p.getAmount()))
-                .filter(p -> zonedDateTimeDifference(exchangeToExchangePayment.getDateTime(), p.getDateTime(), ChronoUnit.SECONDS) < 60)
-                .filter(p-> tryToTagAsXrapidDestination(exchangeToExchangePayment.getDestinationAddress(), exchangeToExchangePayment.getTag().toString()))
-                .peek(p -> xrapidInboundAddressService.add(exchangeToExchangePayment))
-                .peek(p -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), p.getDateTime() ))
+                .filter(trade -> Exchange.BITSO.equals(exchangeToExchangePayment.getDestination()))
+                .filter(trade -> exchangeToExchangePayment.getAmount().equals(trade.getAmount()))
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 0)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
+                .filter(trade-> tryToTagAsXrapidDestination(exchangeToExchangePayment.getDestinationAddress(), exchangeToExchangePayment.getTag().toString()))
+                .peek(trade -> xrapidInboundAddressService.add(exchangeToExchangePayment))
+                .peek(trade -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), trade.getDateTime() ))
                 .findFirst().orElse(null);
 
         if (xrpTrade == null) {
@@ -134,8 +138,8 @@ public abstract class XrapidCorridors {
                     .source(Exchange.byAddress(payment.getSource()))
                     .sourceAddress(payment.getSource())
                     .destinationAddress(payment.getDestination())
-                    .transactionHash(payment.getTxHash())
                     .tag(payment.getDestinationTag())
+                    .transactionHash(payment.getTxHash())
                     .timestamp(dateFormat.parse(payment.getExecutedTime()).getTime())
                     .dateTime(OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                     .build();
@@ -162,18 +166,18 @@ public abstract class XrapidCorridors {
     }
 
     private boolean tryToTagAsXrapidDestination(String address, String tag) {
-
-        if (tagAsXrapidAttempts.containsKey(address, tag)) {
-            if (tagAsXrapidAttempts.get(address, tag) > 3) {
-                tagAsXrapidAttempts.remove(address, tag);
-                return true;
-            } else {
-                tagAsXrapidAttempts.put(address, tag, tagAsXrapidAttempts.get(address, tag) + 1);
-            }
-        } else {
-            tagAsXrapidAttempts.put(address, tag, 1);
-        }
-
-        return false;
+        return true;
+//        if (tagAsXrapidAttempts.containsKey(address, tag)) {
+//            if (tagAsXrapidAttempts.get(address, tag) > 2) {
+//                tagAsXrapidAttempts.remove(address, tag);
+//                return true;
+//            } else {
+//                tagAsXrapidAttempts.put(address, tag, tagAsXrapidAttempts.get(address, tag) + 1);
+//            }
+//        } else {
+//            tagAsXrapidAttempts.put(address, tag, 1);
+//        }
+//
+//        return false;
     }
 }
