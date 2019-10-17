@@ -1,7 +1,6 @@
 package space.xrapid.job;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.MultiKeyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.Exchange;
@@ -71,7 +70,7 @@ public abstract class XrapidCorridors {
     }
 
     private boolean isXrapidCandidate(Payment payment) {
-        return allExchangeAddresses.contains(payment.getDestination()) && allExchangeAddresses.contains(payment.getSource());
+        return getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
     }
 
     private void submit(List<Payment> payments) {
@@ -145,7 +144,7 @@ public abstract class XrapidCorridors {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-2500);
+        windowStart = windowEnd.plusMinutes(-10);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

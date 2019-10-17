@@ -16,7 +16,7 @@ public class Scheduler {
     @Autowired
     private List<XrapidCorridors> corridors;
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 40000)
     public void process() {
         corridors.forEach(c -> c.searchXrapidPayments());
     }

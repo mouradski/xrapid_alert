@@ -22,6 +22,7 @@ public enum Exchange {
             "rfEu1Wnr7LxStoFx8DBdzgr8M16FBUbH3K",
             "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
+    BX_IN("bx.in.th", BAHT, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
     SBI_VC("sbi_vc", YEN,
             "rHtqTcp3SvjxbhpTYMFTUWX5B1mny9KWeE",
