@@ -34,9 +34,6 @@ public abstract class XrapidCorridors {
     private SimpMessageSendingOperations messagingTemplate;
 
     @Autowired
-    private XrpLedgerService xrpLedgerService;
-
-    @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
 
     private List<XrpTrade> xrpTrades = new ArrayList<>();
@@ -79,16 +76,15 @@ public abstract class XrapidCorridors {
                 .map(this::mapPayment)
                 .filter(this::mxnXrpToCurrencyTradeExistOrAddressIdentified)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .forEach(p -> {
-                    persistPayment(p);
-                    log.info("Xrapid Trx Spotted : {}", p);
-                    notify(p);
-                });
+                .forEach(this::persistPayment);
+
     }
 
 
     private void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
-        exchangeToExchangePaymentService.save(exchangeToFiatPayment);
+        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
+            notify(exchangeToFiatPayment);
+        }
     }
 
     private boolean mxnXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {

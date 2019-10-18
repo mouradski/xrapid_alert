@@ -32,11 +32,11 @@ public class Scheduler {
     public void process() {
         updatePaymentsWindows();
 
-        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
+        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart, windowEnd);
 
         corridors.stream()
                 .sorted(Comparator.comparing(XrapidCorridors::getPriority))
-                .forEach(c -> c.searchXrapidPayments(payments, windowStart.plusMinutes(-5)));
+                .forEach(c -> c.searchXrapidPayments(payments, windowStart));
     }
 
     private void updatePaymentsWindows() {
