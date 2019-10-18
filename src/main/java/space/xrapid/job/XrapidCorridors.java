@@ -10,7 +10,6 @@ import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradeService;
 import space.xrapid.service.XrapidInboundAddressService;
-import space.xrapid.service.XrpLedgerService;
 
 import javax.annotation.PostConstruct;
 import java.text.DateFormat;
@@ -50,7 +49,9 @@ public abstract class XrapidCorridors {
 
     public void searchXrapidPayments(List<Payment> payments, OffsetDateTime windowStart) {
 
-        xrpTrades = getTradeService().fetchTrades(windowStart);
+        if (getTradeService() != null) {
+            xrpTrades = getTradeService().fetchTrades(windowStart);
+        }
 
         submit(payments);
     }
