@@ -7,7 +7,7 @@ import space.xrapid.service.BitsoService;
 import space.xrapid.service.TradeService;
 
 @Component
-public class MxnCorridors extends XrapidCorridors {
+public class BitsoCorridors extends XrapidCorridors {
 
     @Autowired
     private BitsoService bitsoService;
@@ -20,5 +20,10 @@ public class MxnCorridors extends XrapidCorridors {
     @Override
     protected Exchange getDestinationExchange() {
         return Exchange.BITSO;
+    }
+
+    @Override
+    protected int getPriority() {
+        return 1;
     }
 }

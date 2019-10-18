@@ -21,4 +21,9 @@ public class BrlCorridors extends XrapidCorridors {
     protected Exchange getDestinationExchange() {
         return Exchange.MERCADO;
     }
+
+    @Override
+    protected int getPriority() {
+        return 0;
+    }
 }

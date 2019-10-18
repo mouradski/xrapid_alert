@@ -21,4 +21,9 @@ public class BitstampEurCorridors extends XrapidCorridors {
     protected Exchange getDestinationExchange() {
         return Exchange.BITSTAMP;
     }
+
+    @Override
+    protected int getPriority() {
+        return 0;
+    }
 }

@@ -4,10 +4,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.ripple.Payment;
 import space.xrapid.domain.ripple.Payments;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class XrpLedgerService {
@@ -16,8 +19,9 @@ public class XrpLedgerService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
+    public List<Payment> fetchPayments(OffsetDateTime startOffset, OffsetDateTime endOffset) {
+        List<Payment> payments = new ArrayList<>();
 
-    public void fetchPayments(OffsetDateTime startOffset, OffsetDateTime endOffset, SubmitXrpLedgerPayments submitXrpLedgerPayments) {
         String endAsString = endOffset.format(DateTimeFormatter.ISO_INSTANT);
         String startAsString = startOffset.format(DateTimeFormatter.ISO_INSTANT);
 
@@ -39,10 +43,12 @@ public class XrpLedgerService {
                 url = urlWithMarker.replace("{MARKER}", response.getBody().getMarker());
             }
 
-            submitXrpLedgerPayments.submit(response.getBody().getPayments());
-        }
-    }
+            payments.addAll(response.getBody().getPayments());
 
+        }
+
+        return payments;
+    }
 
     private boolean hasNext(ResponseEntity<Payments> response) {
         return (response.getBody().getMarker() != null && !response.getBody().getMarker().isEmpty());

@@ -21,4 +21,9 @@ public class BxThCorridors extends XrapidCorridors {
     protected Exchange getDestinationExchange() {
         return Exchange.BX_IN;
     }
+
+    @Override
+    protected int getPriority() {
+        return 2;
+    }
 }

@@ -17,7 +17,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,10 +39,6 @@ public abstract class XrapidCorridors {
     @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
 
-    private OffsetDateTime lastWindowEnd;
-    private OffsetDateTime windowStart;
-    private OffsetDateTime windowEnd;
-
     private List<XrpTrade> xrpTrades = new ArrayList<>();
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
@@ -56,12 +51,11 @@ public abstract class XrapidCorridors {
                 .collect(Collectors.toList());
     }
 
-    public void searchXrapidPayments() {
-        updatePaymentsWindows();
+    public void searchXrapidPayments(List<Payment> payments, OffsetDateTime windowStart) {
 
         xrpTrades = getTradeService().fetchTrades(windowStart);
 
-        xrpLedgerService.fetchPayments(windowStart, windowEnd, this::submit);
+        submit(payments);
     }
 
     private void notify(ExchangeToExchangePayment payment) {
@@ -110,8 +104,8 @@ public abstract class XrapidCorridors {
         XrpTrade xrpTrade = xrpTrades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> exchangeToExchangePayment.getAmount().equals(trade.getAmount()))
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 0)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 1)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 180)
                 .peek(trade -> xrapidInboundAddressService.add(exchangeToExchangePayment))
                 .peek(trade -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), trade.getDateTime()))
                 .findFirst().orElse(null);
@@ -143,19 +137,10 @@ public abstract class XrapidCorridors {
         }
     }
 
-    private void updatePaymentsWindows() {
-        windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-10);
-
-        if (lastWindowEnd != null) {
-            windowStart = lastWindowEnd;
-        }
-
-        lastWindowEnd = windowEnd;
-    }
-
     protected abstract TradeService getTradeService();
 
     protected abstract Exchange getDestinationExchange();
+
+    protected abstract int getPriority();
 
 }
