@@ -1,4 +1,23 @@
 package space.xrapid.job;
 
-public class CoinsPhCorridors {
+import org.springframework.stereotype.Component;
+import space.xrapid.domain.Exchange;
+import space.xrapid.service.TradeService;
+
+@Component
+public class CoinsPhCorridors extends XrapidCorridors {
+    @Override
+    protected TradeService getTradeService() {
+        return null;
+    }
+
+    @Override
+    protected Exchange getDestinationExchange() {
+        return Exchange.COIN_PH;
+    }
+
+    @Override
+    protected int getPriority() {
+        return 5;
+    }
 }
