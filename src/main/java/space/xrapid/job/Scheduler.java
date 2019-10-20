@@ -41,7 +41,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-500);
+        windowStart = windowEnd.plusMinutes(-70);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

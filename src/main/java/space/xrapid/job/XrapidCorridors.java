@@ -12,7 +12,6 @@ import space.xrapid.service.TradeService;
 import space.xrapid.service.XrapidInboundAddressService;
 
 import javax.annotation.PostConstruct;
-import javax.swing.text.html.parser.Entity;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,13 +90,13 @@ public abstract class XrapidCorridors {
         Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 1)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 180)
                 .collect(Collectors.groupingBy(XrpTrade::getDateTime));
 
         for (Map.Entry<OffsetDateTime, List<XrpTrade>> e : aggregatedTrades.entrySet()) {
             double amount = e.getValue().stream().mapToDouble(XrpTrade::getAmount).sum();
 
-            if (Math.abs(exchangeToExchangePayment.getAmount() - amount) < 0.3) {
+            if (amountMatches(exchangeToExchangePayment, amount)) {
                 exchangeToExchangePayment.setToFiatTrades(e.getValue());
                 exchangeToExchangePayment.setTradeIds(e.getValue().stream().map(XrpTrade::getOrderId).collect(Collectors.joining(";")));
                 System.out.println(exchangeToExchangePayment);
@@ -106,6 +105,11 @@ public abstract class XrapidCorridors {
         }
 
         return false;
+    }
+
+    private boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
+        return (exchangeToExchangePayment.getAmount() > 20000 &&  Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 200)
+                || Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 5;
     }
 
     private ExchangeToExchangePayment mapPayment(Payment payment) {
