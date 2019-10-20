@@ -72,7 +72,7 @@ public abstract class XrapidCorridors {
 
         paymentsToProcess.stream()
                 .map(this::mapPayment)
-                .filter(this::mxnXrpToCurrencyTradeExistOrAddressIdentified)
+                .filter(this::fiatXrpToCurrencyTradeExistOrAddressIdentified)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .forEach(this::persistPayment);
 
@@ -84,7 +84,7 @@ public abstract class XrapidCorridors {
         }
     }
 
-    private boolean mxnXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
+    private boolean fiatXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
 
         Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
