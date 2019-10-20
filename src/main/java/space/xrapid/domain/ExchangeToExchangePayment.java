@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -33,7 +34,9 @@ public class ExchangeToExchangePayment extends Payment {
     private String transactionHash;
 
     @Transient
-    private XrpTrade toFiatTrade;
+    private List<XrpTrade> toFiatTrades;
+
+    private String tradeIds;
 
     private Long tag;
 

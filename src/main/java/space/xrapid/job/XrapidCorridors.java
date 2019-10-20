@@ -12,15 +12,13 @@ import space.xrapid.service.TradeService;
 import space.xrapid.service.XrapidInboundAddressService;
 
 import javax.annotation.PostConstruct;
+import javax.swing.text.html.parser.Entity;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -81,7 +79,6 @@ public abstract class XrapidCorridors {
 
     }
 
-
     private void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
         if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
             notify(exchangeToFiatPayment);
@@ -89,31 +86,26 @@ public abstract class XrapidCorridors {
     }
 
     private boolean mxnXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
-        boolean destinationIdentifiedAsXrapid = xrapidInboundAddressService.isXrapidInbound(exchangeToExchangePayment.getDestinationAddress(), exchangeToExchangePayment.getTag());
-
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
 
-        if (destinationIdentifiedAsXrapid) {
-            log.info("destinationIdentifiedAsXrapid :)");
-            return true;
-        }
-
-        XrpTrade xrpTrade = xrpTrades.stream()
+        Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
-                .filter(trade -> exchangeToExchangePayment.getAmount().equals(trade.getAmount()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 1)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 180)
-                .peek(trade -> xrapidInboundAddressService.add(exchangeToExchangePayment))
-                .peek(trade -> log.info("Trx @ {}, Trade XRP -> {} @ {}", exchangeToExchangePayment.getDateTime(), exchangeToExchangePayment.getDestination().getLocalFiat(), trade.getDateTime()))
-                .findFirst().orElse(null);
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
+                .collect(Collectors.groupingBy(XrpTrade::getDateTime));
 
-        if (xrpTrade == null) {
-            return false;
+        for (Map.Entry<OffsetDateTime, List<XrpTrade>> e : aggregatedTrades.entrySet()) {
+            double amount = e.getValue().stream().mapToDouble(XrpTrade::getAmount).sum();
+
+            if (Math.abs(exchangeToExchangePayment.getAmount() - amount) < 0.3) {
+                exchangeToExchangePayment.setToFiatTrades(e.getValue());
+                exchangeToExchangePayment.setTradeIds(e.getValue().stream().map(XrpTrade::getOrderId).collect(Collectors.joining(";")));
+                System.out.println(exchangeToExchangePayment);
+                return true;
+            }
         }
 
-        exchangeToExchangePayment.setToFiatTrade(xrpTrade);
-
-        return true;
+        return false;
     }
 
     private ExchangeToExchangePayment mapPayment(Payment payment) {

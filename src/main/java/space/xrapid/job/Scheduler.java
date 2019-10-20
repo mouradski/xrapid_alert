@@ -28,11 +28,11 @@ public class Scheduler {
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 30000)
     public void process() {
         updatePaymentsWindows();
 
-        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart, windowEnd);
+        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
 
         corridors.stream()
                 .sorted(Comparator.comparing(XrapidCorridors::getPriority))
@@ -41,7 +41,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-60);
+        windowStart = windowEnd.plusMinutes(-500);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
