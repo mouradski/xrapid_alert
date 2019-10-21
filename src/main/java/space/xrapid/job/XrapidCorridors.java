@@ -72,7 +72,7 @@ public abstract class XrapidCorridors {
 
         paymentsToProcess.stream()
                 .map(this::mapPayment)
-                .filter(this::fiatXrpToCurrencyTradeExistOrAddressIdentified)
+                .filter(this::xrpToFiatTradeExistOrAddressIdentified)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .forEach(this::persistPayment);
 
@@ -84,7 +84,7 @@ public abstract class XrapidCorridors {
         }
     }
 
-    private boolean fiatXrpToCurrencyTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
+    private boolean xrpToFiatTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
 
         Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
@@ -93,18 +93,34 @@ public abstract class XrapidCorridors {
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 180)
                 .collect(Collectors.groupingBy(XrpTrade::getDateTime));
 
+
+        List<List<XrpTrade>> candidates = new ArrayList<>();
+
         for (Map.Entry<OffsetDateTime, List<XrpTrade>> e : aggregatedTrades.entrySet()) {
             double amount = e.getValue().stream().mapToDouble(XrpTrade::getAmount).sum();
 
             if (amountMatches(exchangeToExchangePayment, amount)) {
-                exchangeToExchangePayment.setToFiatTrades(e.getValue());
-                exchangeToExchangePayment.setTradeIds(e.getValue().stream().map(XrpTrade::getOrderId).collect(Collectors.joining(";")));
-                System.out.println(exchangeToExchangePayment);
-                return true;
+                candidates.add(e.getValue());
             }
         }
 
+        if (!candidates.isEmpty()) {
+
+            List<XrpTrade> xrpTrades = takeClosest(exchangeToExchangePayment, candidates);
+
+            exchangeToExchangePayment.setToFiatTrades(xrpTrades);
+            exchangeToExchangePayment.setTradeIds(xrpTrades.stream().map(XrpTrade::getOrderId).collect(Collectors.joining(";")));
+
+            return true;
+        }
+
         return false;
+    }
+
+    private List<XrpTrade> takeClosest(ExchangeToExchangePayment exchangeToExchangePayment, List<List<XrpTrade>> groupedXrpTrades) {
+        return groupedXrpTrades.stream()
+                .sorted((l1,l2) -> Double.valueOf( l1.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp()).compareTo(Double.valueOf(l2.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp())))
+                .findFirst().get();
     }
 
     private boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
