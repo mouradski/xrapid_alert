@@ -90,7 +90,7 @@ public abstract class XrapidCorridors {
         Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 1)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 120)
                 .collect(Collectors.groupingBy(XrpTrade::getDateTime));
 
 
