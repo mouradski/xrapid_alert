@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -120,8 +121,8 @@ public abstract class XrapidCorridors {
     private List<XrpTrade> takeClosest(ExchangeToExchangePayment exchangeToExchangePayment, List<List<XrpTrade>> groupedXrpTrades) {
 
         return groupedXrpTrades.stream()
-                .sorted((l1,l2) -> Double.valueOf( l1.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp()).compareTo(Double.valueOf(l2.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp())))
-                .sorted((l1,l2) -> Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(l1))).compareTo(Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(l2)))))
+                .sorted(Comparator.comparing(tradesGroup -> Double.valueOf(tradesGroup.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp())))
+                .sorted(Comparator.comparing(tradesGroup -> Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)))))
                 .findFirst().get();
     }
 
