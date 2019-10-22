@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,12 +63,11 @@ public class BitsoService implements TradeService {
         }
 
         return payments;
-
     }
 
     private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
-                .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
+                .filter(filterTradePerDate(begin))
                 .map(Trade::getTid)
                 .sorted()
                 .findFirst()
@@ -76,7 +76,7 @@ public class BitsoService implements TradeService {
 
     private List<XrpTrade> getTrades(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
-                .filter(p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)))
+                .filter(filterTradePerDate(begin))
                 .sorted(Comparator.comparing(Trade::getCreatedAt))
                 .map(this::mapTrade)
                 .collect(Collectors.toList());
@@ -84,12 +84,16 @@ public class BitsoService implements TradeService {
 
     private XrpTrade mapTrade(Trade trade) {
         return XrpTrade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.BITSO).timestamp(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter).toEpochSecond() * 1000)
+                .target(Exchange.BITSO)
+                .timestamp(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter).toEpochSecond() * 1000)
                 .dateTime(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
-
                 .orderId(trade.getTid().toString())
                 .rate(Double.valueOf(trade.getPrice()))
                 .build();
+    }
+
+    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
+        return p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
     }
 
 }
