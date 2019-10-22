@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -131,12 +130,17 @@ public abstract class XrapidCorridors {
     }
 
     private boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
-        return (exchangeToExchangePayment.getAmount() > 20000 &&  Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 200)
-                || Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 5;
+        return (exchangeToExchangePayment.getAmount() > 30000 &&  Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 200)
+                || Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 3;
     }
 
     private ExchangeToExchangePayment mapPayment(Payment payment) {
         try {
+
+            Exchange source = Exchange.byAddress(payment.getSource());
+            Exchange destination = Exchange.byAddress(payment.getDestination());
+            boolean xrapidCorridorConfirmed = source.isConfirmed() && destination.isConfirmed();
+
             return ExchangeToExchangePayment.builder()
                     .amount(Double.valueOf(payment.getDeliveredAmount()))
                     .destination(Exchange.byAddress(payment.getDestination()))
@@ -147,6 +151,7 @@ public abstract class XrapidCorridors {
                     .transactionHash(payment.getTxHash())
                     .timestamp(dateFormat.parse(payment.getExecutedTime()).getTime())
                     .dateTime(OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                    .confirmed(xrapidCorridorConfirmed)
                     .build();
         } catch (ParseException e) {
             return null;
