@@ -90,7 +90,7 @@ public abstract class XrapidCorridors {
         Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) > 1)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 120)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
                 .collect(Collectors.groupingBy(XrpTrade::getDateTime));
 
 
@@ -118,9 +118,15 @@ public abstract class XrapidCorridors {
     }
 
     private List<XrpTrade> takeClosest(ExchangeToExchangePayment exchangeToExchangePayment, List<List<XrpTrade>> groupedXrpTrades) {
+
         return groupedXrpTrades.stream()
                 .sorted((l1,l2) -> Double.valueOf( l1.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp()).compareTo(Double.valueOf(l2.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp())))
+                .sorted((l1,l2) -> Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(l1))).compareTo(Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(l2)))))
                 .findFirst().get();
+    }
+
+    private double totalAmount(List<XrpTrade> trades) {
+        return trades.stream().mapToDouble(XrpTrade::getAmount).sum();
     }
 
     private boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
