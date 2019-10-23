@@ -29,14 +29,19 @@ public abstract class XrapidCorridors {
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
-    @Autowired
-    private XrapidInboundAddressService xrapidInboundAddressService;
-
     private List<XrpTrade> xrpTrades = new ArrayList<>();
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
 
     private List<String> allExchangeAddresses;
+
+    private final double HUGE_TRANSACTION_THRESHOLD = 30000;
+    private final double MEDIUM_TRANSACTION_THRESHOLD = 5000;
+
+    private final double HUGE_TRANSACTION_TOLERANCE = 200;
+    private final double MEDIUM_TRANSACTION_TOLERANCE = 5;
+    private final double SMALL_TRANSACTION_TOLERANCE = 1;
+
 
     @PostConstruct
     public void init() {
@@ -117,12 +122,21 @@ public abstract class XrapidCorridors {
         return false;
     }
 
+
     private List<XrpTrade> takeClosest(ExchangeToExchangePayment exchangeToExchangePayment, List<List<XrpTrade>> groupedXrpTrades) {
 
         return groupedXrpTrades.stream()
-                .sorted(Comparator.comparing(tradesGroup -> Double.valueOf(tradesGroup.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp())))
-                .sorted(Comparator.comparing(tradesGroup -> Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)))))
+                .sorted(Comparator.comparing(tradesGroup -> getAmountDelta(exchangeToExchangePayment, (List<XrpTrade>) tradesGroup))
+                        .thenComparing(tradesGroup -> getDateDelta(exchangeToExchangePayment, (List<XrpTrade>) tradesGroup)))
                 .findFirst().get();
+    }
+
+    private double getDateDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<XrpTrade> tradesGroup) {
+        return Double.valueOf(tradesGroup.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp());
+    }
+
+    private double getAmountDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<XrpTrade> tradesGroup) {
+        return Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)));
     }
 
     private double totalAmount(List<XrpTrade> trades) {
@@ -130,8 +144,9 @@ public abstract class XrapidCorridors {
     }
 
     private boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
-        return (exchangeToExchangePayment.getAmount() > 30000 &&  Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 200)
-                || Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < 3;
+        return (exchangeToExchangePayment.getAmount() > HUGE_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < HUGE_TRANSACTION_TOLERANCE)
+                || (exchangeToExchangePayment.getAmount() > MEDIUM_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < MEDIUM_TRANSACTION_TOLERANCE)
+                ||  Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < SMALL_TRANSACTION_TOLERANCE;
     }
 
     private ExchangeToExchangePayment mapPayment(Payment payment) {
