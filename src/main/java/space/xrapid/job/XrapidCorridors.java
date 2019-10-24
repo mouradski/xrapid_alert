@@ -9,7 +9,6 @@ import space.xrapid.domain.XrpTrade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradeService;
-import space.xrapid.service.XrapidInboundAddressService;
 
 import javax.annotation.PostConstruct;
 import java.text.DateFormat;
@@ -34,14 +33,15 @@ public abstract class XrapidCorridors {
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
 
     private List<String> allExchangeAddresses;
+    private Set<String> tradesIdAlreadyProcessed = new HashSet<>();
 
     private final double HUGE_TRANSACTION_THRESHOLD = 30000;
     private final double MEDIUM_TRANSACTION_THRESHOLD = 5000;
+    private final double SMALL_TRANSACTION_THRESHOLD = 1000;
 
     private final double HUGE_TRANSACTION_TOLERANCE = 200;
     private final double MEDIUM_TRANSACTION_TOLERANCE = 5;
     private final double SMALL_TRANSACTION_TOLERANCE = 1;
-
 
     @PostConstruct
     public void init() {
@@ -95,7 +95,8 @@ public abstract class XrapidCorridors {
         Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) >= 0)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 120)
+                .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
                 .collect(Collectors.groupingBy(XrpTrade::getDateTime));
 
 
@@ -114,7 +115,12 @@ public abstract class XrapidCorridors {
             List<XrpTrade> xrpTrades = takeClosest(exchangeToExchangePayment, candidates);
 
             exchangeToExchangePayment.setToFiatTrades(xrpTrades);
-            exchangeToExchangePayment.setTradeIds(xrpTrades.stream().map(XrpTrade::getOrderId).collect(Collectors.joining(";")));
+
+            String tradeIds = xrpTrades.stream().map(XrpTrade::getOrderId).collect(Collectors.joining(";"));
+
+            exchangeToExchangePayment.setTradeIds(tradeIds);
+
+            tradesIdAlreadyProcessed.addAll(xrpTrades.stream().map(XrpTrade::getOrderId).collect(Collectors.toList()));
 
             return true;
         }
@@ -146,7 +152,8 @@ public abstract class XrapidCorridors {
     private boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
         return (exchangeToExchangePayment.getAmount() > HUGE_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < HUGE_TRANSACTION_TOLERANCE)
                 || (exchangeToExchangePayment.getAmount() > MEDIUM_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < MEDIUM_TRANSACTION_TOLERANCE)
-                ||  Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < SMALL_TRANSACTION_TOLERANCE;
+                || (exchangeToExchangePayment.getAmount() > SMALL_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < SMALL_TRANSACTION_TOLERANCE)
+                || exchangeToExchangePayment.getAmount().equals(aggregatedAmount);
     }
 
     private ExchangeToExchangePayment mapPayment(Payment payment) {
