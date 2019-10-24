@@ -50,7 +50,9 @@ public abstract class XrapidCorridors {
     }
 
     public void searchXrapidPayments(List<Payment> payments, OffsetDateTime windowStart) {
-
+       
+        tradesIdAlreadyProcessed = new HashSet<>();
+        
         if (getTradeService() != null) {
             xrpTrades = getTradeService().fetchTrades(windowStart);
         }
