@@ -1,0 +1,69 @@
+
+
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    HOMEPAGE
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+.home-w{
+  min-height: 600px;
+
+  .bloc{
+    background: white;
+    border-radius: $radius;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(94, 148, 216, 0.26);
+    margin: 20px;
+  }
+
+  .bloc--tab{
+
+      .table{
+        margin-bottom: 0;
+        .table-row{
+          padding: 20px;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          span{
+            font-size: 1.4rem;
+          }
+        }
+
+        .table__header{
+          background: $color-primary;
+          width: 100%;
+          .table-row{
+            span{
+              color: white;
+              font-weight: $bold;
+            }
+          }
+        }
+        .table__content{
+          background: white;
+          border-bottom: 1px solid $color-neutral-10;
+          .table-row{
+            img{
+              width: 85px;
+            }
+            .tab-time{
+              font-weight:300;
+            }
+            .tab-link{
+
+              a{
+                font-weight: 500;
+                text-transform: uppercase;
+                i{
+                  margin-right: 8px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+  }
+
+}//home-w

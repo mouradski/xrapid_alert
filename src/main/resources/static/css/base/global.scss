@@ -1,0 +1,67 @@
+//RUBIK GOOGLE FONT
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700&display=swap');
+
+html { font-size: 62.5%; }
+
+i{    font-family: fontawesome;
+font-style: normal;
+}
+
+body {
+  background-color: $color-neutral-10;
+  font-weight: 300;
+  font-family: 'lato', sans-serif;
+  font-size: 1.6rem;
+}
+
+span,li,h1,h2,h3,h4,h5{font-weight: 300}
+
+a{
+  text-decoration: none;
+  color: $color-primary;
+  cursor: pointer;
+  &:hover{
+    text-decoration: none;
+  }
+}
+
+
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    NAVBAR
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+.navbar-w{
+  width: 100%;
+  background: $color-tertiary;
+  margin-bottom: 40px;
+  .navbar{
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    .navbar__logo{
+      width: 160px;
+      a{
+        &:hover{
+          opacity: 0.7;
+        }
+        img{
+          object-fit: contain;
+          width: 100%;
+        }
+      }
+
+    }
+  }
+}
+
+
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    MODAL TEMPLATE
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+.modal-dialog{
+  width: 960px;
+}
+
