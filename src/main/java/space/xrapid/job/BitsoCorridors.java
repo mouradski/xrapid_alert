@@ -7,7 +7,7 @@ import space.xrapid.service.BitsoService;
 import space.xrapid.service.TradeService;
 
 @Component
-public class BitsoCorridors extends XrapidCorridors {
+public class BitsoCorridors extends InboundXrapidCorridors {
 
     @Autowired
     private BitsoService bitsoService;

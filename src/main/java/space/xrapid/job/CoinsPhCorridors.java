@@ -5,7 +5,7 @@ import space.xrapid.domain.Exchange;
 import space.xrapid.service.TradeService;
 
 @Component
-public class CoinsPhCorridors extends XrapidCorridors {
+public class CoinsPhCorridors extends InboundXrapidCorridors {
     @Override
     protected TradeService getTradeService() {
         return null;

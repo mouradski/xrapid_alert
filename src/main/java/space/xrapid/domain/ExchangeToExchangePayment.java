@@ -35,7 +35,7 @@ public class ExchangeToExchangePayment extends Payment {
     private String transactionHash;
 
     @Transient
-    private List<XrpTrade> toFiatTrades;
+    private List<Trade> toFiatTrades;
 
     private String tradeIds;
 

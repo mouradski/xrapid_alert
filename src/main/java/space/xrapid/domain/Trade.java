@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Setter
 @Builder
 @ToString
-public class XrpTrade {
+public class Trade {
     private OffsetDateTime dateTime;
     private Long timestamp;
     private Double amount;

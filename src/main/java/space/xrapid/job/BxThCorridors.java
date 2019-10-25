@@ -7,7 +7,7 @@ import space.xrapid.service.BxService;
 import space.xrapid.service.TradeService;
 
 @Component
-public class BxThCorridors extends XrapidCorridors {
+public class BxThCorridors extends InboundXrapidCorridors {
 
     @Autowired
     private BxService bxService;

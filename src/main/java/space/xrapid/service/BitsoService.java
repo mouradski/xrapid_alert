@@ -7,9 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
-import space.xrapid.domain.XrpTrade;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.bitso.BitsoXrpTrades;
-import space.xrapid.domain.bitso.Trade;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,9 +28,9 @@ public class BitsoService implements TradeService {
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-    public List<XrpTrade> fetchTrades(OffsetDateTime begin) {
-        List<XrpTrade> payments = new ArrayList<>();
-        List<XrpTrade> currentPayments = new ArrayList<>();
+    public List<Trade> fetchTrades(OffsetDateTime begin) {
+        List<Trade> payments = new ArrayList<>();
+        List<Trade> currentPayments = new ArrayList<>();
 
         HttpEntity<String> entity = getEntity();
 
@@ -68,22 +67,22 @@ public class BitsoService implements TradeService {
     private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
                 .filter(filterTradePerDate(begin))
-                .map(Trade::getTid)
+                .map(space.xrapid.domain.bitso.Trade::getTid)
                 .sorted()
                 .findFirst()
                 .orElse(null);
     }
 
-    private List<XrpTrade> getTrades(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
+    private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
                 .filter(filterTradePerDate(begin))
-                .sorted(Comparator.comparing(Trade::getCreatedAt))
+                .sorted(Comparator.comparing(space.xrapid.domain.bitso.Trade::getCreatedAt))
                 .map(this::mapTrade)
                 .collect(Collectors.toList());
     }
 
-    private XrpTrade mapTrade(Trade trade) {
-        return XrpTrade.builder().amount(Double.valueOf(trade.getAmount()))
+    private Trade mapTrade(space.xrapid.domain.bitso.Trade trade) {
+        return Trade.builder().amount(Double.valueOf(trade.getAmount()))
                 .target(Exchange.BITSO)
                 .timestamp(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter).toEpochSecond() * 1000)
                 .dateTime(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
@@ -92,8 +91,13 @@ public class BitsoService implements TradeService {
                 .build();
     }
 
-    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
+    private Predicate<space.xrapid.domain.bitso.Trade> filterTradePerDate(OffsetDateTime begin) {
+        return p -> begin.plusMinutes(-2).isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
+    }
+
+    @Override
+    public Exchange getExchange() {
+        return Exchange.BITSO;
     }
 
 }

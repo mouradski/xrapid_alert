@@ -5,35 +5,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
-import space.xrapid.domain.XrpTrade;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
-import space.xrapid.service.TradeService;
+import space.xrapid.service.TradeCacheService;
 
-import javax.annotation.PostConstruct;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.List;
 
 @Slf4j
 public abstract class XrapidCorridors {
 
     @Autowired
-    private ExchangeToExchangePaymentService exchangeToExchangePaymentService;
+    protected ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
     @Autowired
-    private SimpMessageSendingOperations messagingTemplate;
+    protected SimpMessageSendingOperations messagingTemplate;
 
-    private List<XrpTrade> xrpTrades = new ArrayList<>();
-
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
-
-    private List<String> allExchangeAddresses;
-    private Set<String> tradesIdAlreadyProcessed = new HashSet<>();
+    @Autowired
+    protected TradeCacheService tradeCacheService;
 
     private final double HUGE_TRANSACTION_THRESHOLD = 30000;
     private final double MEDIUM_TRANSACTION_THRESHOLD = 5000;
@@ -43,124 +38,12 @@ public abstract class XrapidCorridors {
     private final double MEDIUM_TRANSACTION_TOLERANCE = 5;
     private final double SMALL_TRANSACTION_TOLERANCE = 1;
 
-    @PostConstruct
-    public void init() {
-        allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
-                .collect(Collectors.toList());
-    }
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
 
-    public void searchXrapidPayments(List<Payment> payments, OffsetDateTime windowStart) {
-       
-        tradesIdAlreadyProcessed = new HashSet<>();
-        
-        if (getTradeService() != null) {
-            xrpTrades = getTradeService().fetchTrades(windowStart);
-        }
+    protected abstract Exchange getDestinationExchange();
 
-        submit(payments);
-    }
-
-    private void notify(ExchangeToExchangePayment payment) {
-        log.info("Xrapid payment {} ", payment);
-        messagingTemplate.convertAndSend("/topic/payments", payment);
-    }
-
-    private boolean isXrapidCandidate(Payment payment) {
-        return getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
-    }
-
-    private void submit(List<Payment> payments) {
-        List<Payment> paymentsToProcess = payments.stream()
-                .filter(this::isXrapidCandidate).collect(Collectors.toList());
-
-        if (paymentsToProcess.isEmpty()) {
-            return;
-        }
-
-        paymentsToProcess.stream()
-                .map(this::mapPayment)
-                .filter(this::xrpToFiatTradeExistOrAddressIdentified)
-                .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .forEach(this::persistPayment);
-
-    }
-
-    private void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
-        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
-            notify(exchangeToFiatPayment);
-        }
-    }
-
-    private boolean xrpToFiatTradeExistOrAddressIdentified(ExchangeToExchangePayment exchangeToExchangePayment) {
-        exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
-
-        Map<OffsetDateTime, List<XrpTrade>> aggregatedTrades  = xrpTrades.stream()
-                .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) >= 0)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 120)
-                .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
-                .collect(Collectors.groupingBy(XrpTrade::getDateTime));
-
-
-        List<List<XrpTrade>> candidates = new ArrayList<>();
-
-        for (Map.Entry<OffsetDateTime, List<XrpTrade>> e : aggregatedTrades.entrySet()) {
-            double amount = e.getValue().stream().mapToDouble(XrpTrade::getAmount).sum();
-
-            if (amountMatches(exchangeToExchangePayment, amount)) {
-                candidates.add(e.getValue());
-            }
-        }
-
-        if (!candidates.isEmpty()) {
-
-            List<XrpTrade> xrpTrades = takeClosest(exchangeToExchangePayment, candidates);
-
-            exchangeToExchangePayment.setToFiatTrades(xrpTrades);
-
-            String tradeIds = xrpTrades.stream().map(XrpTrade::getOrderId).collect(Collectors.joining(";"));
-
-            exchangeToExchangePayment.setTradeIds(tradeIds);
-
-            tradesIdAlreadyProcessed.addAll(xrpTrades.stream().map(XrpTrade::getOrderId).collect(Collectors.toList()));
-
-            return true;
-        }
-
-        return false;
-    }
-
-
-    private List<XrpTrade> takeClosest(ExchangeToExchangePayment exchangeToExchangePayment, List<List<XrpTrade>> groupedXrpTrades) {
-
-        return groupedXrpTrades.stream()
-                .sorted(Comparator.comparing(tradesGroup -> getAmountDelta(exchangeToExchangePayment, (List<XrpTrade>) tradesGroup))
-                        .thenComparing(tradesGroup -> getDateDelta(exchangeToExchangePayment, (List<XrpTrade>) tradesGroup)))
-                .findFirst().get();
-    }
-
-    private double getDateDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<XrpTrade> tradesGroup) {
-        return Double.valueOf(tradesGroup.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp());
-    }
-
-    private double getAmountDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<XrpTrade> tradesGroup) {
-        return Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)));
-    }
-
-    private double totalAmount(List<XrpTrade> trades) {
-        return trades.stream().mapToDouble(XrpTrade::getAmount).sum();
-    }
-
-    private boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
-        return (exchangeToExchangePayment.getAmount() > HUGE_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < HUGE_TRANSACTION_TOLERANCE)
-                || (exchangeToExchangePayment.getAmount() > MEDIUM_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < MEDIUM_TRANSACTION_TOLERANCE)
-                || (exchangeToExchangePayment.getAmount() > SMALL_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < SMALL_TRANSACTION_TOLERANCE)
-                || exchangeToExchangePayment.getAmount().equals(aggregatedAmount);
-    }
-
-    private ExchangeToExchangePayment mapPayment(Payment payment) {
+    protected ExchangeToExchangePayment mapPayment(Payment payment) {
         try {
-
             Exchange source = Exchange.byAddress(payment.getSource());
             Exchange destination = Exchange.byAddress(payment.getDestination());
             boolean xrapidCorridorConfirmed = source.isConfirmed() && destination.isConfirmed();
@@ -182,10 +65,42 @@ public abstract class XrapidCorridors {
         }
     }
 
-    protected abstract TradeService getTradeService();
+    protected List<Trade> takeClosest(ExchangeToExchangePayment exchangeToExchangePayment, List<List<Trade>> groupedXrpTrades) {
 
-    protected abstract Exchange getDestinationExchange();
+        return groupedXrpTrades.stream()
+                .sorted(Comparator.comparing(tradesGroup -> getAmountDelta(exchangeToExchangePayment, (List<Trade>) tradesGroup))
+                        .thenComparing(tradesGroup -> getDateDelta(exchangeToExchangePayment, (List<Trade>) tradesGroup)))
+                .findFirst().get();
+    }
 
-    protected abstract int getPriority();
+    protected double getDateDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<Trade> tradesGroup) {
+        return Double.valueOf(tradesGroup.get(0).getTimestamp() - exchangeToExchangePayment.getTimestamp());
+    }
+
+    protected double getAmountDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<Trade> tradesGroup) {
+        return Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)));
+    }
+
+    protected double totalAmount(List<Trade> trades) {
+        return trades.stream().mapToDouble(Trade::getAmount).sum();
+    }
+
+    protected boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
+        return (exchangeToExchangePayment.getAmount() > HUGE_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < HUGE_TRANSACTION_TOLERANCE)
+                || (exchangeToExchangePayment.getAmount() > MEDIUM_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < MEDIUM_TRANSACTION_TOLERANCE)
+                || (exchangeToExchangePayment.getAmount() > SMALL_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < SMALL_TRANSACTION_TOLERANCE)
+                || exchangeToExchangePayment.getAmount().equals(aggregatedAmount);
+    }
+
+    protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
+        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
+            notify(exchangeToFiatPayment);
+        }
+    }
+
+    protected void notify(ExchangeToExchangePayment payment) {
+        log.info("Xrapid payment {} ", payment);
+        messagingTemplate.convertAndSend("/topic/payments", payment);
+    }
 
 }

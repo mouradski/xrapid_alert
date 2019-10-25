@@ -5,8 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
-import space.xrapid.domain.XrpTrade;
-import space.xrapid.domain.braziliex.Trade;
+import space.xrapid.domain.Trade;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -23,25 +22,30 @@ public class BraziliexService implements TradeService {
     private RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public List<XrpTrade> fetchTrades(OffsetDateTime begin) {
+    public List<Trade> fetchTrades(OffsetDateTime begin) {
         String urlGet = apiUrl.replace("{TIMESTAMP}", String.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond() * 1000));
 
-        ResponseEntity<Trade[]> response = restTemplate.exchange(urlGet,
-                HttpMethod.GET, getEntity(), Trade[].class);
+        ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response = restTemplate.exchange(urlGet,
+                HttpMethod.GET, getEntity(), space.xrapid.domain.braziliex.Trade[].class);
 
         return getTrades(begin, response);
     }
 
-    private List<XrpTrade> getTrades(OffsetDateTime begin, ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
-        long beginTimestamp = begin.toEpochSecond() * 1000;
+    private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
+        long beginTimestamp = begin.plusMinutes(-2).toEpochSecond() * 1000;
         return Arrays.stream(response.getBody())
                 .filter(p -> beginTimestamp < p.getTimestamp())
-                .sorted(Comparator.comparing(Trade::getTimestamp))
+                .sorted(Comparator.comparing(space.xrapid.domain.braziliex.Trade::getTimestamp))
                 .map(this::mapTrade)
                 .collect(Collectors.toList());
     }
 
-    private XrpTrade mapTrade(Trade trade) {
-        return XrpTrade.builder().amount(Double.valueOf(trade.getAmount())).target(Exchange.BRAZILIEX).build();
+    private Trade mapTrade(space.xrapid.domain.braziliex.Trade trade) {
+        return Trade.builder().amount(Double.valueOf(trade.getAmount())).target(Exchange.BRAZILIEX).build();
+    }
+
+    @Override
+    public Exchange getExchange() {
+        return Exchange.BRAZILIEX;
     }
 }

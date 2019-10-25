@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.ripple.Payment;
+import space.xrapid.service.TradeCacheService;
 import space.xrapid.service.XrpLedgerService;
 
 import java.time.OffsetDateTime;
@@ -19,7 +20,10 @@ import java.util.List;
 public class Scheduler {
 
     @Autowired
-    private List<XrapidCorridors> corridors;
+    private List<InboundXrapidCorridors> corridors;
+
+    @Autowired
+    private TradeCacheService tradeCacheService;
 
     @Autowired
     private XrpLedgerService xrpLedgerService;
@@ -35,7 +39,7 @@ public class Scheduler {
         List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
 
         corridors.stream()
-                .sorted(Comparator.comparing(XrapidCorridors::getPriority))
+                .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
                 .forEach(c -> c.searchXrapidPayments(payments, windowStart));
     }
 

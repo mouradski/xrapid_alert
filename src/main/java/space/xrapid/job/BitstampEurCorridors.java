@@ -7,7 +7,7 @@ import space.xrapid.service.BitstampEurSevice;
 import space.xrapid.service.TradeService;
 
 @Component
-public class BitstampEurCorridors extends XrapidCorridors {
+public class BitstampEurCorridors extends InboundXrapidCorridors {
 
     @Autowired
     private BitstampEurSevice bitstampEurSevice;
