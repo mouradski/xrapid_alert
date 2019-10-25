@@ -7,7 +7,7 @@ import space.xrapid.service.MercadoBitcoinService;
 import space.xrapid.service.TradeService;
 
 @Component
-public class BrlCorridors extends XrapidCorridors {
+public class BrlCorridors extends InboundXrapidCorridors {
 
     @Autowired
     private MercadoBitcoinService mercadoBitcoinService;

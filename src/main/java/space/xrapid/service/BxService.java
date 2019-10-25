@@ -6,10 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
-import space.xrapid.domain.XrpTrade;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.bx.MessageConverter;
 import space.xrapid.domain.bx.Response;
-import space.xrapid.domain.bx.Trade;
 
 import javax.annotation.PostConstruct;
 import java.time.OffsetDateTime;
@@ -31,7 +30,7 @@ public class BxService implements TradeService {
     }
 
     @Override
-    public List<XrpTrade> fetchTrades(OffsetDateTime begin) {
+    public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
         ResponseEntity<Response> response = restTemplate.exchange(apiUrl,
@@ -39,21 +38,26 @@ public class BxService implements TradeService {
 
         return response.getBody().getTrades().stream()
                 .map(this::mapTrade)
-                .filter(p -> begin.isBefore(p.getDateTime()))
+                .filter(p -> begin.plusMinutes(-2).isBefore(p.getDateTime()))
                 .collect(Collectors.toList());
     }
 
 
-    private XrpTrade mapTrade(Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.bx.Trade trade) {
         //TODO check if exchange using UTC
         OffsetDateTime date = OffsetDateTime.parse(trade.getTradeDate().replace(" ", "T" ) + "+00:00",
                 DateTimeFormatter.ISO_DATE_TIME);
 
-        return XrpTrade.builder().amount(Double.valueOf(trade.getAmount()))
+        return Trade.builder().amount(Double.valueOf(trade.getAmount()))
                 .target(Exchange.BX_IN).timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getOrderId())
                 .rate(Double.valueOf(trade.getRate()))
                 .build();
+    }
+
+    @Override
+    public Exchange getExchange() {
+        return Exchange.BX_IN;
     }
 }

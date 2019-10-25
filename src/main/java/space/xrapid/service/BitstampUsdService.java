@@ -6,8 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
-import space.xrapid.domain.XrpTrade;
-import space.xrapid.domain.bitstamp.Trade;
+import space.xrapid.domain.Trade;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -24,25 +23,30 @@ public class BitstampUsdService implements TradeService {
     protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd/";
 
     @Override
-    public List<XrpTrade> fetchTrades(OffsetDateTime begin) {
+    public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<Trade[]> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, Trade[].class);
+        ResponseEntity<space.xrapid.domain.bitstamp.Trade[]> response = restTemplate.exchange(apiUrl,
+                HttpMethod.GET, entity, space.xrapid.domain.bitstamp.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
-                .filter(p -> begin.isBefore(p.getDateTime()))
+                .filter(p -> begin.plusMinutes(-2).isBefore(p.getDateTime()))
                 .collect(Collectors.toList());
     }
 
-    private XrpTrade mapTrade(Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.bitstamp.Trade trade) {
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));
-        return XrpTrade.builder().amount(Double.valueOf(trade.getAmount()))
+        return Trade.builder().amount(Double.valueOf(trade.getAmount()))
                 .target(Exchange.BITSTAMP).timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getTid())
                 .rate(Double.valueOf(trade.getPrice()))
                 .build();
+    }
+
+    @Override
+    public Exchange getExchange() {
+        return Exchange.BITSTAMP;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.ripple.Payment;
+import space.xrapid.service.TradeCacheService;
 import space.xrapid.service.XrpLedgerService;
 
 import java.time.OffsetDateTime;
@@ -19,7 +20,13 @@ import java.util.List;
 public class Scheduler {
 
     @Autowired
-    private List<XrapidCorridors> corridors;
+    private List<InboundXrapidCorridors> inboundCorridors;
+
+    @Autowired
+    private List<OutboundXrapidCorridors> outboundCorridors;
+
+    @Autowired
+    private TradeCacheService tradeCacheService;
 
     @Autowired
     private XrpLedgerService xrpLedgerService;
@@ -30,18 +37,25 @@ public class Scheduler {
 
     @Scheduled(fixedDelay = 30000)
     public void process() {
+
+        tradeCacheService.reset();
+
         updatePaymentsWindows();
 
         List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
 
-        corridors.stream()
-                .sorted(Comparator.comparing(XrapidCorridors::getPriority))
+        inboundCorridors.stream()
+                .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
                 .forEach(c -> c.searchXrapidPayments(payments, windowStart));
+
+        outboundCorridors.forEach(c -> {
+            c.searchXrapidPayments(payments);
+        });
     }
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-70);
+        windowStart = windowEnd.plusMinutes(-400);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
