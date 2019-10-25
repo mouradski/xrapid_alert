@@ -21,6 +21,10 @@ public class TradeCacheService {
                 .collect(Collectors.toList());
     }
 
+    public void reset() {
+        cache.clear();
+    }
+
     public void fill(List<Trade> trades) {
         cache.addAll(trades);
     }

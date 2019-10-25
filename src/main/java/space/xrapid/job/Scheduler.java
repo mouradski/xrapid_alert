@@ -20,7 +20,10 @@ import java.util.List;
 public class Scheduler {
 
     @Autowired
-    private List<InboundXrapidCorridors> corridors;
+    private List<InboundXrapidCorridors> inboundCorridors;
+
+    @Autowired
+    private List<OutboundXrapidCorridors> outboundCorridors;
 
     @Autowired
     private TradeCacheService tradeCacheService;
@@ -34,18 +37,25 @@ public class Scheduler {
 
     @Scheduled(fixedDelay = 30000)
     public void process() {
+
+        tradeCacheService.reset();
+
         updatePaymentsWindows();
 
         List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
 
-        corridors.stream()
+        inboundCorridors.stream()
                 .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
                 .forEach(c -> c.searchXrapidPayments(payments, windowStart));
+
+        outboundCorridors.forEach(c -> {
+            c.searchXrapidPayments(payments);
+        });
     }
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-70);
+        windowStart = windowEnd.plusMinutes(-400);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
