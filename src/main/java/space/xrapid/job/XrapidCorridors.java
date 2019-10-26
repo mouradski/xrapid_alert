@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
+import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
@@ -70,6 +71,7 @@ public abstract class XrapidCorridors {
                     .timestamp(dateFormat.parse(payment.getExecutedTime()).getTime())
                     .dateTime(OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                     .confirmed(xrapidCorridorConfirmed)
+                    .spottedAt(getSpottedAt())
                     .build();
         } catch (ParseException e) {
             return null;
@@ -173,7 +175,8 @@ public abstract class XrapidCorridors {
                 .filter(this::tradeExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .forEach(this::persistPayment);
-
     }
+
+    protected abstract SpottedAt getSpottedAt();
 
 }

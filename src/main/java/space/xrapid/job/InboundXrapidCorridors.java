@@ -1,6 +1,7 @@
 package space.xrapid.job;
 
 import lombok.extern.slf4j.Slf4j;
+import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.TradeService;
 
@@ -28,4 +29,9 @@ public abstract class InboundXrapidCorridors extends XrapidCorridors {
     protected abstract TradeService getTradeService();
 
     protected abstract int getPriority();
+
+    @Override
+    protected SpottedAt getSpottedAt() {
+        return SpottedAt.DESTINATION;
+    }
 }

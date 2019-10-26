@@ -3,6 +3,7 @@ package space.xrapid.job;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import space.xrapid.domain.ExchangeToExchangePayment;
+import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.TradeCacheService;
@@ -43,5 +44,10 @@ public abstract class OutboundXrapidCorridors extends XrapidCorridors {
     @Override
     protected double getAmountDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<Trade> tradesGroup) {
         return Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)));
+    }
+
+    @Override
+    protected SpottedAt getSpottedAt() {
+        return SpottedAt.SOURCE;
     }
 }
