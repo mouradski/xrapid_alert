@@ -28,12 +28,13 @@ public abstract class OutboundXrapidCorridors extends XrapidCorridors {
     @Override
     protected Map<OffsetDateTime, List<Trade>> getAggregatedTrades(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trades.stream()
-                    .filter(trade -> "buy".equals(trade.getSide()))
-                    .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
-                    .filter(trade -> trade.getTarget().equals(exchangeToExchangePayment.getSource()))
-                    .filter(trade -> (exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond()) >= 0)
-                    .filter(trade -> (exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond()) < 60)
-                    .collect(Collectors.groupingBy(Trade::getDateTime));
+                .filter(trade -> "buy".equals(trade.getSide()))
+                .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
+                .filter(trade -> trade.getTarget().equals(exchangeToExchangePayment.getSource()))
+                .filter(trade -> (exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond()) >= 0)
+                .filter(trade -> (exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond()) < 60)
+                .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
+                .collect(Collectors.groupingBy(Trade::getDateTime));
     }
 
     @Override
