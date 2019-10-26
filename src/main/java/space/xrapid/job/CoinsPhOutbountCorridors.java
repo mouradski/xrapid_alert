@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import space.xrapid.domain.Exchange;
 
 @Component
-public class CoinsPhCorridors extends OutboundXrapidCorridors {
+public class CoinsPhOutbountCorridors extends OutboundXrapidCorridors {
 
     @Override
     protected Exchange getDestinationExchange() {

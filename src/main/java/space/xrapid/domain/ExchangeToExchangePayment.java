@@ -30,6 +30,7 @@ public class ExchangeToExchangePayment extends Payment {
     private Exchange destination;
     private Double amount;
     private boolean confirmed;
+    private SpottedAt spottedAt;
 
     @Column(unique=true)
     private String transactionHash;

@@ -18,4 +18,5 @@ public class Trade {
     private Exchange target;
     private String orderId;
     private double rate;
+    private String side;
 }

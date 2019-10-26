@@ -39,13 +39,19 @@ $(function () {
         var msg = document.createElement('div');
         msg.className = 'message';
 
-        var trxClass = "ODL Transaction spoted";
+        var trxClass = "ODL Transaction spotted";
 
         if (!payment.confirmed) {
             trxClass = "Uncofirmed ODL Transaction"
         }
 
-        msg.innerText = payment.dateTime + ", " + trxClass  + " : " + payment.amount + " XRP from " + payment.source + " to " + payment.destination + ", TrxHash : " + payment.transactionHash +  ", Destination Fiat : " + payment.destinationCurrencry + ", TradeIds : (" + payment.tradeIds + ")";;
+        var spottedAt = payment.destination;
+
+        if (payment.spottedAt && payment.spottedAt == "SOURCE") {
+            spottedAt = payment.source;
+        }
+
+        msg.innerText = payment.dateTime + ", " + trxClass  + " : " + payment.amount + " XRP from " + payment.source + " to " + payment.destination + ", TrxHash : " + payment.transactionHash +  ", Destination Fiat : " + payment.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + payment.tradeIds + ")";;
 
         scroller.insertBefore(msg, anchor);
     }
@@ -64,13 +70,19 @@ $(function () {
 
         var msg = document.createElement('div');
         msg.className = 'message';
-        var trxClass = "ODL Transaction spoted";
+        var trxClass = "ODL Transaction spotted";
 
         if (!message.confirmed) {
             trxClass = "Uncofirmed ODL Transaction"
         }
 
-        msg.innerText = message.dateTime + ", " + trxClass  + " : " + message.amount + " XRP from " + message.source + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry + ", TradeIds : (" + message.tradeIds + ")";
+        var spottedAt = message.destination;
+
+        if (message.spottedAt && message.spottedAt == "SOURCE") {
+            spottedAt = message.source;
+        }
+
+        msg.innerText = message.dateTime + ", " + trxClass  + " : " + message.amount + " XRP from " + message.source + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + message.tradeIds + ")";
 
         scroller.insertBefore(msg, anchor);
     }

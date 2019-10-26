@@ -3,27 +3,27 @@ package space.xrapid.job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.Exchange;
-import space.xrapid.service.BitsoService;
+import space.xrapid.service.BitstampEurSevice;
 import space.xrapid.service.TradeService;
 
 @Component
-public class BitsoCorridors extends InboundXrapidCorridors {
+public class BitstampInboundEurCorridors extends InboundXrapidCorridors {
 
     @Autowired
-    private BitsoService bitsoService;
+    private BitstampEurSevice bitstampEurSevice;
 
     @Override
     protected TradeService getTradeService() {
-        return bitsoService;
+        return bitstampEurSevice;
     }
 
     @Override
     protected Exchange getDestinationExchange() {
-        return Exchange.BITSO;
+        return Exchange.BITSTAMP;
     }
 
     @Override
     protected int getPriority() {
-        return 1;
+        return 0;
     }
 }

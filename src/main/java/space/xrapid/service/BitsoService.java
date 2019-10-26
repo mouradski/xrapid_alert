@@ -88,6 +88,7 @@ public class BitsoService implements TradeService {
                 .dateTime(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
                 .orderId(trade.getTid().toString())
                 .rate(Double.valueOf(trade.getPrice()))
+                .side(trade.getMakerSide())
                 .build();
     }
 

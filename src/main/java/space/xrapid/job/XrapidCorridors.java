@@ -39,8 +39,6 @@ public abstract class XrapidCorridors {
 
     protected final double HUGE_TRANSACTION_THRESHOLD = 30000;
     protected final double MEDIUM_TRANSACTION_THRESHOLD = 5000;
-    protected final double SMALL_TRANSACTION_THRESHOLD = 1000;
-
     protected final double HUGE_TRANSACTION_TOLERANCE = 200;
     protected final double MEDIUM_TRANSACTION_TOLERANCE = 5;
     protected final double SMALL_TRANSACTION_TOLERANCE = 1;
@@ -105,8 +103,7 @@ public abstract class XrapidCorridors {
     protected boolean amountMatches(ExchangeToExchangePayment exchangeToExchangePayment, double aggregatedAmount) {
         return (exchangeToExchangePayment.getAmount() > HUGE_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < HUGE_TRANSACTION_TOLERANCE)
                 || (exchangeToExchangePayment.getAmount() > MEDIUM_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < MEDIUM_TRANSACTION_TOLERANCE)
-                || (exchangeToExchangePayment.getAmount() > SMALL_TRANSACTION_THRESHOLD && Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < SMALL_TRANSACTION_TOLERANCE)
-                || exchangeToExchangePayment.getAmount().equals(aggregatedAmount);
+                || Math.abs(exchangeToExchangePayment.getAmount() - aggregatedAmount) < SMALL_TRANSACTION_TOLERANCE;
     }
 
     protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {

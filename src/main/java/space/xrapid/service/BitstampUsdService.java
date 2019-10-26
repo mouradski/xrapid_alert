@@ -42,6 +42,7 @@ public class BitstampUsdService implements TradeService {
                 .dateTime(date)
                 .orderId(trade.getTid())
                 .rate(Double.valueOf(trade.getPrice()))
+                .side("0".equals(trade.getType()) ? "buy" : "sell")
                 .build();
     }
 
