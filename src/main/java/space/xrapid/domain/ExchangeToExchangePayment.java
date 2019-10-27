@@ -47,6 +47,7 @@ public class ExchangeToExchangePayment extends Payment {
 
     private Long tag;
 
+    @Enumerated(EnumType.STRING)
     private Currency destinationCurrencry;
 
     public String getDateAsString() {
