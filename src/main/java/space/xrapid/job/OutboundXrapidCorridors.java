@@ -32,7 +32,7 @@ public abstract class OutboundXrapidCorridors extends XrapidCorridors {
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> trade.getTarget().equals(exchangeToExchangePayment.getSource()))
                 .filter(trade -> (exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond()) >= 0)
-                .filter(trade -> (exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond()) < 60)
+                .filter(trade -> (exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond()) < 90)
                 .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
                 .collect(Collectors.groupingBy(Trade::getDateTime));
     }

@@ -24,9 +24,14 @@ public class ExchangeToExchangePayment extends Payment {
 
     private OffsetDateTime dateTime;
     private Long timestamp;
+
+    @Enumerated(EnumType.STRING)
     private Exchange source;
+
     private String sourceAddress;
     private String destinationAddress;
+
+    @Enumerated(EnumType.STRING)
     private Exchange destination;
     private Double amount;
     private boolean confirmed;

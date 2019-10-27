@@ -13,5 +13,14 @@ public interface ExchangeToExchangePaymentRepository extends JpaRepository<Excha
     @Query(value = "SELECT * FROM exchange_payment ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
     List<ExchangeToExchangePayment> findTop(int limit);
 
+    @Query(value = "SELECT SUM(ep.amount) FROM exchange_payment ep", nativeQuery = true)
+    double getAllTimeVolume();
+
+    @Query(value = "SELECT SUM(ep.amount) FROM exchange_payment ep WHERE ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
+    Double getVolumeBetween(long startTimestamp, long endTimestamp);
+
+    @Query(value = "SELECT SUM(ep.amount) FROM exchange_payment ep WHERE ep.source = ? AND ep.destination = ? AND ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
+    Double getVolumeBySourceAndDestinationBetween(String source, String destination, long startTimestamp, long endTimestamp);
+
     boolean existsByTransactionHash(String transactionHash);
 }

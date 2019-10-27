@@ -13,7 +13,6 @@ import space.xrapid.service.TradeCacheService;
 
 import javax.annotation.PostConstruct;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +41,7 @@ public abstract class XrapidCorridors {
     protected final double MEDIUM_TRANSACTION_THRESHOLD = 5000;
     protected final double HUGE_TRANSACTION_TOLERANCE = 200;
     protected final double MEDIUM_TRANSACTION_TOLERANCE = 5;
-    protected final double SMALL_TRANSACTION_TOLERANCE = 1;
+    protected final double SMALL_TRANSACTION_TOLERANCE = 0.1;
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
 
@@ -60,6 +59,8 @@ public abstract class XrapidCorridors {
             Exchange destination = Exchange.byAddress(payment.getDestination());
             boolean xrapidCorridorConfirmed = source.isConfirmed() && destination.isConfirmed();
 
+            OffsetDateTime dateTime = OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
             return ExchangeToExchangePayment.builder()
                     .amount(Double.valueOf(payment.getDeliveredAmount()))
                     .destination(Exchange.byAddress(payment.getDestination()))
@@ -68,12 +69,12 @@ public abstract class XrapidCorridors {
                     .destinationAddress(payment.getDestination())
                     .tag(payment.getDestinationTag())
                     .transactionHash(payment.getTxHash())
-                    .timestamp(dateFormat.parse(payment.getExecutedTime()).getTime())
-                    .dateTime(OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                    .timestamp(dateTime.toEpochSecond() * 1000)
+                    .dateTime(dateTime)
                     .confirmed(xrapidCorridorConfirmed)
                     .spottedAt(getSpottedAt())
                     .build();
-        } catch (ParseException e) {
+        } catch (Exception e) {
             return null;
         }
     }
@@ -157,7 +158,7 @@ public abstract class XrapidCorridors {
         return trades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) >= 0)
-                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 60)
+                .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 90)
                 .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
                 .collect(Collectors.groupingBy(Trade::getDateTime));
     }
