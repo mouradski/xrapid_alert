@@ -23,7 +23,7 @@ $ cd xrp_alert
 $ mvn clean install
 ```
 
-# Deploy with maven & spring-boot
+# Run with maven & spring-boot
 
 ```
 $ cd xrp_alert
