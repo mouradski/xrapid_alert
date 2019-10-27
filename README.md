@@ -7,10 +7,10 @@
 spring:
   jpa:
     hibernate.ddl-auto: update
-    database-platform: jdbc:mysql://localhost:3306/xrapid?autoReconnect=true&useSSL=false
+    database-platform: org.hibernate.dialect.H2Dialect
 
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:mysql://localhost:3306/xrapid?autoReconnect=true&useSSL=false
     driverClassName: com.mysql.jdbc.Driver
     username: USERNAME
     password: PASSWORD
