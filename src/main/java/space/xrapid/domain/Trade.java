@@ -19,4 +19,9 @@ public class Trade {
     private String orderId;
     private double rate;
     private String side;
+
+
+    public String getDateTimeAndOrderSide() {
+        return new StringBuilder().append(this.getSide()).append(":").append(this.getDateTime()).toString();
+    }
 }

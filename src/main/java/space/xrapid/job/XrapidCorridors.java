@@ -43,8 +43,6 @@ public abstract class XrapidCorridors {
     protected final double MEDIUM_TRANSACTION_TOLERANCE = 5;
     protected final double SMALL_TRANSACTION_TOLERANCE = 0.1;
 
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
-
     @PostConstruct
     public void init() {
         allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
@@ -123,12 +121,12 @@ public abstract class XrapidCorridors {
     protected boolean tradeExists(ExchangeToExchangePayment exchangeToExchangePayment) {
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestination().getLocalFiat());
 
-        Map<OffsetDateTime, List<Trade>> aggregatedTrades = getAggregatedTrades(exchangeToExchangePayment);
+        Map<String, List<Trade>> aggregatedTrades = getAggregatedTrades(exchangeToExchangePayment);
 
 
         List<List<Trade>> candidates = new ArrayList<>();
 
-        for (Map.Entry<OffsetDateTime, List<Trade>> e : aggregatedTrades.entrySet()) {
+        for (Map.Entry<String, List<Trade>> e : aggregatedTrades.entrySet()) {
             double amount = e.getValue().stream().mapToDouble(Trade::getAmount).sum();
 
             if (amountMatches(exchangeToExchangePayment, amount)) {
@@ -154,13 +152,13 @@ public abstract class XrapidCorridors {
         return false;
     }
 
-    protected Map<OffsetDateTime, List<Trade>> getAggregatedTrades(ExchangeToExchangePayment exchangeToExchangePayment) {
+    protected Map<String, List<Trade>> getAggregatedTrades(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trades.stream()
                 .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) >= 0)
                 .filter(trade -> (trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond()) < 90)
                 .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
-                .collect(Collectors.groupingBy(Trade::getDateTime));
+                .collect(Collectors.groupingBy(Trade::getDateTimeAndOrderSide));
     }
 
     protected void submit(List<Payment> payments) {
