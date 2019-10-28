@@ -82,7 +82,7 @@ $(function () {
             spottedAt = message.source;
         }
 
-        msg.innerText = message.dateTime + ", " + trxClass  + " : " + message.amount + " XRP from " + message.source + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + message.tradeIds + ")";
+        msg.innerText = message.dateTime + ", " + trxClass  + " : " + message.amount.toFixed(6).replace(/\d(?=(\d{3})+\.)/g, '$&,') + " XRP from " + message.source + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + message.tradeIds + ")";
 
         scroller.insertBefore(msg, anchor);
     }
