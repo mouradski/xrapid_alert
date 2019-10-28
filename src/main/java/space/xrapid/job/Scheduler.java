@@ -2,10 +2,12 @@ package space.xrapid.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.ripple.Payment;
+import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradeCacheService;
 import space.xrapid.service.XrpLedgerService;
 
@@ -31,12 +33,18 @@ public class Scheduler {
     @Autowired
     private XrpLedgerService xrpLedgerService;
 
+    @Autowired
+    ExchangeToExchangePaymentService exchangeToExchangePaymentService;
+
+    @Autowired
+    protected SimpMessageSendingOperations messagingTemplate;
+
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
     @Scheduled(fixedDelay = 30000)
-    public void process() {
+    public void odl() {
 
         tradeCacheService.reset();
 
@@ -51,11 +59,18 @@ public class Scheduler {
         outboundCorridors.forEach(c -> {
             c.searchXrapidPayments(payments);
         });
+
+        messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+    }
+
+    @Scheduled(fixedDelay =  12000)
+    public void stats() {
+
     }
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-1400);
+        windowStart = windowEnd.plusMinutes(-500);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
