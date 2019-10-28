@@ -7,7 +7,7 @@
 spring:
   jpa:
     hibernate.ddl-auto: update
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.Dialect.MySQLInnoDBDialect
 
   datasource:
     url: jdbc:mysql://localhost:3306/xrapid?autoReconnect=true&useSSL=false
