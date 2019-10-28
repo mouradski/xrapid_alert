@@ -51,7 +51,7 @@ $(function () {
             spottedAt = payment.source;
         }
 
-        msg.innerText = payment.dateTime + ", " + trxClass  + " : " + payment.amount + " XRP from " + payment.source + " to " + payment.destination + ", TrxHash : " + payment.transactionHash +  ", Destination Fiat : " + payment.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + payment.tradeIds + ")";;
+        msg.innerText = payment.dateTime + ", " + trxClass  + " : " + payment.amount.toFixed(6).replace(/\d(?=(\d{3})+\.)/g, '$&,') + " XRP from " + payment.source + " to " + payment.destination + ", TrxHash : " + payment.transactionHash +  ", Destination Fiat : " + payment.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + payment.tradeIds + ")";
 
         scroller.insertBefore(msg, anchor);
     }
@@ -82,7 +82,7 @@ $(function () {
             spottedAt = message.source;
         }
 
-        msg.innerText = message.dateTime + ", " + trxClass  + " : " + message.amount + " XRP from " + message.source + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + message.tradeIds + ")";
+        msg.innerText = message.dateTime + ", " + trxClass  + " : " + message.amount.toFixed(6).replace(/\d(?=(\d{3})+\.)/g, '$&,') + " XRP from " + message.source + " to " + message.destination + ", TrxHash : " + message.transactionHash +  ", Destination Fiat : " + message.destinationCurrencry + ", " + spottedAt + " TradeIds : (" + message.tradeIds + ")";
 
         scroller.insertBefore(msg, anchor);
     }
