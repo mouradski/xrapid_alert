@@ -10,9 +10,11 @@ import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,7 +43,7 @@ public class ExchangeToExchangePaymentService {
 
         Map<String, Double> volumes = new HashMap<>();
 
-        for (Exchange source : Exchange.values()) {
+        for (Exchange source : Arrays.stream(Exchange.values()).filter(Exchange::isConfirmed).collect(Collectors.toList())) {
             for (Exchange destination : Exchange.values()) {
                 if (source.equals(destination)) {
                     continue;
