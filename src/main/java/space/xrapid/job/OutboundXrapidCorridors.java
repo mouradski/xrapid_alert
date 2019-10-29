@@ -19,7 +19,8 @@ public abstract class OutboundXrapidCorridors extends XrapidCorridors {
     @Autowired
     private TradeCacheService tradeCacheService;
 
-    public void searchXrapidPayments(List<Payment> payments) {
+    public void searchXrapidPayments(List<Payment> payments, double rate) {
+        this.rate = rate;
         trades = tradeCacheService.getCandidateOutboundTrades(getDestinationExchange());
 
         submit(payments);

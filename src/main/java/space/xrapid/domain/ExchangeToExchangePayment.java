@@ -43,6 +43,8 @@ public class ExchangeToExchangePayment extends Payment {
     @Transient
     private List<Trade> toFiatTrades;
 
+    private double usdValue;
+
     private String tradeIds;
 
     private Long tag;

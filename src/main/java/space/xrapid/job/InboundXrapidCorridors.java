@@ -13,8 +13,8 @@ import java.util.List;
 public abstract class InboundXrapidCorridors extends XrapidCorridors {
 
 
-    public void searchXrapidPayments(List<Payment> payments, OffsetDateTime windowStart) {
-
+    public void searchXrapidPayments(List<Payment> payments, OffsetDateTime windowStart, double rate) {
+        this.rate = rate;
         tradesIdAlreadyProcessed = new HashSet<>();
 
         if (getTradeService() != null) {

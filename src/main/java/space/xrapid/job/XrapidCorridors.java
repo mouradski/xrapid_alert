@@ -43,6 +43,8 @@ public abstract class XrapidCorridors {
     protected final double MEDIUM_TRANSACTION_TOLERANCE = 5;
     protected final double SMALL_TRANSACTION_TOLERANCE = 0.1;
 
+    protected double rate;
+
     @PostConstruct
     public void init() {
         allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
@@ -108,6 +110,7 @@ public abstract class XrapidCorridors {
     }
 
     protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
+        exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
         if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
             notify(exchangeToFiatPayment);
         }

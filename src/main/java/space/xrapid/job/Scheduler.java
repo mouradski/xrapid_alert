@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.RateService;
 import space.xrapid.service.TradeCacheService;
 import space.xrapid.service.XrpLedgerService;
 
@@ -34,10 +35,14 @@ public class Scheduler {
     private XrpLedgerService xrpLedgerService;
 
     @Autowired
-    ExchangeToExchangePaymentService exchangeToExchangePaymentService;
+    private ExchangeToExchangePaymentService exchangeToExchangePaymentService;
+
+    @Autowired
+    private RateService rateService;
 
     @Autowired
     protected SimpMessageSendingOperations messagingTemplate;
+
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
@@ -50,14 +55,16 @@ public class Scheduler {
 
         updatePaymentsWindows();
 
+        double rate = rateService.getXrpUsdRate();
+
         List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
 
         inboundCorridors.stream()
                 .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
-                .forEach(c -> c.searchXrapidPayments(payments, windowStart));
+                .forEach(c -> c.searchXrapidPayments(payments, windowStart, rate));
 
         outboundCorridors.forEach(c -> {
-            c.searchXrapidPayments(payments);
+            c.searchXrapidPayments(payments, rate);
         });
 
         messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
@@ -65,7 +72,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-1400);
+        windowStart = windowEnd.plusMinutes(-50);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
