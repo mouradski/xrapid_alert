@@ -43,8 +43,9 @@ public class ExchangeToExchangePaymentService {
 
         Map<String, Double> volumes = new HashMap<>();
 
-        for (Exchange source : Arrays.stream(Exchange.values()).filter(Exchange::isConfirmed).collect(Collectors.toList())) {
-            for (Exchange destination : Exchange.values()) {
+        List<Exchange> exchanges = Arrays.stream(Exchange.values()).filter(Exchange::isConfirmed).collect(Collectors.toList());
+        for (Exchange source : exchanges) {
+            for (Exchange destination : exchanges) {
                 if (source.equals(destination)) {
                     continue;
                 }

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import space.xrapid.domain.ExchangeToExchangePayment;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Repository
@@ -14,13 +13,13 @@ public interface ExchangeToExchangePaymentRepository extends JpaRepository<Excha
     @Query(value = "SELECT * FROM exchange_payment ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
     List<ExchangeToExchangePayment> findTop(int limit);
 
-    @Query(value = "SELECT SUM(ep.amount) FROM exchange_payment ep", nativeQuery = true)
+    @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep", nativeQuery = true)
     Double getAllTimeVolume();
 
-    @Query(value = "SELECT SUM(ep.amount) FROM exchange_payment ep WHERE ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
+    @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
     Double getVolumeBetween(long startTimestamp, long endTimestamp);
 
-    @Query(value = "SELECT SUM(ep.amount) FROM exchange_payment ep WHERE ep.source = ? AND ep.destination = ? AND ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
+    @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.source = ? AND ep.destination = ? AND ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
     Double getVolumeBySourceAndDestinationBetween(String source, String destination, long startTimestamp, long endTimestamp);
 
 
