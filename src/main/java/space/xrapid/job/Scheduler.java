@@ -63,14 +63,9 @@ public class Scheduler {
         messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
     }
 
-    @Scheduled(fixedDelay =  12000)
-    public void stats() {
-
-    }
-
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-500);
+        windowStart = windowEnd.plusMinutes(-1400);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

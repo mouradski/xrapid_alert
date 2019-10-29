@@ -48,39 +48,35 @@ public class ExchangeToExchangePaymentService {
                 }
 
                 try {
-                    Double volume = repository.getVolumeBySourceAndDestinationBetween(source.toString(), destination.toString(), today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
-
+                    Double volume = repository.getVolumeBySourceAndDestinationBetween(source.toString(), destination.toString(),
+                            today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
                     if (volume != null) {
                         volumes.put(source + "_" + destination, volume);
                     }
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
         }
 
-        int i = 0;
-
-        double[] volumePerDay = new double[5];
-
-        while (i < 5) {
+        double[] volumePerDay = new double[6];
+        volumePerDay[5] = todayVolume;
+        for (int i = 4;i >=0;i--) {
             Double volume = repository.getVolumeBetween(today.plusDays(-1 * (i+1)).toEpochSecond() * 1000, today.plusDays(-1 * (i+1)).plusDays(1).toEpochSecond() * 1000);
 
             if (volume == null) {
-                volumePerDay[i] = 0;
+                volumePerDay[4-i] = 0;
 
             } else {
-                volumePerDay[i] = volume;
+                volumePerDay[4-i] = volume;
             }
-
-            i++;
         }
 
         return Stats.builder()
                 .allTimeVolume(allTimeVolume)
                 .todayVolume(todayVolume)
                 .topVolumes(volumes)
+                .allTimeFrom(repository.getFirstOdl().getDateTime())
                 .last5DaysOdlVolume(volumePerDay)
                 .build();
     }
