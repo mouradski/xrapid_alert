@@ -71,7 +71,7 @@ public class ExchangeToExchangePaymentService {
                 volumePerDay[4 - i] = 0;
 
             } else {
-                volumePerDay[4 - i] = roundVolume(volume)
+                volumePerDay[4 - i] = roundVolume(volume);
             }
         }
 
