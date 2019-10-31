@@ -54,9 +54,9 @@ public class ExchangeToExchangePaymentService {
                     Double volume = repository.getVolumeBySourceAndDestinationBetween(source.toString(), destination.toString(),
                             today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
                     if (volume != null) {
-                        volumes.put(source + "_" + destination, volume);
+                        volumes.put(source + "_" + destination,  roundVolume(volume));
                     }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -64,24 +64,28 @@ public class ExchangeToExchangePaymentService {
 
         double[] volumePerDay = new double[6];
         volumePerDay[5] = todayVolume;
-        for (int i = 4;i >=0;i--) {
-            Double volume = repository.getVolumeBetween(today.plusDays(-1 * (i+1)).toEpochSecond() * 1000, today.plusDays(-1 * (i+1)).plusDays(1).toEpochSecond() * 1000);
+        for (int i = 4; i >= 0; i--) {
+            Double volume = repository.getVolumeBetween(today.plusDays(-1 * (i + 1)).toEpochSecond() * 1000, today.plusDays(-1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
 
             if (volume == null) {
-                volumePerDay[4-i] = 0;
+                volumePerDay[4 - i] = 0;
 
             } else {
-                volumePerDay[4-i] = volume;
+                volumePerDay[4 - i] = roundVolume(volume)
             }
         }
 
         return Stats.builder()
-                .allTimeVolume(allTimeVolume)
-                .todayVolume(todayVolume)
+                .allTimeVolume(roundVolume(allTimeVolume))
+                .todayVolume(roundVolume(todayVolume))
                 .topVolumes(volumes)
                 .allTimeFrom(repository.getFirstOdl().getDateTime())
                 .last5DaysOdlVolume(volumePerDay)
                 .build();
+    }
+
+    private double roundVolume(double volume) {
+        return Math.round(volume * 100.0) / 100.0;
     }
 
     public List<ExchangeToExchangePayment> getLasts() {
