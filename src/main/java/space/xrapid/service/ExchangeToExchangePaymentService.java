@@ -85,6 +85,6 @@ public class ExchangeToExchangePaymentService {
     }
 
     public List<ExchangeToExchangePayment> getLasts() {
-        return repository.findTop(20);
+        return repository.findTop(150);
     }
 }
