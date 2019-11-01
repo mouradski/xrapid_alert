@@ -1,3 +1,22 @@
+.alert-warning{
+  margin-top: 30px;
+  padding: 10px;
+  background: #5c4ff6;
+  p{
+    font-size: 12px;
+    line-height: 16px;
+    color: #64390b;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+  }
+  b{
+    font-weight: bold;
+  }
+  button{
+    right: 5px!important;
+  }
+}
+
 .card{
     background: $card-black-background;
     border: 0;
