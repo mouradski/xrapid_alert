@@ -14,6 +14,8 @@ import { AppRoutingModule } from "./app-routing.module";
 import { ComponentsModule } from "./components/components.module";
 import {AdminLayoutModule} from "./layouts/admin-layout/admin-layout.module";
 
+import { CookieService } from 'ngx-cookie-service';
+
 @NgModule({
   imports: [
     BrowserAnimationsModule,
@@ -27,7 +29,7 @@ import {AdminLayoutModule} from "./layouts/admin-layout/admin-layout.module";
     AdminLayoutModule
   ],
   declarations: [AppComponent, AdminLayoutComponent],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

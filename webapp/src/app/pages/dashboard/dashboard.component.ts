@@ -5,6 +5,9 @@ import {Client} from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
 import {Payment} from "../tables/tables.component";
+import { CookieService } from 'ngx-cookie-service';
+
+
 
 @Component({
   selector: "app-dashboard",
@@ -16,8 +19,6 @@ export class DashboardComponent implements OnInit {
   public datasets: any;
   public data: any;
 
-  public myChartData;
-
   private client: Client;
 
   public myChart2: any;
@@ -25,14 +26,9 @@ export class DashboardComponent implements OnInit {
 
   public lastTransaction:Payment;
 
-  public historyData: any;
-  public volumes: any;
-  public daysVolumes:Array<number>;
-
-
   public stats: Stats;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private cookieService: CookieService) {
     const _this = this;
 
     this.stats = new Stats();
@@ -47,8 +43,6 @@ export class DashboardComponent implements OnInit {
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
       _this.lastTransaction = data[data.length - 1];
     })
-
-
 
     const socket = new SockJS('/ws');
     this.client = Stomp.over(socket);
@@ -265,6 +259,14 @@ export class DashboardComponent implements OnInit {
       options: gradientBarChartConfiguration
     });
 
+  }
+
+  setDisclaimerRead() {
+    this.cookieService.set( 'disclaimerRead', 'yes' );
+  }
+
+  isDisclaimerNotRead() {
+    return this.cookieService.get("disclaimerRead") != 'yes';
   }
 }
 

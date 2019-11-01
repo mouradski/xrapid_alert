@@ -70,6 +70,7 @@
     "chart.js": "2.8.0",
     "core-js": "3.1.4",
     "net": "^1.0.2",
+    "ngx-cookie-service": "^2.2.0",
     "ngx-toastr": "10.0.4",
     "rxjs": "6.5.2",
     "sockjs-client": "^1.4.0",
