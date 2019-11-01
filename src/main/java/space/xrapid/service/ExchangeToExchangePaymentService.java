@@ -52,7 +52,7 @@ public class ExchangeToExchangePaymentService {
 
                 try {
                     Double volume = repository.getVolumeBySourceAndDestinationBetween(source.toString(), destination.toString(),
-                            today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+                            now.plusDays(-1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
                     if (volume != null) {
                         volumes.put(source + "_" + destination,  roundVolume(volume));
                     }
