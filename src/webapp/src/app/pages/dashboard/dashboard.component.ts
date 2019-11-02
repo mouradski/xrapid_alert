@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit {
   constructor(private httpClient: HttpClient, private cookieService: CookieService) {
     const _this = this;
 
-    this.trxSecondsAgo = 1;
+    this.trxSecondsAgo = 0;
 
     this.stats = new Stats();
     this.stats.allTimeFrom = '';
@@ -66,6 +66,8 @@ export class DashboardComponent implements OnInit {
       });
     });
 
+
+    _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
 
     setInterval(function () {
       _this.trxSecondsAgo++;
