@@ -9,6 +9,7 @@ import { DashboardComponent } from "../../pages/dashboard/dashboard.component";
 import { TablesComponent } from "../../pages/tables/tables.component";
 
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import {DateAgoPipe} from "../../pipes/date-ago.pipe";
 
 @NgModule({
   imports: [
@@ -23,7 +24,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
   ],
   declarations: [
     DashboardComponent,
-    TablesComponent
+    TablesComponent, DateAgoPipe
   ]
 })
 export class AdminLayoutModule {}
