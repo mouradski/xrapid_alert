@@ -63,6 +63,11 @@ export class DashboardComponent implements OnInit {
         _this.updateStats(_this.stats)
       });
     });
+
+
+    setInterval(function () {
+      _this.trxSecondsAgo++;
+    }, 1000)
   }
 
   updateStats(data: Stats) {
