@@ -61,7 +61,7 @@
 
               <!-- block derniere trx a designer -->
               <div>
-                <p><b>Last ODL transaction spotted</b></p>
+                <p><b>Last ODL transaction spotted {{trxSecondsAgo | dateAgo}}</b></p>
                 <p><b>USD Value : </b> {{lastTransaction.usdValue | currency}}</p>
                 <p>FROM <b>{{lastTransaction.source}} TO {{lastTransaction.destination}}</b></p>
               </div>

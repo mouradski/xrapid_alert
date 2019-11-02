@@ -26,6 +26,8 @@ export class DashboardComponent implements OnInit {
 
   public lastTransaction:Payment;
 
+  public trxSecondsAgo:number;
+
   public stats: Stats;
 
   constructor(private httpClient: HttpClient, private cookieService: CookieService) {
@@ -42,6 +44,7 @@ export class DashboardComponent implements OnInit {
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
       _this.lastTransaction = data[data.length - 1];
+      _this.trxSecondsAgo = 0;
     })
 
     const socket = new SockJS('/ws');
@@ -51,6 +54,7 @@ export class DashboardComponent implements OnInit {
       _this.client.subscribe('/topic/payments', function (message) {
         console.log(JSON.parse(message.body));
         _this.lastTransaction = JSON.parse(message.body);
+        _this.trxSecondsAgo = 0;
       });
 
       _this.client.subscribe('/topic/stats', function (message) {

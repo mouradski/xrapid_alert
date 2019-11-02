@@ -15,6 +15,7 @@ import { ComponentsModule } from "./components/components.module";
 import {AdminLayoutModule} from "./layouts/admin-layout/admin-layout.module";
 
 import { CookieService } from 'ngx-cookie-service';
+import {DateAgoPipe} from "./pipes/date-ago.pipe";
 
 @NgModule({
   imports: [
@@ -28,8 +29,8 @@ import { CookieService } from 'ngx-cookie-service';
     ToastrModule.forRoot(),
     AdminLayoutModule
   ],
-  declarations: [AppComponent, AdminLayoutComponent],
-  providers: [CookieService],
+  declarations: [AppComponent, AdminLayoutComponent, DateAgoPipe],
+  providers: [CookieService, DateAgoPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
