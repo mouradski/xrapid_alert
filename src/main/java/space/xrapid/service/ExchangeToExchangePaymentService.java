@@ -39,7 +39,11 @@ public class ExchangeToExchangePaymentService {
         OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         double allTimeVolume = repository.getAllTimeVolume();
-        double todayVolume = repository.getVolumeBetween(today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+        Double todayVolume = repository.getVolumeBetween(today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+
+        if (todayVolume == null) {
+            todayVolume = 0d;
+        }
 
         Map<String, Double> volumes = new HashMap<>();
 
