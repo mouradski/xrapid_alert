@@ -33,6 +33,8 @@ export class DashboardComponent implements OnInit {
   constructor(private httpClient: HttpClient, private cookieService: CookieService) {
     const _this = this;
 
+    this.trxSecondsAgo = 1;
+
     this.stats = new Stats();
     this.stats.allTimeFrom = '';
     this.lastTransaction = new Payment();
@@ -44,7 +46,7 @@ export class DashboardComponent implements OnInit {
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
       _this.lastTransaction = data[data.length - 1];
-      _this.trxSecondsAgo = 0;
+      _this.trxSecondsAgo = 1;
     })
 
     const socket = new SockJS('/ws');
@@ -54,7 +56,7 @@ export class DashboardComponent implements OnInit {
       _this.client.subscribe('/topic/payments', function (message) {
         console.log(JSON.parse(message.body));
         _this.lastTransaction = JSON.parse(message.body);
-        _this.trxSecondsAgo = 0;
+        _this.trxSecondsAgo = 1;
       });
 
       _this.client.subscribe('/topic/stats', function (message) {

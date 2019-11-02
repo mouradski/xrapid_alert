@@ -4,6 +4,7 @@ import { RouterModule } from "@angular/router";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 import { FooterComponent } from "./footer/footer.component";
+import {DateAgoPipe} from "../pipes/date-ago.pipe";
 @NgModule({
   imports: [CommonModule, RouterModule, NgbModule],
   declarations: [FooterComponent],
