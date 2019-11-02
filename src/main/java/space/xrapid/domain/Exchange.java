@@ -50,7 +50,9 @@ public enum Exchange {
     BITREX("bitrex", true, USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
 
-    DCEX("dcex", true, USD, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz");
+    DCEX("dcex", true, USD, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
+
+    BITKUB("bitkub", true, BAHT, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW");
 
 
     private String name;
