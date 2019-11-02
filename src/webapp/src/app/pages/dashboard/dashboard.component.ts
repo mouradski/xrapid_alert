@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
       _this.lastTransaction = data[data.length - 1];
-      _this.trxSecondsAgo = 1;
+      _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
     })
 
     const socket = new SockJS('/ws');
@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit {
       _this.client.subscribe('/topic/payments', function (message) {
         console.log(JSON.parse(message.body));
         _this.lastTransaction = JSON.parse(message.body);
-        _this.trxSecondsAgo = 1;
+        _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
       });
 
       _this.client.subscribe('/topic/stats', function (message) {
@@ -68,6 +68,7 @@ export class DashboardComponent implements OnInit {
 
 
     _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
+
 
     setInterval(function () {
       _this.trxSecondsAgo++;
