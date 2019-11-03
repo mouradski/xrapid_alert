@@ -52,6 +52,8 @@ public enum Exchange {
 
     DCEX("dcex", true, USD, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
 
+    BTC_MARKETS("btc_market", true, AUD, "r94JFtstbXmyG21h3RHKcNfkAHxAQ6HSGC", "rL3ggCUKaiR1iywkGW6PACbn3Y8g5edWiY", "rU7xJs7QmjbiyxpEozNYUFQxaRD5kueY7z"),
+
     BITKUB("bitkub", true, BAHT, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW");
 
 
