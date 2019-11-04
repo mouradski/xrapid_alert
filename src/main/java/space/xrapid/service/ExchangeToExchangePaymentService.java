@@ -58,7 +58,12 @@ public class ExchangeToExchangePaymentService {
                     Double volume = repository.getVolumeBySourceAndDestinationBetween(source.toString(), destination.toString(),
                             now.plusDays(-1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
                     if (volume != null) {
-                        volumes.put(source.getLocalFiat() + "-" + destination.getLocalFiat(),  roundVolume(volume));
+                        String key = source.getLocalFiat() + "-" + destination.getLocalFiat();
+                        if (volumes.containsKey(key)) {
+                            volumes.put(key,  roundVolume(volume) + volumes.get(key));
+                        } else {
+                            volumes.put(key,  roundVolume(volume));
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
