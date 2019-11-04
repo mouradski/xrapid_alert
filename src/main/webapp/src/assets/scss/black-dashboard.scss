@@ -62,32 +62,32 @@
 
  // Custom components
 
- @import "black-dashboard/custom/alerts.scss";
- @import "black-dashboard/custom/dropdown.scss";
- @import "black-dashboard/custom/footer.scss";
- @import "black-dashboard/custom/forms.scss";
- @import "black-dashboard/custom/images.scss";
- @import "black-dashboard/custom/modal.scss";
- @import "black-dashboard/custom/navbar.scss";
- @import "black-dashboard/custom/type.scss";
+ @import "black-dashboard/custom/alerts";
+ @import "black-dashboard/custom/dropdown";
+ @import "black-dashboard/custom/footer";
+ @import "black-dashboard/custom/forms";
+ @import "black-dashboard/custom/images";
+ @import "black-dashboard/custom/modal";
+ @import "black-dashboard/custom/navbar";
+ @import "black-dashboard/custom/type";
  @import "black-dashboard/custom/tables";
  @import "black-dashboard/custom/checkboxes-radio";
  @import "black-dashboard/custom/fixed-plugin";
- @import "black-dashboard/custom/sidebar-and-main-panel.scss";
- @import "black-dashboard/custom/misc.scss";
- @import "black-dashboard/custom/rtl.scss";
- @import "black-dashboard/custom/input-group.scss";
- @import "black-dashboard/custom/buttons.scss";
+ @import "black-dashboard/custom/sidebar-and-main-panel";
+ @import "black-dashboard/custom/misc";
+ @import "black-dashboard/custom/rtl";
+ @import "black-dashboard/custom/input-group";
+ @import "black-dashboard/custom/buttons";
 
 
  // Vendor / Plugins
 
-@import "black-dashboard/custom/vendor/plugin-perfect-scrollbar.scss";
-@import "black-dashboard/custom/vendor/plugin-animate-bootstrap-notify.scss";
+@import "black-dashboard/custom/vendor/plugin-perfect-scrollbar";
+@import "black-dashboard/custom/vendor/plugin-animate-bootstrap-notify";
 
 // light mode
 
-@import "black-dashboard/custom/white-content.scss";
+@import "black-dashboard/custom/white-content";
 
 // Cards
 
