@@ -24,6 +24,9 @@ export class TablesComponent implements OnInit {
 
   private client: Client;
 
+  private recInterval = null;
+  private socket = null;
+
 
   constructor(private httpClient: HttpClient) {
 
@@ -37,9 +40,7 @@ export class TablesComponent implements OnInit {
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
 
-      console.log(data);
       for (let i = 0; i < data.length; i++) {
-
         _this.datasets.push(data[i]);
       }
 
@@ -52,13 +53,19 @@ export class TablesComponent implements OnInit {
       _this.currentPage = _this.paginate(this.datasets, 5, this.pageIndex)
     });
 
-    const socket = new SockJS('/ws');
-    this.client = Stomp.over(socket);
+
+    this.newConnect();
+
+  }
+
+  newConnect() {
+    const _this = this;
+    this.socket = new SockJS('/ws');
+    this.client = Stomp.over(this.socket);
 
     this.client.connect({}, function (frame) {
       _this.client.subscribe('/topic/payments', function (message) {
         _this.datasets.push(JSON.parse(message.body));
-
 
         _this.payment = JSON.parse(message.body);
 
@@ -70,6 +77,15 @@ export class TablesComponent implements OnInit {
         _this.currentPage = _this.paginate(_this.datasets, 5, _this.pageIndex)
       });
     });
+
+    clearInterval(this.recInterval);
+
+    this.socket.onclose = function () {
+      this.socket = null;
+      this.recInterval = setInterval(function() {
+        this.newConnect();
+      }, 60000);
+    }
   }
 
   sort(data: Array<Payment>) {

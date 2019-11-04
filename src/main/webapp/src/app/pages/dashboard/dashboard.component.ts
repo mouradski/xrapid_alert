@@ -19,8 +19,6 @@ export class DashboardComponent implements OnInit {
   public datasets: any;
   public data: any;
 
-  private client: Client;
-
   public myChart2: any;
   public myChart1: any;
 
@@ -29,6 +27,12 @@ export class DashboardComponent implements OnInit {
   public trxSecondsAgo:number;
 
   public stats: Stats;
+
+  private client: Client;
+
+  private recInterval = null;
+  private socket = null;
+
 
   constructor(private httpClient: HttpClient, private cookieService: CookieService) {
     const _this = this;
@@ -49,8 +53,21 @@ export class DashboardComponent implements OnInit {
       _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
     })
 
-    const socket = new SockJS('/ws');
-    this.client = Stomp.over(socket);
+
+    _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
+
+
+    setInterval(function () {
+      _this.trxSecondsAgo++;
+    }, 1000);
+
+    this.newConnect();
+  }
+
+  newConnect() {
+    const _this = this;
+    this.socket = new SockJS('/ws');
+    this.client = Stomp.over(this.socket);
 
     this.client.connect({}, function (frame) {
       _this.client.subscribe('/topic/payments', function (message) {
@@ -66,13 +83,14 @@ export class DashboardComponent implements OnInit {
       });
     });
 
+    clearInterval(this.recInterval);
 
-    _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
-
-
-    setInterval(function () {
-      _this.trxSecondsAgo++;
-    }, 1000)
+    this.socket.onclose = function () {
+      this.socket = null;
+      this.recInterval = setInterval(function() {
+        this.newConnect();
+      }, 60000);
+    }
   }
 
   updateStats(data: Stats) {
