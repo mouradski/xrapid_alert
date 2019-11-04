@@ -166,7 +166,7 @@
                             <outputDirectory>${build.directory}/classes/static/</outputDirectory >
                             <resources>
                                 <resource>
-                                    <directory>../webapp/dist</directory>
+                                    <directory>${project.basedir}/src/main/webapp/dist</directory>
                                 </resource>
                             </resources>
                         </configuration>
