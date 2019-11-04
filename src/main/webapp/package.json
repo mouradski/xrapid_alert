@@ -1,9 +1,11 @@
 {
-  "name": "black-dashboard-angular",
-  "version": "1.0.0",
+  "name": "xrp-utility-scan",
+  "version": "0.0.1",
   "description": "Black Dasboard Angular, a Creative Tim Desgin. Coded by Creative Tim",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "npm install @angular-devkit/build-angular",
+    "build": "ng build"
   },
   "repository": {
     "type": "git",
