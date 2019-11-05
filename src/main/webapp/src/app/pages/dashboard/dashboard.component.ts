@@ -52,16 +52,17 @@ export class DashboardComponent implements OnInit {
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
       _this.lastTransaction = data[data.length - 1];
       _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
+      _this.newConnect();
     })
 
-    _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
+    this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
 
 
     setInterval(function () {
       _this.trxSecondsAgo++;
     }, 1000);
 
-    this.newConnect();
+
   }
 
   newConnect() {
@@ -86,9 +87,9 @@ export class DashboardComponent implements OnInit {
     clearInterval(this.recInterval);
 
     this.socket.onclose = function () {
-      this.socket = null;
-      this.recInterval = setInterval(function() {
-        this.newConnect();
+      _this.socket = null;
+      _this.recInterval = setInterval(function() {
+        _this.newConnect();
       }, 60000);
     }
   }

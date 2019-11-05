@@ -43,10 +43,12 @@ export class TablesComponent implements OnInit {
       }
 
       _this.datasets =  _this.sort(_this.datasets);
-      _this.currentPage = _this.paginate(this.datasets, 5, this.pageIndex)
+      _this.currentPage = _this.paginate(this.datasets, 5, this.pageIndex);
+
+      _this.newConnect();
     });
 
-    this.newConnect();
+
   }
 
   newConnect() {
@@ -72,9 +74,9 @@ export class TablesComponent implements OnInit {
     clearInterval(this.recInterval);
 
     this.socket.onclose = function () {
-      this.socket = null;
-      this.recInterval = setInterval(function() {
-        this.newConnect();
+      _this.socket = null;
+      _this.recInterval = setInterval(function() {
+        _this.newConnect();
       }, 60000);
     }
   }
