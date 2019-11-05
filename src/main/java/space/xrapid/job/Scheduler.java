@@ -49,25 +49,40 @@ public class Scheduler {
     private OffsetDateTime windowEnd;
 
     @Scheduled(fixedDelay = 30000)
-    public void odl() {
+    public void odl() throws Exception {
 
-        tradeCacheService.reset();
+        OffsetDateTime lastWindowEndRollback = lastWindowEnd;
+        OffsetDateTime windowStartRollback = windowStart;
+        OffsetDateTime windowEndRollback = windowEnd;
 
-        updatePaymentsWindows();
+        try {
+            tradeCacheService.reset();
 
-        double rate = rateService.getXrpUsdRate();
+            updatePaymentsWindows();
 
-        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
+            double rate = rateService.getXrpUsdRate();
 
-        inboundCorridors.stream()
-                .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
-                .forEach(c -> c.searchXrapidPayments(payments, windowStart, rate));
+            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
 
-        outboundCorridors.forEach(c -> {
-            c.searchXrapidPayments(payments, rate);
-        });
+            inboundCorridors.stream()
+                    .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
+                    .forEach(c -> c.searchXrapidPayments(payments, windowStart, rate));
 
-        messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+            outboundCorridors.forEach(c -> {
+                c.searchXrapidPayments(payments, rate);
+            });
+
+            messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+            
+        } catch (Exception e) {
+            log.error("", e);
+            lastWindowEnd = lastWindowEndRollback;
+            windowStart = windowStartRollback;
+            windowEnd = windowEndRollback;
+
+            Thread.sleep(120000);
+        }
+
     }
 
     private void updatePaymentsWindows() {
