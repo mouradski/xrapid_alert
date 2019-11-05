@@ -14,6 +14,7 @@ import { CookieService } from 'ngx-cookie-service';
   templateUrl: "dashboard.component.html"
 })
 export class DashboardComponent implements OnInit {
+
   public canvas : any;
   public ctx;
   public datasets: any;
@@ -52,7 +53,6 @@ export class DashboardComponent implements OnInit {
       _this.lastTransaction = data[data.length - 1];
       _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
     })
-
 
     _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
 
@@ -108,7 +108,7 @@ export class DashboardComponent implements OnInit {
 
 
   draw5DaysHistory(updatedData:Array<number>) {
-    var gradientChartOptionsConfigurationWithTooltipRed: any = {
+    let gradientChartOptionsConfigurationWithTooltipRed: any = {
       maintainAspectRatio: false,
       legend: {
         display: false
@@ -159,13 +159,13 @@ export class DashboardComponent implements OnInit {
     this.canvas = document.getElementById("chart1");
     this.ctx = this.canvas.getContext("2d");
 
-    var gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
+    let gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
 
     gradientStroke.addColorStop(1, 'rgba(233,32,16,0.2)');
     gradientStroke.addColorStop(0.4, 'rgba(233,32,16,0.0)');
     gradientStroke.addColorStop(0, 'rgba(233,32,16,0)'); //red colors
 
-    var data = {
+    let data = {
       labels: ['D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'D'],
       datasets: [{
         label: "Data",
@@ -202,7 +202,7 @@ export class DashboardComponent implements OnInit {
   }
 
   drawVolumesByCorridor(updatedData:Map<string, number>) {
-    var gradientBarChartConfiguration: any = {
+    let gradientBarChartConfiguration: any = {
       maintainAspectRatio: false,
       legend: {
         display: false
@@ -252,13 +252,13 @@ export class DashboardComponent implements OnInit {
     this.canvas = document.getElementById("chart2");
     this.ctx = this.canvas.getContext("2d");
 
-    var gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
+    let gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
 
     gradientStroke.addColorStop(1, 'rgba(233,32,16,0.2)');
     gradientStroke.addColorStop(0.4, 'rgba(233,32,16,0.0)');
     gradientStroke.addColorStop(0, 'rgba(233,32,16,0)'); //red colors
 
-    var data = {
+    let data = {
       labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
       datasets: [{
         label: "Data",

@@ -19,24 +19,17 @@ export class TablesComponent implements OnInit {
   public currentPage: Array<Payment>;
   public pageIndex: number;
 
-
-  public i: number;
-
   private client: Client;
-
   private recInterval = null;
   private socket = null;
 
+  public notifier:string;
 
   constructor(private httpClient: HttpClient) {
-
-
     const _this = this;
-
     this.payment = new Payment();
-
     this.pageIndex = 1;
-
+    this.notifier = 'brad';
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
 
@@ -53,9 +46,7 @@ export class TablesComponent implements OnInit {
       _this.currentPage = _this.paginate(this.datasets, 5, this.pageIndex)
     });
 
-
     this.newConnect();
-
   }
 
   newConnect() {
@@ -109,9 +100,10 @@ export class TablesComponent implements OnInit {
   }
 
   info(data) {
-    var transactionHash = data[0][0];
+    let transactionHash = data[0][0];
 
     const _this = this;
+
     this.datasets.forEach(function (payment) {
 
       if (transactionHash == payment.transactionHash) {
