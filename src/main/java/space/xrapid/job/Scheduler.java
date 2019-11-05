@@ -73,6 +73,7 @@ public class Scheduler {
             });
 
             messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+            
         } catch (Exception e) {
             log.error("", e);
             lastWindowEnd = lastWindowEndRollback;
