@@ -38,7 +38,7 @@ public class BxService implements TradeService {
 
         return response.getBody().getTrades().stream()
                 .map(this::mapTrade)
-                .filter(p -> begin.plusMinutes(-2).isBefore(p.getDateTime()))
+                .filter(p -> begin.minusMinutes(2).isBefore(p.getDateTime()))
                 .collect(Collectors.toList());
     }
 

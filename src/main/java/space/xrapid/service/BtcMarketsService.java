@@ -60,7 +60,7 @@ public class BtcMarketsService implements TradeService {
     }
 
     private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return trade -> begin.plusMinutes(-2).isBefore(trade.getDateTime());
+        return trade -> begin.minusMinutes(2).isBefore(trade.getDateTime());
     }
 
     private String transformDate(String date) {

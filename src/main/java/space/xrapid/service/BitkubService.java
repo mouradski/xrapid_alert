@@ -60,6 +60,6 @@ public class BitkubService implements TradeService {
     }
 
     private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.plusMinutes(-2).isBefore(p.getDateTime());
+        return p -> begin.minusMinutes(2).isBefore(p.getDateTime());
     }
 }

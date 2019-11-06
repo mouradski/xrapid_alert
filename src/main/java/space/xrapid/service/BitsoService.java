@@ -93,7 +93,7 @@ public class BitsoService implements TradeService {
     }
 
     private Predicate<space.xrapid.domain.bitso.Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.plusMinutes(-2).isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
+        return p -> begin.minusMinutes(2).isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
     }
 
     @Override

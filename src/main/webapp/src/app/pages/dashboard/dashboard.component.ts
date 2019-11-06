@@ -304,6 +304,7 @@ export class DashboardComponent implements OnInit {
 }
 
 export class Stats {
+  athDaylyVolume: number;
   todayVolume: number;
   allTimeVolume: number;
   averageTimeBetweetTransactions: number;
