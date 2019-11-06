@@ -62,7 +62,9 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(5), windowEnd);
+
+            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(5), windowEnd);
+
 
             inboundCorridors.stream()
                     .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
