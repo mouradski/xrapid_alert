@@ -36,7 +36,7 @@ public class MercadoBitcoinService implements TradeService {
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
-                .filter(p -> begin.plusMinutes(-2).isBefore(p.getDateTime()))
+                .filter(p -> begin.minusMinutes(2).isBefore(p.getDateTime()))
                 .collect(Collectors.toList());
     }
 

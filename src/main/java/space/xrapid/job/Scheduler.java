@@ -57,7 +57,7 @@ public class Scheduler {
 
         double rate = rateService.getXrpUsdRate();
 
-        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.plusMinutes(-5), windowEnd);
+        List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(5), windowEnd);
 
         inboundCorridors.stream()
                 .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
@@ -72,7 +72,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.plusMinutes(-150);
+        windowStart = windowEnd.minusMinutes(350);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

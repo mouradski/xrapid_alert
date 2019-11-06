@@ -22,6 +22,8 @@ public interface ExchangeToExchangePaymentRepository extends JpaRepository<Excha
     @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.source = ? AND ep.destination = ? AND ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
     Double getVolumeBySourceAndDestinationBetween(String source, String destination, long startTimestamp, long endTimestamp);
 
+    @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.source = ? AND ep.destination = ? AND ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
+    Double getAthDaylyVolume();
 
     @Query(value = "SELECT * FROM exchange_payment ORDER BY date_time ASC LIMIT 1", nativeQuery = true)
     ExchangeToExchangePayment getFirstOdl();

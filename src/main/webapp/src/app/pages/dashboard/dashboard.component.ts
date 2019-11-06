@@ -14,12 +14,11 @@ import { CookieService } from 'ngx-cookie-service';
   templateUrl: "dashboard.component.html"
 })
 export class DashboardComponent implements OnInit {
+
   public canvas : any;
   public ctx;
   public datasets: any;
   public data: any;
-
-  private client: Client;
 
   public myChart2: any;
   public myChart1: any;
@@ -29,6 +28,12 @@ export class DashboardComponent implements OnInit {
   public trxSecondsAgo:number;
 
   public stats: Stats;
+
+  private client: Client;
+
+  private recInterval = null;
+  private socket = null;
+
 
   constructor(private httpClient: HttpClient, private cookieService: CookieService) {
     const _this = this;
@@ -47,10 +52,23 @@ export class DashboardComponent implements OnInit {
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
       _this.lastTransaction = data[data.length - 1];
       _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
+      _this.newConnect();
     })
 
-    const socket = new SockJS('/ws');
-    this.client = Stomp.over(socket);
+    this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
+
+
+    setInterval(function () {
+      _this.trxSecondsAgo++;
+    }, 1000);
+
+
+  }
+
+  newConnect() {
+    const _this = this;
+    this.socket = new SockJS('/ws');
+    this.client = Stomp.over(this.socket);
 
     this.client.connect({}, function (frame) {
       _this.client.subscribe('/topic/payments', function (message) {
@@ -66,13 +84,14 @@ export class DashboardComponent implements OnInit {
       });
     });
 
+    clearInterval(this.recInterval);
 
-    _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
-
-
-    setInterval(function () {
-      _this.trxSecondsAgo++;
-    }, 1000)
+    this.socket.onclose = function () {
+      _this.socket = null;
+      _this.recInterval = setInterval(function() {
+        _this.newConnect();
+      }, 60000);
+    }
   }
 
   updateStats(data: Stats) {
@@ -90,7 +109,7 @@ export class DashboardComponent implements OnInit {
 
 
   draw5DaysHistory(updatedData:Array<number>) {
-    var gradientChartOptionsConfigurationWithTooltipRed: any = {
+    let gradientChartOptionsConfigurationWithTooltipRed: any = {
       maintainAspectRatio: false,
       legend: {
         display: false
@@ -141,13 +160,13 @@ export class DashboardComponent implements OnInit {
     this.canvas = document.getElementById("chart1");
     this.ctx = this.canvas.getContext("2d");
 
-    var gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
+    let gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
 
     gradientStroke.addColorStop(1, 'rgba(233,32,16,0.2)');
     gradientStroke.addColorStop(0.4, 'rgba(233,32,16,0.0)');
     gradientStroke.addColorStop(0, 'rgba(233,32,16,0)'); //red colors
 
-    var data = {
+    let data = {
       labels: ['D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'D'],
       datasets: [{
         label: "Data",
@@ -184,7 +203,7 @@ export class DashboardComponent implements OnInit {
   }
 
   drawVolumesByCorridor(updatedData:Map<string, number>) {
-    var gradientBarChartConfiguration: any = {
+    let gradientBarChartConfiguration: any = {
       maintainAspectRatio: false,
       legend: {
         display: false
@@ -234,13 +253,13 @@ export class DashboardComponent implements OnInit {
     this.canvas = document.getElementById("chart2");
     this.ctx = this.canvas.getContext("2d");
 
-    var gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
+    let gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
 
     gradientStroke.addColorStop(1, 'rgba(233,32,16,0.2)');
     gradientStroke.addColorStop(0.4, 'rgba(233,32,16,0.0)');
     gradientStroke.addColorStop(0, 'rgba(233,32,16,0)'); //red colors
 
-    var data = {
+    let data = {
       labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
       datasets: [{
         label: "Data",
@@ -285,6 +304,7 @@ export class DashboardComponent implements OnInit {
 }
 
 export class Stats {
+  athDaylyVolume: number;
   todayVolume: number;
   allTimeVolume: number;
   averageTimeBetweetTransactions: number;
