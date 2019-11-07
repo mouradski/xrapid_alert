@@ -45,7 +45,7 @@ public class ExchangeToExchangePayment extends Payment {
 
     private double usdValue;
 
-    @Column(length = 386)
+    @Column(length = 500)
     private String tradeIds;
 
     private Long tag;
