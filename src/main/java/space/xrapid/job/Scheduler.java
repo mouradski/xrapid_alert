@@ -62,8 +62,9 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-
+            log.info("Fetching payment from XRP Ledger from {} to {}", windowStart.minusMinutes(5), windowEnd);
             List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(5), windowEnd);
+            log.info("{} payments fetched from XRP Ledger", payments.size());
 
 
             inboundCorridors.stream()

@@ -18,11 +18,15 @@ public abstract class InboundXrapidCorridors extends XrapidCorridors {
         tradesIdAlreadyProcessed = new HashSet<>();
 
         if (getTradeService() != null) {
-            trades = getTradeService().fetchTrades(windowStart);
-            tradeCacheService.fill(trades);
-        }
 
-        submit(payments);
+            log.info("Fetching trade from Exchange {}, starting time : {}", getTradeService().getExchange(), windowStart);
+            trades = getTradeService().fetchTrades(windowStart);
+            log.info("{} tardes fetched", trades.size());
+
+            tradeCacheService.fill(trades);
+
+            submit(payments);
+        }
     }
 
 
