@@ -149,4 +149,5 @@ export class Payment {
   tradeIds: string;
   usdValue: number;
   spottedAt: String;
+  tag:number;
 }

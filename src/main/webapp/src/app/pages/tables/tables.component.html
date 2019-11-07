@@ -32,6 +32,10 @@
             {{payment.destination}}
           </li>
           <li>
+            <span class="modal-desc">Destination Tag :</span>
+            {{payment.tag}}
+          </li>
+          <li>
             <span
               class="modal-desc">You can check these trades on {{payment.spottedAt == 'SOURCE' ? payment.source : payment.destination}}</span>
             <td>{{ payment.tradeIds }}
