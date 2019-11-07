@@ -39,8 +39,8 @@ public abstract class XrapidCorridors {
 
     protected final double HUGE_TRANSACTION_THRESHOLD = 30000;
     protected final double MEDIUM_TRANSACTION_THRESHOLD = 5000;
-    protected final double HUGE_TRANSACTION_TOLERANCE = 200;
-    protected final double MEDIUM_TRANSACTION_TOLERANCE = 5;
+    protected final double HUGE_TRANSACTION_TOLERANCE = 250;
+    protected final double MEDIUM_TRANSACTION_TOLERANCE = 50;
     protected final double SMALL_TRANSACTION_TOLERANCE = 0.1;
 
     protected double rate;
