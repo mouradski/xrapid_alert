@@ -46,6 +46,8 @@ public enum Exchange {
     BRAZILIEX("braziliex", false, BRL,
             "__UNKNOW__"),
 
+    BITCOIN_TRADE("bitcoin_trade", false, BRL, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),
+
 
     BITREX("bitrex", true, USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
