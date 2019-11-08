@@ -1,5 +1,6 @@
 package space.xrapid.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,13 +11,11 @@ import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class ExchangeToExchangePaymentService {
 
@@ -88,7 +87,10 @@ public class ExchangeToExchangePaymentService {
 
         calculateDailyVolumes();
 
-        double athDayVolume = dailyVolumes.values().stream().mapToDouble(v -> v.doubleValue()).max().getAsDouble();
+        double athDayVolume = dailyVolumes.values().stream()
+                .mapToDouble(v -> v.doubleValue())
+                .peek(System.out::println)
+                .max().getAsDouble();
 
         return Stats.builder()
                 .allTimeVolume(roundVolume(allTimeVolume))
@@ -102,15 +104,16 @@ public class ExchangeToExchangePaymentService {
 
     private void calculateDailyVolumes() {
         OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
+        OffsetDateTime day = today.minusDays(1);
         if (dailyVolumes.isEmpty()) {
             for (int i = 0; i < 365; i++) {
-                OffsetDateTime day = today.minusDays(1);
                 Double volume = repository.getVolumeBetween(day.toEpochSecond() * 1000, day.plusDays(1).toEpochSecond() * 1000);
                 dailyVolumes.put(day, volume == null ? 0 : volume);
+                day = today.minusDays(1);
             }
         } else {
-            OffsetDateTime latestCalculatedDay = dailyVolumes.keySet().stream().sorted().findFirst().get();
-            OffsetDateTime day = latestCalculatedDay.plusDays(1);
+            OffsetDateTime latestCalculatedDay = dailyVolumes.keySet().stream().max(Comparator.comparing(OffsetDateTime::toEpochSecond)).get();
+            day = latestCalculatedDay.plusDays(1);
 
             while (day.isBefore(today)) {
                 Double volume = repository.getVolumeBetween(day.toEpochSecond() * 1000, day.plusDays(1).toEpochSecond() * 1000);
