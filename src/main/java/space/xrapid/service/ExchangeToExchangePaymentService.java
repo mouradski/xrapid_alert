@@ -109,7 +109,7 @@ public class ExchangeToExchangePaymentService {
             for (int i = 0; i < 365; i++) {
                 Double volume = repository.getVolumeBetween(day.toEpochSecond() * 1000, day.plusDays(1).toEpochSecond() * 1000);
                 dailyVolumes.put(day, volume == null ? 0 : volume);
-                day = today.minusDays(1);
+                day = day.minusDays(1);
             }
         } else {
             OffsetDateTime latestCalculatedDay = dailyVolumes.keySet().stream().max(Comparator.comparing(OffsetDateTime::toEpochSecond)).get();
