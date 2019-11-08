@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class BitcoinTradeService implements TradeService {
 
-    private String url = "https://api.bitcointrade.com.br/v2/public/BRLBTC/trades?start_time={start_time}&page_size=1000&current_page={current_page}";
+    private String url = "https://api.bitcointrade.com.br/v2/public/BRLXRP/trades?start_time={start_time}&page_size=1000&current_page={current_page}";
 
     private RestTemplate restTemplate = new RestTemplate();
 
