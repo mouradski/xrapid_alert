@@ -6,16 +6,16 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.service.ExchangeToExchangePaymentService;
-import space.xrapid.service.RateService;
-import space.xrapid.service.TradeCacheService;
-import space.xrapid.service.XrpLedgerService;
+import space.xrapid.service.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @EnableScheduling
@@ -27,6 +27,13 @@ public class Scheduler {
 
     @Autowired
     private List<OutboundXrapidCorridors> outboundCorridors;
+
+    @Autowired
+    private List<InboundOutboundXrapidCorridors> inboundOutboundXrapidCorridors;
+
+    @Autowired
+    private List<TradeService> tradeServices;
+
 
     @Autowired
     private TradeCacheService tradeCacheService;
@@ -60,22 +67,37 @@ public class Scheduler {
 
             updatePaymentsWindows();
 
+            List<Trade> allTrades = new ArrayList<>();
+
+             tradeServices.forEach(tradeService -> {
+                 allTrades.addAll(tradeService.fetchTrades(windowStart));
+            });
+
+
             double rate = rateService.getXrpUsdRate();
 
             log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(5), windowEnd);
             List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(5), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
-
-            inboundCorridors.stream()
-                    .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
-                    .forEach(c -> c.searchXrapidPayments(payments, windowStart, rate));
-
-            outboundCorridors.forEach(c -> {
-                c.searchXrapidPayments(payments, rate);
+            inboundOutboundXrapidCorridors.forEach(c -> {
+                c.searchXrapidPayments(payments, allTrades, rate);
             });
 
-            messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+//            inboundCorridors.stream()
+//                    .sorted(Comparator.comparing(InboundXrapidCorridors::getPriority))
+//                    .forEach(c -> c.searchXrapidPayments(payments, allTrades.stream()
+//                            .filter(t -> t.getExchange().equals(c.getDestinationExchange()))
+//                            .collect(Collectors.toList()), rate));
+//
+//            outboundCorridors.forEach(c -> {
+//                c.searchXrapidPayments(payments, allTrades, rate);
+//            });
+
+
+
+
+           // messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
 
         } catch (Exception e) {
             log.error("", e);
@@ -90,7 +112,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(350);
+        windowStart = windowEnd.minusMinutes(150);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.bx.MessageConverter;
@@ -49,7 +50,8 @@ public class BxService implements TradeService {
                 DateTimeFormatter.ISO_DATE_TIME);
 
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.BX_IN).timestamp(date.toEpochSecond() * 1000)
+                .exchange(Exchange.BX_IN)
+                .timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getOrderId())
                 .rate(Double.valueOf(trade.getRate()))

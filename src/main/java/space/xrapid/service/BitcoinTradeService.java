@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.bitcointrade.Response;
@@ -69,7 +70,7 @@ public class BitcoinTradeService implements TradeService {
                 .dateTime(date)
                 .timestamp(date.toEpochSecond() * 1000)
                 .amount(trade.getAmount())
-                .target(Exchange.BITCOIN_TRADE)
+                .exchange(Exchange.BITCOIN_TRADE)
                 .rate(trade.getUnitPrice())
                 .orderId(trade.getActiveOrderCode())
                 .side(trade.getType())

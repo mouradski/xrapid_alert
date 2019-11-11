@@ -17,7 +17,7 @@ public class TradeCacheService {
 
     public List<Trade> getCandidateOutboundTrades(Exchange targetExchange) {
         return cache.stream()
-                .filter(trade -> !targetExchange.equals(trade.getTarget()))
+                .filter(trade -> !targetExchange.equals(trade.getExchange()))
                 .collect(Collectors.toList());
     }
 

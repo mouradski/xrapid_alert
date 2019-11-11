@@ -9,13 +9,8 @@ import space.xrapid.service.TradeService;
 @Component
 public class BitstampInboundUsdCorridors extends InboundXrapidCorridors {
 
-    @Autowired
-    private BitstampUsdService bitstampUsdService;
 
-    @Override
-    protected TradeService getTradeService() {
-        return bitstampUsdService;
-    }
+
 
     @Override
     protected Exchange getDestinationExchange() {

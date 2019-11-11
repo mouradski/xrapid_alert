@@ -14,6 +14,14 @@ public enum Exchange {
             "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
             "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
 
+    BITSTAMP_EUR("bitstamp", true, EUR,
+            "rrpNnNLKrartuEqfJGpqyDwPj1AFPg9vn1",
+            "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
+            "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
+            "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
+            "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
+
     BITSO("bitso",true, MXN,
             "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
             "rHZaDC6tsGN2JWGeXhjKL6664RNCq5hu4B",
@@ -38,8 +46,6 @@ public enum Exchange {
     COIN_PH("coin.ph", true, PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
     COINBENE("coinbene", false, BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
-
-    BITTREX("bittrex", true, USD, "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy", "rK7LSKygRUu9y9xcuhkWbcMRKRF5HVWwVL"),
 
     MERCADO("mercado", false, BRL, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
 
@@ -74,6 +80,17 @@ public enum Exchange {
     public static Exchange byAddress(String address) {
         return Arrays.stream(Exchange.values())
                 .filter(adr -> Arrays.asList(adr.addresses).contains(address)).findAny().orElse(null);
+    }
+
+    public static Exchange byAddress(String address, Currency fiat) {
+        if (fiat == null) {
+            return byAddress(address);
+        } else {
+            return Arrays.stream(Exchange.values())
+                    .filter(exchange -> Arrays.asList(exchange.addresses).contains(address))
+                    .filter(exchange -> exchange.getLocalFiat().equals(fiat))
+                    .findAny().orElse(null);
+        }
     }
 
     public String getName() {

@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.bitkub.Trades;
@@ -53,7 +54,7 @@ public class BitkubService implements TradeService {
                 .timestamp(Long.valueOf(trade.get(0)) * 1000)
                 .rate(Double.valueOf(trade.get(1)))
                 .amount(Double.valueOf(trade.get(2)))
-                .target(Exchange.BITKUB)
+                .exchange(Exchange.BITKUB)
                 .dateTime(date)
                 .orderId(trade.get(0) + trade.get(2).replace(".", "")) // API don't provide orderId so we fill with dateTime + amount
                 .build();

@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
@@ -55,7 +56,7 @@ public class BtcMarketsService implements TradeService {
                 .timestamp(date.toEpochSecond() * 1000)
                 .amount(trade.getAmount())
                 .rate(trade.getPrice())
-                .target(Exchange.BTC_MARKETS)
+                .exchange(Exchange.BTC_MARKETS)
                 .build();
     }
 

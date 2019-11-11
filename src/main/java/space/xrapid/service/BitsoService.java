@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.bitso.BitsoXrpTrades;
@@ -83,7 +84,7 @@ public class BitsoService implements TradeService {
 
     private Trade mapTrade(space.xrapid.domain.bitso.Trade trade) {
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.BITSO)
+                .exchange(Exchange.BITSO)
                 .timestamp(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter).toEpochSecond() * 1000)
                 .dateTime(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
                 .orderId(trade.getTid().toString())

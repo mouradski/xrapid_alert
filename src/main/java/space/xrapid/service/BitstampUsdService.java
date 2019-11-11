@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
@@ -20,7 +21,7 @@ public class BitstampUsdService implements TradeService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd/";
+    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd?time=day";
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
@@ -38,7 +39,8 @@ public class BitstampUsdService implements TradeService {
     private Trade mapTrade(space.xrapid.domain.bitstamp.Trade trade) {
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.BITSTAMP).timestamp(date.toEpochSecond() * 1000)
+                .exchange(Exchange.BITSTAMP)
+                .timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getTid())
                 .rate(Double.valueOf(trade.getPrice()))
