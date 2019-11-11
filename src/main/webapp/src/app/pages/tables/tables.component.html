@@ -71,6 +71,69 @@
         <div class=" card-body">
           <div class=" table-responsive">
             <table class=" table tablesorter" id="">
+              <div class="search-popup" style="display: none">
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">From</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">To</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Source</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Target</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PM</button>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="#">AM</a>
+                    </div>
+                  </div>
+                  <input placeholder="00:00" type="text" class="form-control" aria-label="Text input with dropdown button">
+                </div>
+
+                <a href="#" class="align-right btn btn-primary">Valid</a>
+              </div>
+
               <thead class=" text-primary">
               <tr>
                 <th>Date</th>
@@ -79,7 +142,11 @@
                 <th>From</th>
                 <th>To</th>
                 <th>Target Fiat</th>
-                <th></th>
+                <th class="search">
+                  <a href="#" class="btn btn-outline-white">
+                    <i class="fas fa-search"></i> Search
+                  </a>
+                </th>
               </tr>
               </thead>
               <tbody>

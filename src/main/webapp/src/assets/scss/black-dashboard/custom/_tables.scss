@@ -1,5 +1,6 @@
 .table{
   margin-bottom: 0;
+  position: relative;
   > tbody > tr > td {
     color: rgba(255, 255, 255, 0.8);
 
@@ -236,6 +237,62 @@ table.tablesorter thead tr .headerSortDown {
 
 row.first{
   animation: newRow .5s linear 1s;
+}
+
+
+//Search Tab
+.search{
+
+}
+
+.search-popup{
+  right: 0;
+  top: 0;
+  transition: all 2s ease-in-out;
+  padding: 18px;
+  margin: 30px;
+  border-radius: 6px;
+  position: absolute;
+  background: white;
+  z-index: 999;
+  .btn-primary{
+    width: 100%;
+
+  }
+
+  .input-group{
+    width:230px;
+
+    &:last-child{
+      margin-bottom:0!important;
+      .btn{
+        margin-bottom:0!important;
+      }
+    }
+    .input-group-text{
+      min-width: 77px;
+    }
+    .form-control{
+      border-color: #2b35534a!important;
+    }
+    label{
+      background: #5d3dbb;
+      padding: 10px!important;
+      border: transparent;
+    }
+    select,input{
+      color: black;
+    }
+    .btn{
+      background: #5d3dbb;
+      border: transparent!important;
+      font-weight: normal;
+    }
+    .custom-select{
+      color: black;
+    }
+
+  }
 }
 
 
