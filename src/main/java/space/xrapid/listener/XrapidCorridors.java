@@ -148,7 +148,7 @@ public abstract class XrapidCorridors {
                 diff = exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond();
             }
 
-            return diff >= 1 && diff < 90;
+            return diff >= 1 && diff < 60;
         };
     }
 
@@ -193,30 +193,30 @@ public abstract class XrapidCorridors {
         return false;
     }
 
-    protected void submit(List<Payment> payments) {
+    protected List<ExchangeToExchangePayment> submit(List<Payment> payments) {
         List<Payment> paymentsToProcess = payments.stream()
                 .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
         if (paymentsToProcess.isEmpty()) {
-            return;
+            return new ArrayList<>();
         }
 
-        paymentsToProcess.stream()
+        return paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::xrpToFiatTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .forEach(this::persistPayment);
+                .peek(this::persistPayment)
+                .collect(Collectors.toList());
     }
 
     void recursiveFindCandidates(ArrayList<Trade> trades, double trxAmount, ArrayList<Trade> partial, List<List<Trade>> candidates) {
 
         double sum = partial.stream().mapToDouble(Trade::getAmount).sum();
 
-        if (Math.abs(sum - trxAmount) < 1) {
+        if (Math.abs(sum - trxAmount) < 2) {
             candidates.add(partial);
         }
-
-
+        
         if (sum >= trxAmount) {
             return;
         }

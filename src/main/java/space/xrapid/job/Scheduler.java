@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
+import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
@@ -22,6 +23,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -81,25 +83,36 @@ public class Scheduler {
 
 
             // Scan all XRPL TRX between exchanges that providing API
+            List<CompletableFuture<List<ExchangeToExchangePayment>>> endToEndFeatures = new ArrayList<>();
             destinationFiats.forEach(fiat -> {
                 availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat).searchXrapidPayments(payments, allTrades, rate);
+                            endToEndFeatures.add(new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat).searchXrapidPayments(payments, allTrades, rate));
                         });
             });
 
+            CompletableFuture.allOf(endToEndFeatures.stream().toArray(CompletableFuture[]::new)).join();
+
+
             // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
+            List<CompletableFuture<List<ExchangeToExchangePayment>>> inboundFeatures = new ArrayList<>();
             availableExchangesWithApi.forEach(exchange -> {
-                new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                inboundFeatures.add(new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate));
             });
+
+            CompletableFuture.allOf(inboundFeatures.stream().toArray(CompletableFuture[]::new)).join();
+
 
             // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
+            List<CompletableFuture<List<ExchangeToExchangePayment>>> outboundFeatures = new ArrayList<>();
             allConfirmedExchange.forEach(exchange -> {
-                new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades, rate);
+                outboundFeatures.add(new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades, rate));
             });
 
-           messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+            CompletableFuture.allOf(outboundFeatures.stream().toArray(CompletableFuture[]::new)).join();
+
+            messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
 
         } catch (Exception e) {
             log.error("", e);
@@ -114,7 +127,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(400);
+        windowStart = windowEnd.minusMinutes(10);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

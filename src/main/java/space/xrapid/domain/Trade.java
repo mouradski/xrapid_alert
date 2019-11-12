@@ -16,7 +16,6 @@ public class Trade {
     private Long timestamp;
     private Double amount;
     private Exchange exchange;
-    //TODO ajouter exchange, le remettre et si besoin fiat faire un getLocalFiat
     private String orderId;
     private double rate;
 

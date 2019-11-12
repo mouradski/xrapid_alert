@@ -2,6 +2,7 @@ package space.xrapid.listener.endtoend;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Async;
 import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
@@ -9,9 +10,11 @@ import space.xrapid.service.ExchangeToExchangePaymentService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,13 +38,14 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         this.destinationExchange = destinationExchange;
     }
 
-    public void searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
+    @Async
+    public CompletableFuture<List<ExchangeToExchangePayment>> searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
         this.rate = rate;
 
         tradesIdAlreadyProcessed = new HashSet<>();
 
         this.trades = trades;
-        submit(payments);
+        return CompletableFuture.completedFuture(submit(payments));
     }
 
     @Override
@@ -50,20 +54,26 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     }
 
     @Override
-    protected void submit(List<Payment> payments) {
+    protected List<ExchangeToExchangePayment> submit(List<Payment> payments) {
         List<Payment> paymentsToProcess = payments.stream()
                 .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
         if (paymentsToProcess.isEmpty()) {
-            return;
+            return new ArrayList<>();
         }
 
-        paymentsToProcess.stream()
+        return paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .filter(this::xrpToFiatTradesExists)
+                .filter(this::validateTrades)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .forEach(this::persistPayment);
+                .peek(this::persistPayment)
+                .collect(Collectors.toList());
+    }
+
+    private boolean validateTrades(ExchangeToExchangePayment payment) {
+        return payment.getFiatToXrpTrades().stream().mapToDouble(Trade::getAmount).sum() >= payment.getXrpToFiatTrades().stream().mapToDouble(Trade::getAmount).sum();
     }
 
     @Override
@@ -98,7 +108,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
         exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
         exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
-        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment, true)) {
+        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment, false)) {
             notify(exchangeToFiatPayment);
         }
     }
