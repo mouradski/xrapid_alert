@@ -38,11 +38,13 @@ public class Scheduler {
     @Autowired
     private ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
-    @Autowired
-    private RateService rateService;
 
     @Autowired
     protected SimpMessageSendingOperations messagingTemplate;
+
+    @Autowired
+    private RateService rateService;
+
 
 
     private OffsetDateTime lastWindowEnd;
@@ -83,18 +85,18 @@ public class Scheduler {
                 availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            new EndToEndXrapidCorridors(exchange, fiat).searchXrapidPayments(payments, allTrades, rate);
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat).searchXrapidPayments(payments, allTrades, rate);
                         });
             });
 
             // Scan all XRPL TRX between all exchange to exchanges with API (case source exchange not providing API)
             availableExchangesWithApi.forEach(exchange -> {
-                new InboundXrapidCorridors(exchange).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
             });
 
             // Scan all XRPL TRX from exchanges with API to all exchane (case destination exchange not providing API)
             allConfirmedExchange.forEach(exchange -> {
-                new OutboundXrapidCorridors(exchange).searchXrapidPayments(payments, allTrades, rate);
+                new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades, rate);
             });
 
            messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
@@ -112,7 +114,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(150);
+        windowStart = windowEnd.minusMinutes(400);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

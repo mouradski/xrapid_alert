@@ -98,7 +98,6 @@ public class ExchangeToExchangePaymentService {
 
         double athDayVolume = dailyVolumes.values().stream()
                 .mapToDouble(v -> v.doubleValue())
-                .peek(System.out::println)
                 .max().getAsDouble();
 
         return Stats.builder()

@@ -1,7 +1,6 @@
 package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
@@ -10,7 +9,6 @@ import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 
-import javax.annotation.PostConstruct;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,12 +19,6 @@ import java.util.stream.Stream;
 @Slf4j
 public abstract class XrapidCorridors {
 
-    @Autowired
-    protected ExchangeToExchangePaymentService exchangeToExchangePaymentService;
-
-    @Autowired
-    protected SimpMessageSendingOperations messagingTemplate;
-
     protected List<Trade> trades = new ArrayList<>();
 
     protected List<String> allExchangeAddresses;
@@ -34,8 +26,13 @@ public abstract class XrapidCorridors {
 
     protected double rate;
 
-    @PostConstruct
-    public void init() {
+    protected ExchangeToExchangePaymentService exchangeToExchangePaymentService;
+
+    protected SimpMessageSendingOperations messagingTemplate;
+
+    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate) {
+        this.exchangeToExchangePaymentService = exchangeToExchangePaymentService;
+        this.messagingTemplate = messagingTemplate;
         allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
                 .collect(Collectors.toList());
     }
@@ -71,7 +68,12 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean isXrapidCandidate(Payment payment) {
-        return Double.valueOf(payment.getAmount()) > 10 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
+        try {
+            return Double.valueOf(payment.getAmount()) > 10 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     protected List<Trade> takeClosesTrades(ExchangeToExchangePayment exchangeToExchangePayment, List<List<Trade>> groupedXrpTrades) {

@@ -1,12 +1,14 @@
 package space.xrapid.listener.outbound;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
+import space.xrapid.service.ExchangeToExchangePaymentService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,7 +19,8 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
 
     private Exchange destinationExchange;
 
-    public OutboundXrapidCorridors(Exchange destinationExchange) {
+    public OutboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange) {
+        super(exchangeToExchangePaymentService, messagingTemplate);
         this.destinationExchange = destinationExchange;
     }
 

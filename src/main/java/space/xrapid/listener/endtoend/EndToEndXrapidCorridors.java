@@ -1,9 +1,11 @@
 package space.xrapid.listener.endtoend;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
+import space.xrapid.service.ExchangeToExchangePaymentService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +28,9 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         return sourceFiat;
     }
 
-    public EndToEndXrapidCorridors(Exchange destinationExchange, Currency sourceFiat) {
+    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat) {
+        super(exchangeToExchangePaymentService, messagingTemplate);
+
         this.sourceFiat = sourceFiat;
         this.destinationExchange = destinationExchange;
     }
