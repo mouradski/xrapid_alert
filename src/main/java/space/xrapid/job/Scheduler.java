@@ -89,12 +89,12 @@ public class Scheduler {
                         });
             });
 
-            // Scan all XRPL TRX between all exchange to exchanges with API (case source exchange not providing API)
+            // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
             availableExchangesWithApi.forEach(exchange -> {
                 new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
             });
 
-            // Scan all XRPL TRX from exchanges with API to all exchane (case destination exchange not providing API)
+            // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
             allConfirmedExchange.forEach(exchange -> {
                 new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades, rate);
             });
