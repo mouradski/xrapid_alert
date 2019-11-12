@@ -147,6 +147,7 @@ export class Payment {
   destination: string;
   destinationCurrencry: string;
   tradeIds: string;
+  tradeOutIds: string;
   usdValue: number;
   spottedAt: String;
   tag:number;

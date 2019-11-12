@@ -35,9 +35,13 @@
             <span class="modal-desc">Destination Tag :</span>
             {{payment.tag}}
           </li>
-          <li>
+          <li *ngIf="payment.tradeOutIds">
+            <span class="modal-desc">Trades on source exchange ({{payment.source}})</span>
+            <td>{{ payment.tradeOutIds }}
+          </li>
+          <li *ngIf="payment.tradeIds">
             <span
-              class="modal-desc">You can check these trades on {{payment.spottedAt == 'SOURCE' ? payment.source : payment.destination}}</span>
+              class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
             <td>{{ payment.tradeIds }}
           </li>
           <li>
