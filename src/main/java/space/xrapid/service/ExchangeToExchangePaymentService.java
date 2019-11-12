@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.Currency;
-import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.Stats;
 import space.xrapid.repository.ExchangeToExchangePaymentRepository;

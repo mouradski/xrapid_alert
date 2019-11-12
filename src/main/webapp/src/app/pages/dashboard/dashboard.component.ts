@@ -1,12 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import {Component, OnInit} from "@angular/core";
 import Chart from 'chart.js';
 import * as Stomp from 'stompjs';
 import {Client} from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
 import {Payment} from "../tables/tables.component";
-import { CookieService } from 'ngx-cookie-service';
-
+import {CookieService} from 'ngx-cookie-service';
 
 
 @Component({
