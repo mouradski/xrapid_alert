@@ -20,7 +20,7 @@ public class BitstampUsdService implements TradeService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd/";
+    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd?time=day";
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
