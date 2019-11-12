@@ -49,7 +49,8 @@ public class BxService implements TradeService {
                 DateTimeFormatter.ISO_DATE_TIME);
 
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.BX_IN).timestamp(date.toEpochSecond() * 1000)
+                .exchange(Exchange.BX_IN)
+                .timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getOrderId())
                 .rate(Double.valueOf(trade.getRate()))

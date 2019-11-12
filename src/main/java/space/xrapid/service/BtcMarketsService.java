@@ -55,7 +55,7 @@ public class BtcMarketsService implements TradeService {
                 .timestamp(date.toEpochSecond() * 1000)
                 .amount(trade.getAmount())
                 .rate(trade.getPrice())
-                .target(Exchange.BTC_MARKETS)
+                .exchange(Exchange.BTC_MARKETS)
                 .build();
     }
 

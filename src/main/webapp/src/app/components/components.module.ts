@@ -1,10 +1,10 @@
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import {NgModule} from "@angular/core";
+import {CommonModule} from "@angular/common";
+import {RouterModule} from "@angular/router";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
-import { FooterComponent } from "./footer/footer.component";
-import {DateAgoPipe} from "../pipes/date-ago.pipe";
+import {FooterComponent} from "./footer/footer.component";
+
 @NgModule({
   imports: [CommonModule, RouterModule, NgbModule],
   declarations: [FooterComponent],

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
@@ -17,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 @Slf4j
 public class MercadoBitcoinService implements TradeService {
 
@@ -43,7 +42,8 @@ public class MercadoBitcoinService implements TradeService {
 
     private Trade mapTrade(space.xrapid.domain.mercadobitcoin.Trade trade) {
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.MERCADO).timestamp(trade.getDate() * 1000)
+                .exchange(Exchange.MERCADO)
+                .timestamp(trade.getDate() * 1000)
                 .dateTime(OffsetDateTime.ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC")))
                 .orderId(trade.getTid().toString())
                 .rate(Double.valueOf(trade.getPrice()))

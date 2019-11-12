@@ -41,7 +41,7 @@ public class BraziliexService implements TradeService {
     }
 
     private Trade mapTrade(space.xrapid.domain.braziliex.Trade trade) {
-        return Trade.builder().amount(Double.valueOf(trade.getAmount())).target(Exchange.BRAZILIEX).build();
+        return Trade.builder().amount(Double.valueOf(trade.getAmount())).exchange(Exchange.BRAZILIEX).build();
     }
 
     @Override

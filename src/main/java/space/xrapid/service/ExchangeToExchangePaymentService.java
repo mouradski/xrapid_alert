@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import space.xrapid.domain.Exchange;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.Stats;
 import space.xrapid.repository.ExchangeToExchangePaymentRepository;
@@ -25,10 +25,19 @@ public class ExchangeToExchangePaymentService {
     private Map<OffsetDateTime, Double> dailyVolumes = new HashMap<>();
 
     @Transactional
-    public boolean save(ExchangeToExchangePayment exchangeToExchangePayment) {
+    public boolean save(ExchangeToExchangePayment exchangeToExchangePayment, boolean force) {
 
-        if (repository.existsByTransactionHash(exchangeToExchangePayment.getTransactionHash())) {
+        boolean exist = repository.existsByTransactionHash(exchangeToExchangePayment.getTransactionHash());
+        if (exist && !force) {
             return false;
+        }
+
+        if (exist && force) {
+            ExchangeToExchangePayment exchangeToExchangePaymentDb = repository.getByTransactionHash(exchangeToExchangePayment.getTransactionHash());
+            exchangeToExchangePaymentDb.setTradeOutIds(exchangeToExchangePayment.getTradeOutIds());
+            exchangeToExchangePaymentDb.setTradeIds(exchangeToExchangePayment.getTradeIds());
+            repository.save(exchangeToExchangePaymentDb);
+            return true;
         }
 
         repository.save(exchangeToExchangePayment);
@@ -48,18 +57,18 @@ public class ExchangeToExchangePaymentService {
 
         Map<String, Double> volumes = new HashMap<>();
 
-        List<Exchange> exchanges = Arrays.stream(Exchange.values()).filter(Exchange::isConfirmed).collect(Collectors.toList());
-        for (Exchange source : exchanges) {
-            for (Exchange destination : exchanges) {
+        List<Currency> currencies = Arrays.stream(Currency.values()).collect(Collectors.toList());
+        for (Currency source : currencies) {
+            for (Currency destination : currencies) {
                 if (source.equals(destination)) {
                     continue;
                 }
 
                 try {
-                    Double volume = repository.getVolumeBySourceAndDestinationBetween(source.toString(), destination.toString(),
+                    Double volume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source.toString(), destination.toString(),
                             now.minusDays(1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
                     if (volume != null) {
-                        String key = source.getLocalFiat() + "-" + destination.getLocalFiat();
+                        String key = source + "-" + destination;
                         if (volumes.containsKey(key)) {
                             volumes.put(key, roundVolume(volume) + volumes.get(key));
                         } else {
@@ -89,7 +98,6 @@ public class ExchangeToExchangePaymentService {
 
         double athDayVolume = dailyVolumes.values().stream()
                 .mapToDouble(v -> v.doubleValue())
-                .peek(System.out::println)
                 .max().getAsDouble();
 
         return Stats.builder()
