@@ -165,6 +165,10 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean fiatToXrpTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
+        
+        if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
+            return false;
+        }
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestinationFiat());
 
         List<List<Trade>> candidates = new ArrayList<>();
