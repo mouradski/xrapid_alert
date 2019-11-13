@@ -66,14 +66,9 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .filter(this::xrpToFiatTradesExists)
-                .filter(this::validateTrades)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .peek(this::persistPayment)
                 .collect(Collectors.toList());
-    }
-
-    private boolean validateTrades(ExchangeToExchangePayment payment) {
-        return payment.getFiatToXrpTrades().stream().mapToDouble(Trade::getAmount).sum() >= payment.getXrpToFiatTrades().stream().mapToDouble(Trade::getAmount).sum();
     }
 
     @Override
