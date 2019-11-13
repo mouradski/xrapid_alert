@@ -28,9 +28,15 @@ public abstract class XrapidCorridors {
 
     protected ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
+    protected List<Exchange> exchangesToExclude = new ArrayList<>();
+
     protected SimpMessageSendingOperations messagingTemplate;
 
-    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate) {
+    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude) {
+
+        if (exchangesToExclude == null) {
+            this.exchangesToExclude = new ArrayList<>();
+        }
         this.exchangeToExchangePaymentService = exchangeToExchangePaymentService;
         this.messagingTemplate = messagingTemplate;
         allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
@@ -106,6 +112,11 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean xrpToFiatTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
+
+        if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
+            return false;
+        }
+
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestinationFiat());
 
         List<List<Trade>> candidates = new ArrayList<>();

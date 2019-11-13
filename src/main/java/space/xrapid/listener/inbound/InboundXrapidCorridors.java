@@ -20,8 +20,8 @@ public class InboundXrapidCorridors extends XrapidCorridors {
 
     private Exchange destinationExchange;
 
-    public InboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange) {
-        super(exchangeToExchangePaymentService, messagingTemplate);
+    public InboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, List<Exchange> exchangesWithApi) {
+        super(exchangeToExchangePaymentService, messagingTemplate, exchangesWithApi);
         this.destinationExchange = destinationExchange;
     }
 
