@@ -146,11 +146,8 @@
                 <th>From</th>
                 <th>To</th>
                 <th>Target Fiat</th>
-                <th class="search">
-                  <a href="#" class="btn btn-outline-white">
-                    <i class="fas fa-search"></i> Search
-                  </a>
-                </th>
+                <th>Source Fiat</th>
+                <th></th>
               </tr>
               </thead>
               <tbody>
@@ -160,7 +157,8 @@
                 <td>{{ payment.usdValue | currency }}</td>
                 <td>{{ payment.source }}</td>
                 <td>{{ payment.destination }}</td>
-                <td>{{ payment.destinationCurrencry }}</td>
+                <td>{{ payment.sourceFiat }}</td>
+                <td>{{ payment.destinationFiat }}</td>
                 <td class="tab-btn">
                   <button (click)="info([[payment.transactionHash]])" type="button" class="btn btn-primary"
                           data-toggle="modal" data-target="#myModal">

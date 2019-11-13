@@ -145,7 +145,8 @@ export class Payment {
   amount: number;
   source: string;
   destination: string;
-  destinationCurrencry: string;
+  destinationFiat: string;
+  sourceFiat: string;
   tradeIds: string;
   tradeOutIds: string;
   usdValue: number;
