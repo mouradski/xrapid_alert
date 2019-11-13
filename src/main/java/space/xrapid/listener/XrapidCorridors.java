@@ -36,6 +36,8 @@ public abstract class XrapidCorridors {
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
+        } else {
+            this.exchangesToExclude = exchangesToExclude;
         }
         this.exchangeToExchangePaymentService = exchangeToExchangePaymentService;
         this.messagingTemplate = messagingTemplate;
@@ -165,7 +167,7 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean fiatToXrpTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
-        
+
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
             return false;
         }
