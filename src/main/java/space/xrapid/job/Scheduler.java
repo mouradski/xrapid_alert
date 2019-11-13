@@ -82,17 +82,6 @@ public class Scheduler {
             List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(5), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
-            // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
-            List<CompletableFuture<List<ExchangeToExchangePayment>>> outboundFeatures = new ArrayList<>();
-            allConfirmedExchange.stream()
-                    .filter(exchange -> !availableExchangesWithApi.contains(exchange))
-                    .forEach(exchange -> {
-                outboundFeatures.add(new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades, rate));
-            });
-
-            CompletableFuture.allOf(outboundFeatures.stream().toArray(CompletableFuture[]::new)).join();
-
-
             // Scan all XRPL TRX between exchanges that providing API
             List<CompletableFuture<List<ExchangeToExchangePayment>>> endToEndFeatures = new ArrayList<>();
             destinationFiats.forEach(fiat -> {
@@ -111,6 +100,16 @@ public class Scheduler {
             availableExchangesWithApi.forEach(exchange -> {
                 inboundFeatures.add(new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate));
             });
+
+            // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
+            List<CompletableFuture<List<ExchangeToExchangePayment>>> outboundFeatures = new ArrayList<>();
+            allConfirmedExchange.stream()
+                    .filter(exchange -> !availableExchangesWithApi.contains(exchange))
+                    .forEach(exchange -> {
+                        outboundFeatures.add(new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange).searchXrapidPayments(payments, allTrades, rate));
+                    });
+
+            CompletableFuture.allOf(outboundFeatures.stream().toArray(CompletableFuture[]::new)).join();
 
             CompletableFuture.allOf(inboundFeatures.stream().toArray(CompletableFuture[]::new)).join();
 

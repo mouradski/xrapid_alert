@@ -79,6 +79,7 @@ public class ExchangeToExchangePayment extends Payment {
         sb.append("Time : ").append(dateFormat.format(timestamp)).append(", ");
         sb.append("Amount : ").append(this.amount).append(", ");
         sb.append("Exchange Source : ").append(this.source == null ? "UNKNOWN" : this.source).append(", ");
+        sb.append("Exchange Destination : ").append(this.destination == null ? "UNKNOWN" : this.destination).append(", ");
         sb.append("Address Source : ").append(sourceAddress).append(", ");
         sb.append("Destination : ").append(this.destinationAddress).append(", ");
         sb.append("Destination Tag : ").append(this.tag).append(", ");
