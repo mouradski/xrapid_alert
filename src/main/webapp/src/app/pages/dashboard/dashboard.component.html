@@ -58,6 +58,7 @@
               <p><b>All Time Volume : </b> {{stats.allTimeVolume | currency}}</p>
               <p><b>Date start calculation :  </b> {{stats.allTimeFrom | date:'medium'}}</p>
               <p><b>Daily Volume All Time High : </b> {{stats.athDaylyVolume | currency}}</p>
+              <p><b>Current Daily Volume : </b> {{stats.todayVolume | currency}}</p>
               <div>
                 <p><b>Last ODL transaction spotted {{trxSecondsAgo | dateAgo}}</b></p>
                 <p><b>USD Value : </b> {{lastTransaction.usdValue | currency}}</p>
