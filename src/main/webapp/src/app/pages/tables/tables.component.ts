@@ -43,7 +43,7 @@ export class TablesComponent implements OnInit {
       }
 
       _this.datasets =  _this.sort(_this.datasets);
-      _this.currentPage = _this.paginate(this.datasets, 5, this.pageIndex);
+      _this.currentPage = _this.paginate(this.datasets, 25, this.pageIndex);
 
       _this.newConnect();
     });
@@ -67,7 +67,7 @@ export class TablesComponent implements OnInit {
         }
 
         _this.datasets =  _this.sort(_this.datasets);
-        _this.currentPage = _this.paginate(_this.datasets, 5, _this.pageIndex)
+        _this.currentPage = _this.paginate(_this.datasets, 25, _this.pageIndex)
       });
     });
 
@@ -118,16 +118,16 @@ export class TablesComponent implements OnInit {
   left() {
     if (this.pageIndex > 1) {
       this.pageIndex--;
-      this.currentPage = this.paginate(this.datasets, 5, this.pageIndex);
+      this.currentPage = this.paginate(this.datasets, 25, this.pageIndex);
     }
   }
 
   right() {
 
-    if (this.paginate(this.datasets, 5, (this.pageIndex + 1)).length > 1) {
-      if ((this.pageIndex * 5) <= (this.datasets.length)) {
+    if (this.paginate(this.datasets, 25, (this.pageIndex + 1)).length > 1) {
+      if ((this.pageIndex * 25) <= (this.datasets.length)) {
         this.pageIndex++;
-        this.currentPage = this.paginate(this.datasets, 5, this.pageIndex);
+        this.currentPage = this.paginate(this.datasets, 25, this.pageIndex);
       }
     }
   }
