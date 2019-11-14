@@ -100,7 +100,8 @@ public abstract class XrapidCorridors {
     }
 
     protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
-        if (exchangeToFiatPayment.getDestinationFiat().equals(exchangeToFiatPayment.getSourceFiat())) {
+        if (exchangeToFiatPayment.getDestinationFiat() != null && 
+            exchangeToFiatPayment.getDestinationFiat().equals(exchangeToFiatPayment.getSourceFiat())) {
             return;
         }
         exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
