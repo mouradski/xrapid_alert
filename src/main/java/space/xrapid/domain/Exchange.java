@@ -43,6 +43,13 @@ public enum Exchange {
             "rLzFjyD1gYJx3XQc1tEj9pNa4DD1SY6DeR",
             "r9x4D7c2nfa3UJefLR4fpN31zZQvByHSLQ"),
 
+
+
+    COINFIELD_USD("coinfield", true, USD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_CAD("coinfield", true, CAD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_JPY("coinfield", true, JPY, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_GBP("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+
     COIN_PH("coin.ph", true, PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
     COINBENE("coinbene", false, BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
@@ -57,6 +64,8 @@ public enum Exchange {
 
     BITREX("bitrex", true, USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
+    BITTREX("bitrex", true, USD,
+            "_TO_DELETE_"),
 
     DCEX("dcex", true, USD, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
 

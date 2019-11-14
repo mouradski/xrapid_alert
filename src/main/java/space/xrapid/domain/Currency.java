@@ -8,5 +8,8 @@ public enum Currency {
     YEN,
     BRL,
     BAHT,
-    AUD
+    AUD,
+    GBP,
+    CAD,
+    JPY
 }
