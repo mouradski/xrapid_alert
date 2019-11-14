@@ -4,14 +4,15 @@ import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 
 @Service
-public class CoinfieldJpyService extends CoinfieldUsdService {
+public class CoinfieldEurService extends CoinfieldUsdService {
     @Override
     protected String getMarket() {
-        return "xrpjpy";
+        return "xrpeur";
     }
 
     @Override
     public Exchange getExchange() {
-        return Exchange.COINFIELD_JPY;
+        return Exchange.COINFIELD_EUR;
     }
+
 }
