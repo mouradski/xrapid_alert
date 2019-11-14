@@ -37,12 +37,12 @@
           </li>
           <li *ngIf="payment.tradeOutIds">
             <span class="modal-desc">Trades on source exchange ({{payment.source}})</span>
-            <td>{{ payment.tradeOutIds }}
+            {{ payment.tradeOutIds }}
           </li>
           <li *ngIf="payment.tradeIds">
             <span
               class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
-            <td>{{ payment.tradeIds }}
+            {{ payment.tradeIds }}
           </li>
           <li>
             <span class="modal-desc">Transaction Hash :</span>
@@ -145,8 +145,8 @@
                 <th>USD Value</th>
                 <th>From</th>
                 <th>To</th>
-                <th>Target Fiat</th>
                 <th>Source Fiat</th>
+                <th>Target Fiat</th>
                 <th></th>
               </tr>
               </thead>
