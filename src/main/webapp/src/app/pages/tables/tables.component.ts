@@ -3,6 +3,7 @@ import * as Stomp from 'stompjs';
 import {Client} from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
+import { ViewportScroller } from '@angular/common';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class TablesComponent implements OnInit {
 
   public notifier:string;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller) {
     const _this = this;
     this.payment = new Payment();
     this.pageIndex = 1;
@@ -119,6 +120,8 @@ export class TablesComponent implements OnInit {
     if (this.pageIndex > 1) {
       this.pageIndex--;
       this.currentPage = this.paginate(this.datasets, 25, this.pageIndex);
+
+      this.viewportScroller.scrollToPosition([0, 0]);
     }
   }
 
@@ -128,6 +131,8 @@ export class TablesComponent implements OnInit {
       if ((this.pageIndex * 25) <= (this.datasets.length)) {
         this.pageIndex++;
         this.currentPage = this.paginate(this.datasets, 25, this.pageIndex);
+
+        this.viewportScroller.scrollToPosition([0, 0]);
       }
     }
   }
