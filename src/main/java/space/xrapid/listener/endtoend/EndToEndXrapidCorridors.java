@@ -97,15 +97,4 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             return null;
         }
     }
-
-    @Override
-    protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
-        exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
-        exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
-        exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
-        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment, false)) {
-            notify(exchangeToFiatPayment);
-        }
-    }
-
 }
