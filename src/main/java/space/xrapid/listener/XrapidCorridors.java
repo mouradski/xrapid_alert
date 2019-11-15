@@ -105,8 +105,21 @@ public abstract class XrapidCorridors {
             return;
         }
         exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
-        exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
-        exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
+
+
+        if (exchangeToFiatPayment.getFiatToXrpTrades() != null) {
+            exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getFiatToXrpTrades().get(0).getExchange().getLocalFiat());
+        } else {
+            exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
+        }
+
+        if (exchangeToFiatPayment.getXrpToFiatTrades() != null) {
+            exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getXrpToFiatTrades().get(0).getExchange().getLocalFiat());
+        } else {
+            exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
+        }
+
+
         if (exchangeToExchangePaymentService.save(exchangeToFiatPayment, false)) {
             notify(exchangeToFiatPayment);
         }
