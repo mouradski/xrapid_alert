@@ -64,9 +64,10 @@ public enum Exchange {
 
 
     BITREX("bitrex", true, USD,
-            "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
-    BITTREX("bitrex", true, USD,
             "_TO_DELETE_"),
+
+    BITTREX("bitrex", true, USD,
+            "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
 
     DCEX("dcex", true, USD, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
 
