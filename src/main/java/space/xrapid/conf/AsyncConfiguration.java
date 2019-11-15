@@ -14,9 +14,9 @@ public class AsyncConfiguration {
     public Executor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(3);
-        executor.setQueueCapacity(30);
-        executor.setThreadNamePrefix("CarThread-");
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("OdlThread-");
         executor.initialize();
         return executor;
     }

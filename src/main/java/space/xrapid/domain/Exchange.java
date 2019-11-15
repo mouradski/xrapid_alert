@@ -51,6 +51,12 @@ public enum Exchange {
     COINFIELD_GBP("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_EUR("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
 
+
+    KRAKEN_USD("kraken", true, USD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+    KRAKEN_EUR("kraken", true, EUR, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+    KRAKEN_JPY("kraken", true, JPY, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+    KRAKEN_CAD("kraken", true, CAD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+
     COIN_PH("coin.ph", true, PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
     COINBENE("coinbene", false, BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
