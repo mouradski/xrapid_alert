@@ -34,7 +34,7 @@ public class InboundXrapidCorridors extends XrapidCorridors {
 
         tradesIdAlreadyProcessed = new HashSet<>();
 
-        return CompletableFuture.completedFuture(submit(payments));
+        return CompletableFuture.supplyAsync(()-> submit(payments));
     }
 
     @Override

@@ -31,7 +31,8 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
     public CompletableFuture<List<ExchangeToExchangePayment>> searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
         this.rate = rate;
         this.trades = trades;
-        return CompletableFuture.completedFuture(submit(payments));
+
+        return CompletableFuture.supplyAsync(()-> submit(payments));
     }
 
     @Override

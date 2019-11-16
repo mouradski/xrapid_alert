@@ -12,6 +12,8 @@ import space.xrapid.service.ExchangeToExchangePaymentService;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +30,7 @@ public abstract class XrapidCorridors {
 
     protected ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
-    protected List<Exchange> exchangesToExclude = new ArrayList<>();
+    protected List<Exchange> exchangesToExclude;
 
     protected SimpMessageSendingOperations messagingTemplate;
 
