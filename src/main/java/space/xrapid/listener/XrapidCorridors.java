@@ -100,10 +100,7 @@ public abstract class XrapidCorridors {
     }
 
     protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
-        if (exchangeToFiatPayment.getDestinationFiat() != null && 
-            exchangeToFiatPayment.getDestinationFiat().equals(exchangeToFiatPayment.getSourceFiat())) {
-            return;
-        }
+      
         exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
 
 
@@ -117,6 +114,11 @@ public abstract class XrapidCorridors {
             exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getXrpToFiatTrades().get(0).getExchange().getLocalFiat());
         } else {
             exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
+        }
+        
+         if (exchangeToFiatPayment.getDestinationFiat() != null && 
+            exchangeToFiatPayment.getDestinationFiat().equals(exchangeToFiatPayment.getSourceFiat())) {
+            return;
         }
 
 
