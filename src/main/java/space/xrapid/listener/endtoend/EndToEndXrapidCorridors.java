@@ -45,7 +45,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         tradesIdAlreadyProcessed = new HashSet<>();
 
         this.trades = trades;
-        return CompletableFuture.completedFuture(submit(payments));
+        return CompletableFuture.supplyAsync(()-> submit(payments));
     }
 
     @Override

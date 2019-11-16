@@ -24,6 +24,8 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,7 +66,6 @@ public class Scheduler {
         List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).filter(exchange -> exchange.isConfirmed()).collect(Collectors.toList());
         List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).collect(Collectors.toList());
 
-        List<Exchange> exchangesWithoutApi = allConfirmedExchange.stream().filter(exchange -> !availableExchangesWithApi.contains(exchange)).collect(Collectors.toList());
         List<Currency> destinationFiats = availableExchangesWithApi.stream().map(Exchange::getLocalFiat).collect(Collectors.toList());
 
         try {
