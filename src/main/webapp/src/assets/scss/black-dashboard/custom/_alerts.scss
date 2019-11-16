@@ -54,12 +54,24 @@
 
 .alert-dismissible {
     .close {
-        top: 50%;
+        top: 0;
         right: $alert-padding-x;
         padding: 0;
         transform: translateY(-50%);
         color: rgba($white, .6);
         opacity: 1;
+        top: 10px!important;
+        right: -10px!important;
+        background: white;
+        border-radius: 50%;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        span{
+          color: black!important;
+        }
 
         &:hover,
         &:focus {
