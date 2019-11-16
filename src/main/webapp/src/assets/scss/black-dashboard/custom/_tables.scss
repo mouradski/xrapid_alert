@@ -1,3 +1,58 @@
+//TITLE
+
+
+
+.card-header{
+  display: flex;
+  position: relative;
+  width: auto;
+
+  .card-title{
+    font-size: 20px;
+    font-weight: 500 !important;
+    color: white !important;
+
+  }
+  .info-icon{
+    font-size: 20px;
+    font-weight: bold !important;
+    margin-left: 20px;
+
+    &:hover{
+      color: #7d73ec;
+      ~ #infoODL{
+        display: flex;
+      }
+    }
+  }
+
+
+  #infoODL{
+    display: none;
+    bottom: -10px;
+    position: absolute;
+    transform: translate(0%,100%);
+    z-index: 90;
+    box-shadow: 0px 3px 50px rgba(0, 0, 0, 0.3);
+    //display: none;
+    flex-direction: column;
+  }
+
+}
+
+
+.alert{
+  background: #7d73ec !important;
+  span{
+  color: white;
+  }
+  p{
+    color: white;
+    font-size: 13px;
+  }
+}
+
+
 .table{
   margin-bottom: 0;
   position: relative;

@@ -66,9 +66,22 @@
   <div class=" row">
     <div class=" col-md-12">
       <div class=" card card-plain">
-        <div class=" card-header">
+        <div class="card-header">
           <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
-          <p class=" category">We consider a transaction as ODL when 4 factors are combined : 1 / Purchase of XRP with FIAT (local currency of origin) on an Exchange, 2 / Send XRP through the XRPL, 3 / Sale of the same amount of XRP for FIAT on other exchange ( local currency of destination ), 4 / The total time from start to finish should be about 60 seconds.  We use the exchange APIs to track end-to-end ODL transactions, except for coins.ph and possible other future exchanges without API.</p>
+          <span class="info-icon">
+            <i class="far fa-question-circle"></i>
+          </span>
+
+          <div id="infoODL" class="alert alert-success" role="alert">
+            <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold">We consider a transaction as ODL when 4 factors are combined :</span>
+            <p class="category">
+              1 / Purchase of XRP with FIAT (local currency of origin) on an Exchange<br>
+              2 / Send XRP through the XRPL<br>
+              3 / Sale of the same amount of XRP for FIAT on other exchange ( local currency of destination )<br>
+              4 / The total time from start to finish should be about 60 seconds.  We use the exchange APIs to track end-to-end ODL transactions.<br>
+              except for coins.ph and possible other future exchanges without API.</p>
+          </div>
+
         </div>
         <div class=" card-body">
           <div class=" table-responsive">
