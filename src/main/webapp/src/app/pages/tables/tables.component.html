@@ -194,7 +194,7 @@
     </div>
   </div>
 </div>
-<div id="david" class="{{notif == null ? '' : 'active'}}" >
+<div id="david" [className]="notifClass" >
   <div class="talk-bubble tri-right round right-in">
     <div class="talktext">
       <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>
