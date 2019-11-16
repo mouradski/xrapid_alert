@@ -33,10 +33,9 @@ public class ExchangeToExchangePaymentService {
             return false;
         }
 
-        ExchangeToExchangePayment exchangeToExchangePaymentDb = repository.getByTransactionHash(exchangeToExchangePayment.getTransactionHash());
-        exchangeToExchangePaymentDb.setTradeOutIds(exchangeToExchangePayment.getTradeOutIds());
-        exchangeToExchangePaymentDb.setTradeIds(exchangeToExchangePayment.getTradeIds());
-        repository.save(exchangeToExchangePaymentDb);
+        exchangeToExchangePayment.setTradeOutIds(exchangeToExchangePayment.getTradeOutIds());
+        exchangeToExchangePayment.setTradeIds(exchangeToExchangePayment.getTradeIds());
+        repository.save(exchangeToExchangePayment);
 
         return true;
     }
