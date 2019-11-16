@@ -78,7 +78,6 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean isXrapidCandidate(Payment payment) {
-        log.info("Thread : {}, Source : {}, Destination : {}", Thread.currentThread().getName(), payment.getSource(), payment.getDestination());
         try {
             return Double.valueOf(payment.getAmount()) > 10 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
 
