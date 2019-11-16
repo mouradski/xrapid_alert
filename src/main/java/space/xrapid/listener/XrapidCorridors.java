@@ -124,7 +124,7 @@ public abstract class XrapidCorridors {
         }
 
 
-        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment, false)) {
+        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
             notify(exchangeToFiatPayment);
         }
     }

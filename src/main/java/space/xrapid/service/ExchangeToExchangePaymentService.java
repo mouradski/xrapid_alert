@@ -25,27 +25,18 @@ public class ExchangeToExchangePaymentService {
     private Map<OffsetDateTime, Double> dailyVolumes = new HashMap<>();
 
     @Transactional
-    public boolean save(ExchangeToExchangePayment exchangeToExchangePayment, boolean force) {
+    public boolean save(ExchangeToExchangePayment exchangeToExchangePayment) {
 
         boolean exist = repository.existsByTransactionHash(exchangeToExchangePayment.getTransactionHash());
-        if (exist && !force) {
+
+        if (exist) {
             return false;
         }
 
-        if (exist && force) {
-            ExchangeToExchangePayment exchangeToExchangePaymentDb = repository.getByTransactionHash(exchangeToExchangePayment.getTransactionHash());
-            exchangeToExchangePaymentDb.setTradeOutIds(exchangeToExchangePayment.getTradeOutIds());
-            exchangeToExchangePaymentDb.setTradeIds(exchangeToExchangePayment.getTradeIds());
-            repository.save(exchangeToExchangePaymentDb);
-            return true;
-        }
-
-        try {
-            repository.save(exchangeToExchangePayment);
-        } catch (Exception e) {
-            log.error("Erreur lors dde la persistence de la trx {}", exchangeToExchangePayment);
-            return false;
-        }
+        ExchangeToExchangePayment exchangeToExchangePaymentDb = repository.getByTransactionHash(exchangeToExchangePayment.getTransactionHash());
+        exchangeToExchangePaymentDb.setTradeOutIds(exchangeToExchangePayment.getTradeOutIds());
+        exchangeToExchangePaymentDb.setTradeIds(exchangeToExchangePayment.getTradeIds());
+        repository.save(exchangeToExchangePaymentDb);
 
         return true;
     }
