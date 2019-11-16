@@ -11,6 +11,14 @@
   100% {transform: translateY(0px);}
 }
 
+@-webkit-keyframes out {
+  0% {transform: translateY(0px);}
+  100% {transform: translateY(260px);}
+}
+@keyframes out {
+  0% {transform: translateY(0px);}
+  100% {transform: translateY(260px);}
+}
 
 
 
@@ -68,6 +76,10 @@
 }
 #david.active{
     animation: bounce 3s forwards;
+}
+#david.out{
+  animation: out 3s forwards;
+
 }
 
 
