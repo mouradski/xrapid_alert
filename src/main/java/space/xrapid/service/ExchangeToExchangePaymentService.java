@@ -40,7 +40,12 @@ public class ExchangeToExchangePaymentService {
             return true;
         }
 
-        repository.save(exchangeToExchangePayment);
+        try {
+            repository.save(exchangeToExchangePayment);
+        } catch (Exception e) {
+            log.error("Erreur lors dde la persistence de la trx {}", exchangeToExchangePayment);
+            return false;
+        }
 
         return true;
     }

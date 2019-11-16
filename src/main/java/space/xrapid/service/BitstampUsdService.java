@@ -38,7 +38,7 @@ public class BitstampUsdService implements TradeService {
     private Trade mapTrade(space.xrapid.domain.bitstamp.Trade trade) {
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .exchange(Exchange.BITSTAMP)
+                .exchange(getExchange())
                 .timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getTid())
