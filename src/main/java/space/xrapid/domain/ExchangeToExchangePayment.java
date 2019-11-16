@@ -41,16 +41,33 @@ public class ExchangeToExchangePayment extends Payment {
     private String transactionHash;
 
     @Transient
-    private List<Trade> toFiatTrades;
+    private List<Trade> xrpToFiatTrades;
+
+    @Transient
+    private List<Trade> fiatToXrpTrades;
 
     private double usdValue;
 
+    @Column(length = 500)
     private String tradeIds;
+
+    @Column(length = 500)
+    private String tradeOutIds;
+
+    @Enumerated(EnumType.STRING)
+    private Currency sourceFiat;
+
+    @Enumerated(EnumType.STRING)
+    private Currency destinationFiat;
 
     private Long tag;
 
     @Enumerated(EnumType.STRING)
     private Currency destinationCurrencry;
+
+    private boolean inTradeFound = false;
+
+    private boolean outTradeFound = false;
 
     public String getDateAsString() {
         return dateFormat.format(timestamp);
@@ -62,6 +79,7 @@ public class ExchangeToExchangePayment extends Payment {
         sb.append("Time : ").append(dateFormat.format(timestamp)).append(", ");
         sb.append("Amount : ").append(this.amount).append(", ");
         sb.append("Exchange Source : ").append(this.source == null ? "UNKNOWN" : this.source).append(", ");
+        sb.append("Exchange Destination : ").append(this.destination == null ? "UNKNOWN" : this.destination).append(", ");
         sb.append("Address Source : ").append(sourceAddress).append(", ");
         sb.append("Destination : ").append(this.destinationAddress).append(", ");
         sb.append("Destination Tag : ").append(this.tag).append(", ");

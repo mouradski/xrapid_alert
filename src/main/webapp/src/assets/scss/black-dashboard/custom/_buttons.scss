@@ -273,3 +273,18 @@
     background-image: linear-gradient(to bottom left, #d37e13, #ffb422, #ffb438);
   }
 }
+
+
+.btn-outline-white{
+  border: 1px solid white;
+  background: transparent;
+  color: white;
+  padding: 10px 20px!important;
+  font-size: 12px;
+  &:hover,&:focus{
+    background: white!important;
+    border: 1px solid transparent;
+    color: $background-states-black;
+  }
+
+}

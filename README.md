@@ -16,7 +16,7 @@ spring:
     password: PASSWORD
 ```
 
-# Install
+# Build jar
 
 ```
 $ cd xrp_alert

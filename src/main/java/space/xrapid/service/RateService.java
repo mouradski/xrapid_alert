@@ -4,10 +4,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.bitstamp.Ticker;
-import space.xrapid.domain.bitstamp.Trade;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Service
 public class RateService {

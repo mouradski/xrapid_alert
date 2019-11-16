@@ -252,45 +252,6 @@
 }
 
 
-.footer{
-  width: 100%;
-  margin: 0 auto;
-  padding: 0;
-
-  .copyright-w{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .tipbot{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    padding-bottom: 20px;
-    a{
-      font-size: 20px;
-      font-weight: bold;
-    }
-  }
-  .copyright{
-    display: flex;
-    align-items: center;
-    padding:20px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 0 auto;
-
-    .copyright__item{
-      display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
-      margin: 10px;
-    }
-  }
-}
 
 
 /* CARD SUMMARY */

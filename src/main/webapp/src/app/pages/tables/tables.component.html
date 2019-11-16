@@ -32,9 +32,17 @@
             {{payment.destination}}
           </li>
           <li>
+            <span class="modal-desc">Destination Tag :</span>
+            {{payment.tag}}
+          </li>
+          <li *ngIf="payment.tradeOutIds">
+            <span class="modal-desc">Trades on source exchange ({{payment.source}})</span>
+            {{ payment.tradeOutIds }}
+          </li>
+          <li *ngIf="payment.tradeIds">
             <span
-              class="modal-desc">You can check these trades on {{payment.spottedAt == 'SOURCE' ? payment.source : payment.destination}}</span>
-            <td>{{ payment.tradeIds }}
+              class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
+            {{ payment.tradeIds }}
           </li>
           <li>
             <span class="modal-desc">Transaction Hash :</span>
@@ -60,13 +68,74 @@
       <div class=" card card-plain">
         <div class=" card-header">
           <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
-          <p class=" category">We Consider A Transaction As ODL When It Is Initiated From AN Xrapid Partner And Lands In
-            Another Xrapid Partner, And Which Is Followed In The Next Few Seconds By A Sale Of XRP To The Local
-            Currency</p>
+          <p class=" category">We consider a transaction as ODL when 4 factors are combined : 1 / Purchase of XRP with FIAT (local currency of origin) on an Exchange, 2 / Send XRP through the XRPL, 3 / Sale of the same amount of XRP for FIAT on other exchange ( local currency of destination ), 4 / The total time from start to finish should be about 60 seconds.  We use the exchange APIs to track end-to-end ODL transactions, except for coins.ph and possible other future exchanges without API.</p>
         </div>
         <div class=" card-body">
           <div class=" table-responsive">
             <table class=" table tablesorter" id="">
+              <div class="search-popup" style="display: none">
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">From</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">To</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Source</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Target</label>
+                  </div>
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected>Choose</option>
+                    <option value="1">BITSTAMP</option>
+                    <option value="2">BITSTAMP</option>
+                    <option value="3">BITSTAMP</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PM</button>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="#">AM</a>
+                    </div>
+                  </div>
+                  <input placeholder="00:00" type="text" class="form-control" aria-label="Text input with dropdown button">
+                </div>
+
+                <a href="#" class="align-right btn btn-primary">Valid</a>
+              </div>
+
               <thead class=" text-primary">
               <tr>
                 <th>Date</th>
@@ -74,6 +143,7 @@
                 <th>USD Value</th>
                 <th>From</th>
                 <th>To</th>
+                <th>Source Fiat</th>
                 <th>Target Fiat</th>
                 <th></th>
               </tr>
@@ -85,11 +155,12 @@
                 <td>{{ payment.usdValue | currency }}</td>
                 <td>{{ payment.source }}</td>
                 <td>{{ payment.destination }}</td>
-                <td>{{ payment.destinationCurrencry }}</td>
+                <td>{{ payment.sourceFiat }}</td>
+                <td>{{ payment.destinationFiat }}</td>
                 <td class="tab-btn">
                   <button (click)="info([[payment.transactionHash]])" type="button" class="btn btn-primary"
                           data-toggle="modal" data-target="#myModal">
-                    Infos
+                    Info
                   </button>
                 </td>
               </tr>
@@ -118,7 +189,7 @@
   </div>
   <div class="david-pop">
     <span>
-      <img src="./assets/images/bradpop.gif">
+      <img src="./assets/images/{{notifier}}pop.gif">
     </span>
   </div>
 

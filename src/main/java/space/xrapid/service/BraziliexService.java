@@ -32,7 +32,7 @@ public class BraziliexService implements TradeService {
     }
 
     private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
-        long beginTimestamp = begin.plusMinutes(-2).toEpochSecond() * 1000;
+        long beginTimestamp = begin.minusMinutes(2).toEpochSecond() * 1000;
         return Arrays.stream(response.getBody())
                 .filter(p -> beginTimestamp < p.getTimestamp())
                 .sorted(Comparator.comparing(space.xrapid.domain.braziliex.Trade::getTimestamp))
@@ -41,7 +41,7 @@ public class BraziliexService implements TradeService {
     }
 
     private Trade mapTrade(space.xrapid.domain.braziliex.Trade trade) {
-        return Trade.builder().amount(Double.valueOf(trade.getAmount())).target(Exchange.BRAZILIEX).build();
+        return Trade.builder().amount(Double.valueOf(trade.getAmount())).exchange(Exchange.BRAZILIEX).build();
     }
 
     @Override

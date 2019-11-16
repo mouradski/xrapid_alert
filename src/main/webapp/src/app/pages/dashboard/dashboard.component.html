@@ -54,12 +54,10 @@
           </h3>
         </div>
         <div class=" card-body">
-           <!-- block derniere trx a designer -->
           <div class="chart-area last-trx">
               <p><b>All Time Volume : </b> {{stats.allTimeVolume | currency}}</p>
               <p><b>Date start calculation :  </b> {{stats.allTimeFrom | date:'medium'}}</p>
-
-              <!-- block derniere trx a designer -->
+              <p><b>Daily Volume All Time High : </b> {{stats.athDaylyVolume | currency}}</p>
               <div>
                 <p><b>Last ODL transaction spotted {{trxSecondsAgo | dateAgo}}</b></p>
                 <p><b>USD Value : </b> {{lastTransaction.usdValue | currency}}</p>

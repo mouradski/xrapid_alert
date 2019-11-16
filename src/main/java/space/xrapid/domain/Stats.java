@@ -13,6 +13,7 @@ import java.util.Map;
 public class Stats {
     private double todayVolume;
     private double allTimeVolume;
+    private double athDaylyVolume;
     private long averageTimeBetweetTransactions;
     private OffsetDateTime allTimeFrom;
     private double[] last5DaysOdlVolume;

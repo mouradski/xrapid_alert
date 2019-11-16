@@ -53,13 +53,13 @@ public class BitkubService implements TradeService {
                 .timestamp(Long.valueOf(trade.get(0)) * 1000)
                 .rate(Double.valueOf(trade.get(1)))
                 .amount(Double.valueOf(trade.get(2)))
-                .target(Exchange.BITKUB)
+                .exchange(Exchange.BITKUB)
                 .dateTime(date)
                 .orderId(trade.get(0) + trade.get(2).replace(".", "")) // API don't provide orderId so we fill with dateTime + amount
                 .build();
     }
 
     private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.plusMinutes(-2).isBefore(p.getDateTime());
+        return p -> begin.minusMinutes(2).isBefore(p.getDateTime());
     }
 }

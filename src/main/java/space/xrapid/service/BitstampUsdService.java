@@ -20,7 +20,7 @@ public class BitstampUsdService implements TradeService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd/";
+    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd?time=day";
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
@@ -31,14 +31,15 @@ public class BitstampUsdService implements TradeService {
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
-                .filter(p -> begin.plusMinutes(-2).isBefore(p.getDateTime()))
+                .filter(p -> begin.minusMinutes(2).isBefore(p.getDateTime()))
                 .collect(Collectors.toList());
     }
 
     private Trade mapTrade(space.xrapid.domain.bitstamp.Trade trade) {
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.BITSTAMP).timestamp(date.toEpochSecond() * 1000)
+                .exchange(Exchange.BITSTAMP)
+                .timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getTid())
                 .rate(Double.valueOf(trade.getPrice()))

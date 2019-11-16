@@ -36,14 +36,15 @@ public class MercadoBitcoinService implements TradeService {
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
-                .filter(p -> begin.plusMinutes(-2).isBefore(p.getDateTime()))
+                .filter(p -> begin.minusMinutes(2).isBefore(p.getDateTime()))
                 .collect(Collectors.toList());
     }
 
 
     private Trade mapTrade(space.xrapid.domain.mercadobitcoin.Trade trade) {
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.MERCADO).timestamp(trade.getDate() * 1000)
+                .exchange(Exchange.MERCADO)
+                .timestamp(trade.getDate() * 1000)
                 .dateTime(OffsetDateTime.ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC")))
                 .orderId(trade.getTid().toString())
                 .rate(Double.valueOf(trade.getPrice()))

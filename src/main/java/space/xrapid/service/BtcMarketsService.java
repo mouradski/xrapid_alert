@@ -55,12 +55,12 @@ public class BtcMarketsService implements TradeService {
                 .timestamp(date.toEpochSecond() * 1000)
                 .amount(trade.getAmount())
                 .rate(trade.getPrice())
-                .target(Exchange.BTC_MARKETS)
+                .exchange(Exchange.BTC_MARKETS)
                 .build();
     }
 
     private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return trade -> begin.plusMinutes(-2).isBefore(trade.getDateTime());
+        return trade -> begin.minusMinutes(2).isBefore(trade.getDateTime());
     }
 
     private String transformDate(String date) {

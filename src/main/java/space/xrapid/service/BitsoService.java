@@ -83,7 +83,7 @@ public class BitsoService implements TradeService {
 
     private Trade mapTrade(space.xrapid.domain.bitso.Trade trade) {
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .target(Exchange.BITSO)
+                .exchange(Exchange.BITSO)
                 .timestamp(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter).toEpochSecond() * 1000)
                 .dateTime(OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
                 .orderId(trade.getTid().toString())
@@ -93,7 +93,7 @@ public class BitsoService implements TradeService {
     }
 
     private Predicate<space.xrapid.domain.bitso.Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.plusMinutes(-2).isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
+        return p -> begin.minusMinutes(2).isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
     }
 
     @Override
