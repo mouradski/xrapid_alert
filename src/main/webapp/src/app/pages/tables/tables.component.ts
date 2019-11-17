@@ -31,12 +31,15 @@ export class TablesComponent implements OnInit {
 
   public notifier:string;
 
+  private deviceInfo = null;
+
   constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller, private deviceService: DeviceDetectorService) {
     const _this = this;
     this.payment = new Payment();
     this.pageIndex = 1;
     this.notifier = 'brad';
 
+    this.deviceInfo = this.deviceService.getDeviceInfo();
 
     if (this.deviceService.isMobile()) {
       this.pageSize = 4;
