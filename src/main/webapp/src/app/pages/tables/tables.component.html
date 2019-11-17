@@ -73,13 +73,17 @@
           </span>
 
           <div id="infoODL" class="alert alert-success" role="alert">
-            <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold">We consider a transaction as ODL when 4 factors are combined :</span>
+            <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> We consider a transaction as ODL only when those 4 criteria are met :</span>
             <p class="category">
-              1 / Purchase of XRP with FIAT (local currency of origin) on an Exchange<br>
-              2 / Send XRP through the XRPL<br>
-              3 / Sale of the same amount of XRP for FIAT on other exchange ( local currency of destination )<br>
-              4 / The total time from start to finish should be about 60 seconds.  We use the exchange APIs to track end-to-end ODL transactions.<br>
-              except for coins.ph and possible other future exchanges without API.</p>
+
+
+              - XRP initially bought at one exchange in local fiat<br>
+              - XRP being sent across the XRPL<br>
+              - The exact amount of XRP finally sold back at the destination exchange in local fiat<br>
+              - The total timeframe should last roughly 60 seconds<br>
+              The exchange API allows us to track end-to-end ODL transactions.<br>
+              When not available as in <b>coin.ph</b> instance, we match the XRP sale transactions from <b>coin.ph</b> to those initiated from Xrapid exchanges, within the last 60 seconds.
+            </p>
           </div>
 
         </div>
@@ -151,9 +155,9 @@
 
               <thead class=" text-primary">
               <tr>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>USD Value</th>
+                <th class="date">Date</th>
+                <th class="amount">Amount</th>
+                <th class="value">USD Value</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Source Fiat</th>
@@ -162,10 +166,14 @@
               </tr>
               </thead>
               <tbody>
+              <tr><td class="date">Nov 17, 2019, 2:34:41 AM</td><td  class="amount">104.099 XRP</td><td>$27.24</td><td>BITSTAMP</td><td>COIN_PH</td><td>USD</td><td>PHP</td><td class="tab-btn"><button class="btn btn-primary" data-target="#myModal" data-toggle="modal" type="button"> Info </button></td></tr>
+              <tr><td class="date">Nov 17, 2019, 2:34:41 AM</td><td  class="amount">104.099 XRP</td><td>$27.24</td><td>BITSTAMP</td><td>COIN_PH</td><td>USD</td><td>PHP</td><td class="tab-btn"><button class="btn btn-primary" data-target="#myModal" data-toggle="modal" type="button"> Info </button></td></tr>
+              <tr><td class="date">Nov 17, 2019, 2:34:41 AM</td><td  class="amount">104.099 XRP</td><td>$27.24</td><td>BITSTAMP</td><td>COIN_PH</td><td>USD</td><td>PHP</td><td class="tab-btn"><button class="btn btn-primary" data-target="#myModal" data-toggle="modal" type="button"> Info </button></td></tr>
+              <tr><td class="date">Nov 17, 2019, 2:34:41 AM</td><td  class="amount">104.099 XRP</td><td>$27.24</td><td>BITSTAMP</td><td>COIN_PH</td><td>USD</td><td>PHP</td><td class="tab-btn"><button class="btn btn-primary" data-target="#myModal" data-toggle="modal" type="button"> Info </button></td></tr>
               <tr *ngFor="let payment of currentPage">
-                <td>{{ payment.dateTime | date:'medium' }}</td>
-                <td>{{ payment.amount | number}} XRP</td>
-                <td>{{ payment.usdValue | currency }}</td>
+                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
+                <td class="amount">{{ payment.amount | number}} XRP</td>
+                <td  class="value">{{ payment.usdValue | currency }}</td>
                 <td>{{ payment.source }}</td>
                 <td>{{ payment.destination }}</td>
                 <td>{{ payment.sourceFiat }}</td>
