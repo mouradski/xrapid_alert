@@ -166,7 +166,7 @@ export class DashboardComponent implements OnInit {
     gradientStroke.addColorStop(0, 'rgba(233,32,16,0)'); //red colors
 
     let data = {
-      labels: ['D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'D'],
+      labels: ['D-10', 'D-9', 'D-8', 'D-7', 'D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'D'],
       datasets: [{
         label: "Data",
         fill: true,
