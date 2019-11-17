@@ -33,12 +33,14 @@
   #infoODL{
     display: none;
     bottom: -10px;
+    left: 0;
     position: absolute;
     transform: translate(0%,100%);
     z-index: 90;
     box-shadow: 0px 3px 50px rgba(0, 0, 0, 0.3);
     //display: none;
     flex-direction: column;
+    width: 100%;
   }
 
 }
