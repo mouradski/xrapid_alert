@@ -4,6 +4,7 @@ import {Client} from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
 import { ViewportScroller } from '@angular/common';
+import {DeviceDetectorService} from "ngx-device-detector";
 
 
 @Component({
@@ -18,6 +19,8 @@ export class TablesComponent implements OnInit {
 
   public notifClass = '';
 
+  private pageSize: number;
+
 
   public currentPage: Array<Payment>;
   public pageIndex: number;
@@ -28,11 +31,18 @@ export class TablesComponent implements OnInit {
 
   public notifier:string;
 
-  constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller) {
+  constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller, private deviceService: DeviceDetectorService) {
     const _this = this;
     this.payment = new Payment();
     this.pageIndex = 1;
     this.notifier = 'brad';
+
+
+    if (this.deviceService.isMobile()) {
+      this.pageSize = 4;
+    } else {
+      this.pageSize = 15;
+    }
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
 
@@ -46,7 +56,7 @@ export class TablesComponent implements OnInit {
       }
 
       _this.datasets =  _this.sort(_this.datasets);
-      _this.currentPage = _this.paginate(this.datasets, 25, this.pageIndex);
+      _this.currentPage = _this.paginate(this.datasets, this.pageSize, this.pageIndex);
 
       _this.newConnect();
     });
@@ -70,7 +80,7 @@ export class TablesComponent implements OnInit {
         }
 
         _this.datasets =  _this.sort(_this.datasets);
-        _this.currentPage = _this.paginate(_this.datasets, 25, _this.pageIndex)
+        _this.currentPage = _this.paginate(_this.datasets, _this.pageSize, _this.pageIndex)
       });
     });
 
@@ -122,7 +132,7 @@ export class TablesComponent implements OnInit {
   left() {
     if (this.pageIndex > 1) {
       this.pageIndex--;
-      this.currentPage = this.paginate(this.datasets, 25, this.pageIndex);
+      this.currentPage = this.paginate(this.datasets, this.pageSize, this.pageIndex);
 
       this.viewportScroller.scrollToPosition([0, 0]);
     }
@@ -130,10 +140,10 @@ export class TablesComponent implements OnInit {
 
   right() {
 
-    if (this.paginate(this.datasets, 25, (this.pageIndex + 1)).length > 1) {
+    if (this.paginate(this.datasets, this.pageSize, (this.pageIndex + 1)).length > 1) {
       if ((this.pageIndex * 25) <= (this.datasets.length)) {
         this.pageIndex++;
-        this.currentPage = this.paginate(this.datasets, 25, this.pageIndex);
+        this.currentPage = this.paginate(this.datasets, this.pageSize, this.pageIndex);
 
         this.viewportScroller.scrollToPosition([0, 0]);
       }
