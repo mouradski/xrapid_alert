@@ -102,31 +102,33 @@ public abstract class XrapidCorridors {
     }
 
     protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
-      
-        exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
+        try  {
+            exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
 
+            if (exchangeToFiatPayment.getFiatToXrpTrades() != null) {
+                exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getFiatToXrpTrades().get(0).getExchange().getLocalFiat());
+            } else {
+                exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
+            }
 
-        if (exchangeToFiatPayment.getFiatToXrpTrades() != null) {
-            exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getFiatToXrpTrades().get(0).getExchange().getLocalFiat());
-        } else {
-            exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
+            if (exchangeToFiatPayment.getXrpToFiatTrades() != null) {
+                exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getXrpToFiatTrades().get(0).getExchange().getLocalFiat());
+            } else {
+                exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
+            }
+
+            if (exchangeToFiatPayment.getDestinationFiat() != null &&
+                    exchangeToFiatPayment.getDestinationFiat().equals(exchangeToFiatPayment.getSourceFiat())) {
+                return;
+            }
+
+            if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
+                notify(exchangeToFiatPayment);
+            }
+        } catch (Throwable e) {
+            log.error("Erreur persisting {}", exchangeToFiatPayment);
         }
 
-        if (exchangeToFiatPayment.getXrpToFiatTrades() != null) {
-            exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getXrpToFiatTrades().get(0).getExchange().getLocalFiat());
-        } else {
-            exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
-        }
-        
-         if (exchangeToFiatPayment.getDestinationFiat() != null && 
-            exchangeToFiatPayment.getDestinationFiat().equals(exchangeToFiatPayment.getSourceFiat())) {
-            return;
-        }
-
-
-        if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
-            notify(exchangeToFiatPayment);
-        }
     }
 
     protected void notify(ExchangeToExchangePayment payment) {
@@ -176,14 +178,14 @@ public abstract class XrapidCorridors {
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond();
-            return diff >= 1 && diff < 120;
+            return diff >= 1 && diff < 180;
         };
     }
 
     private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond();
-            return diff >= 1 && diff < 120;
+            return diff >= 1 && diff < 180;
         };
     }
 
