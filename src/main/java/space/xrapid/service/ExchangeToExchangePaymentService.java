@@ -76,16 +76,16 @@ public class ExchangeToExchangePaymentService {
             }
         }
 
-        double[] volumePerDay = new double[6];
-        volumePerDay[5] = roundVolume(todayVolume);
-        for (int i = 4; i >= 0; i--) {
+        double[] volumePerDay = new double[11];
+        volumePerDay[10] = roundVolume(todayVolume);
+        for (int i = 9; i >= 0; i--) {
             Double volume = repository.getVolumeBetween(today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
 
             if (volume == null) {
-                volumePerDay[4 - i] = 0;
+                volumePerDay[9 - i] = 0;
 
             } else {
-                volumePerDay[4 - i] = roundVolume(volume);
+                volumePerDay[9 - i] = roundVolume(volume);
             }
         }
 
