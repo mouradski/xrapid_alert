@@ -107,7 +107,12 @@ export class TablesComponent implements OnInit {
   notifPayment(payment) {
     const _this = this;
 
-    if (payment.amount > 20000) {
+    if (payment.amount > 40000) {
+      if (payment.amount > 100000) {
+        _this.notifier = 'brad';
+      } else {
+        _this.notifier = 'david';
+      }
       _this.notif = payment;
       _this.notifClass = 'active';
 
