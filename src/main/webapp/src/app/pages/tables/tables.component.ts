@@ -44,7 +44,7 @@ export class TablesComponent implements OnInit {
     if (this.deviceService.isMobile()) {
       this.pageSize = 4;
     } else {
-      this.pageSize = 15;
+      this.pageSize = 10;
     }
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
@@ -137,7 +137,7 @@ export class TablesComponent implements OnInit {
       this.pageIndex--;
       this.currentPage = this.paginate(this.datasets, this.pageSize, this.pageIndex);
 
-      this.viewportScroller.scrollToPosition([0, 0]);
+      //this.viewportScroller.scrollToPosition([0, 0]);
     }
   }
 
@@ -148,7 +148,7 @@ export class TablesComponent implements OnInit {
         this.pageIndex++;
         this.currentPage = this.paginate(this.datasets, this.pageSize, this.pageIndex);
 
-        this.viewportScroller.scrollToPosition([0, 0]);
+        //this.viewportScroller.scrollToPosition([0, 0]);
       }
     }
   }
