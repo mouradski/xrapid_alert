@@ -41,10 +41,18 @@ public class BittrexService implements TradeService {
     }
 
     private Trade mapTrade(space.xrapid.domain.bittrex.Trade trade) {
+        OffsetDateTime dateTime;
+
+        if (trade.getTimeStamp().contains(".")) {
+            dateTime = OffsetDateTime.parse(trade.getTimeStamp().replaceAll("\\.[0-9]+", "+00:00"), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        } else {
+            dateTime = OffsetDateTime.parse(trade.getTimeStamp() + "+00:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        }
+
         return Trade.builder().amount(Double.valueOf(trade.getQuantity()))
                 .exchange(Exchange.BITTREX)
-                .timestamp(OffsetDateTime.parse(trade.getTimeStamp().replaceAll("\\.[0-9]+", "+00:00"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toEpochSecond() * 1000)
-                .dateTime(OffsetDateTime.parse(trade.getTimeStamp().replaceAll("\\.[0-9]+", "+00:00"), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                .timestamp(dateTime.toEpochSecond() * 1000)
+                .dateTime(dateTime)
                 .orderId(trade.getId().toString())
                 .rate(Double.valueOf(trade.getPrice()))
                 .side(trade.getOrderType().toLowerCase())
