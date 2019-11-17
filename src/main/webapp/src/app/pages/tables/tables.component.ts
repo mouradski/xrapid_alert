@@ -97,13 +97,12 @@ export class TablesComponent implements OnInit {
     if (payment.amount > 20000) {
       _this.notif = payment;
       _this.notifClass = 'active';
+
+      setTimeout(function () {
+        //_this.notif = null;
+        _this.notifClass = 'out';
+      }, 5890);
     }
-
-    setTimeout(function () {
-      //_this.notif = null;
-      _this.notifClass = 'out';
-    }, 5890);
-
   }
 
   info(data) {

@@ -58,12 +58,9 @@
               <p><b>All Time Volume : </b> {{stats.allTimeVolume | currency}}</p>
               <p><b>Since :  </b> {{stats.allTimeFrom | date:'medium'}}</p>
               <p><b>Daily Volume ATH : </b> {{stats.athDaylyVolume | currency}}</p>
-              <div>
-                <p><b>Last ODL spotted {{trxSecondsAgo | dateAgo}}</b></p>
-                <p><b>USD Value : </b> {{lastTransaction.usdValue | currency}}</p>
-                <p>FROM <b>{{lastTransaction.sourceFiat}} TO {{lastTransaction.destinationFiat}}</b></p>
-              </div>
-
+              <p><b>Last ODL spotted {{trxSecondsAgo | dateAgo}}</b></p>
+              <p><b>USD Value : </b> {{lastTransaction.usdValue | currency}}</p>
+              <p>FROM <b>{{lastTransaction.sourceFiat}} TO {{lastTransaction.destinationFiat}}</b></p>
           </div>
         </div>
       </div>
