@@ -7,7 +7,7 @@ import space.xrapid.domain.Exchange;
 public class BitstampEurSevice extends BitstampUsdService {
 
     public BitstampEurSevice() {
-        this.apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpeur?time=day";
+        this.apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpeur";
     }
 
     @Override

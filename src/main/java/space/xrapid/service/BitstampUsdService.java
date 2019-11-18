@@ -20,14 +20,18 @@ public class BitstampUsdService implements TradeService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd?time=day";
+    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd";
+
+    private boolean firstCall = true;
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.bitstamp.Trade[]> response = restTemplate.exchange(apiUrl,
+        ResponseEntity<space.xrapid.domain.bitstamp.Trade[]> response = restTemplate.exchange(firstCall ? apiUrl + "?time=day" : apiUrl,
                 HttpMethod.GET, entity, space.xrapid.domain.bitstamp.Trade[].class);
+
+        firstCall = false;
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
