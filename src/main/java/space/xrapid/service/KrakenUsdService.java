@@ -43,7 +43,7 @@ public class KrakenUsdService implements TradeService {
     }
 
     private Trade mapTrade(List trade) {
-        OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Math.round((double)trade.get(2))), ZoneId.of("UTC"));
+        OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Math.round(Double.valueOf(trade.get(2).toString()))), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(Double.valueOf(trade.get(1).toString())))
                 .exchange(getExchange())
                 .timestamp(date.toEpochSecond() * 1000)
