@@ -135,6 +135,7 @@ public class ExchangeToExchangePaymentService {
         return Math.round(volume * 100.0) / 100.0;
     }
 
+    @Cacheable(value = "lastOdlCache", key = "1")
     public List<ExchangeToExchangePayment> getLasts() {
         return repository.findTop(300);
     }

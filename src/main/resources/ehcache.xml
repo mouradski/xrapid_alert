@@ -10,4 +10,13 @@
         </expiry>
         <heap unit="entries">1</heap>
     </cache>
+    <cache alias="lastOdlCache">
+        <expiry>
+            <ttl unit="seconds">20</ttl>
+        </expiry>
+        <heap unit="entries">300</heap>
+    </cache>
+
+
+
 </config>
