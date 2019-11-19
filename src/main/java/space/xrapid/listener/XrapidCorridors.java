@@ -257,9 +257,16 @@ public abstract class XrapidCorridors {
 
         if (trxAmount > 1000) {
             tolerence = 5;
-        } if (trxAmount > 40000) {
+        }
+
+        if (trxAmount > 20000) {
             tolerence = 200;
         }
+
+        if (trxAmount > 40000) {
+            tolerence = 600;
+        }
+
         if (Math.abs(sum - trxAmount) < tolerence) {
             candidates.add(partial);
         }

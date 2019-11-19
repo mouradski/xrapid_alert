@@ -75,11 +75,14 @@
           <div id="infoODL" class="alert alert-success" role="alert">
             <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> We consider a transaction as ODL only when those 4 criteria are met :</span>
             <p class="category">
-              1 / Purchase of XRP with FIAT (local currency of origin) on an Exchange<br>
-              2 / Send XRP through the XRPL<br>
-              3 / Sale of the same amount of XRP for FIAT on other exchange ( local currency of destination )<br>
-              4 / The total time from start to finish should be about 60 seconds.  We use the exchange APIs to track end-to-end ODL transactions.<br>
-              except for coins.ph and possible other future exchanges without API.
+              We consider a transaction as ODL only when those 4 criteria are met:
+
+              - XRP initially bought at one exchange in local fiat
+              - XRP being sent across the XRPL
+              - the exact amount of XRP finally sold back at the destination exchange in local fiat
+              - the total timeframe should roughly last  60 seconds
+
+              The exchange API allows us to track end-to-end ODL transactions, except for http://coins.p/ and all future exchanges without API.
             </p>
           </div>
 
