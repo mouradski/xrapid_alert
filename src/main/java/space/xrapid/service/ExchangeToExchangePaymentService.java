@@ -2,6 +2,8 @@ package space.xrapid.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.Currency;
@@ -40,6 +42,7 @@ public class ExchangeToExchangePaymentService {
         return true;
     }
 
+    @Cacheable(value = "statsCache", key = "1")
     public Stats calculateStats() {
         OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
