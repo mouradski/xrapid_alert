@@ -178,14 +178,14 @@ public abstract class XrapidCorridors {
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond();
-            return diff >= 1 && diff < 180;
+            return diff >= 1 && diff < 60;
         };
     }
 
     private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond();
-            return diff >= 1 && diff < 180;
+            return diff >= 1 && diff < 60;
         };
     }
 
