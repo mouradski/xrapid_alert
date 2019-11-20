@@ -11,5 +11,6 @@ public enum Currency {
     AUD,
     GBP,
     CAD,
-    JPY
+    JPY,
+    AED
 }

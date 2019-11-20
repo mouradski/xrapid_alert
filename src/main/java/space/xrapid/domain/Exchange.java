@@ -50,6 +50,7 @@ public enum Exchange {
     COINFIELD_JPY("coinfield", true, JPY, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_GBP("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_EUR("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_AED("coinfield", true, AED, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
 
 
     KRAKEN_USD("kraken", true, USD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
