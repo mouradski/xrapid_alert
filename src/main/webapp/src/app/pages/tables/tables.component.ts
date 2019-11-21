@@ -149,7 +149,7 @@ export class TablesComponent implements OnInit {
   right() {
 
     if (this.paginate(this.datasets, this.pageSize, (this.pageIndex + 1)).length > 1) {
-      if ((this.pageIndex * 25) <= (this.datasets.length)) {
+      if ((this.pageIndex * this.pageSize) <= (this.datasets.length)) {
         this.pageIndex++;
         this.currentPage = this.paginate(this.datasets, this.pageSize, this.pageIndex);
 
