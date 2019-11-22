@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 
 @Service
-public class CoifieldAedService extends CoinfieldUsdService {
+public class CoinfieldAedService extends CoinfieldUsdService {
     @Override
     protected String getMarket() {
         return "xrpaed";
