@@ -25,8 +25,7 @@ public class InboundXrapidCorridors extends XrapidCorridors {
         this.destinationExchange = destinationExchange;
     }
 
-    @Async
-    public CompletableFuture<List<ExchangeToExchangePayment>> searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
+    public void searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
 
         this.rate = rate;
 
@@ -34,7 +33,7 @@ public class InboundXrapidCorridors extends XrapidCorridors {
 
         tradesIdAlreadyProcessed = new HashSet<>();
 
-        return CompletableFuture.supplyAsync(()-> submit(payments));
+       submit(payments);
     }
 
     @Override

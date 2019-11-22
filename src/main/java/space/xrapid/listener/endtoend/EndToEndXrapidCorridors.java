@@ -38,14 +38,13 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         this.destinationExchange = destinationExchange;
     }
 
-    @Async
-    public CompletableFuture<List<ExchangeToExchangePayment>> searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
+    public void searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
         this.rate = rate;
 
         tradesIdAlreadyProcessed = new HashSet<>();
 
         this.trades = trades;
-        return CompletableFuture.supplyAsync(()-> submit(payments));
+        submit(payments);
     }
 
     @Override

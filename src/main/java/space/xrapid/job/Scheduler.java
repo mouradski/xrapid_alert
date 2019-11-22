@@ -90,17 +90,16 @@ public class Scheduler {
                 availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            endToEndFeatures.add(new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat).searchXrapidPayments(payments, allTrades, rate));
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat).searchXrapidPayments(payments, allTrades, rate);
                         });
             });
 
-            CompletableFuture.allOf(endToEndFeatures.stream().toArray(CompletableFuture[]::new)).join();
 
 
             // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
             List<CompletableFuture<List<ExchangeToExchangePayment>>> inboundFeatures = new ArrayList<>();
             availableExchangesWithApi.forEach(exchange -> {
-                inboundFeatures.add(new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate));
+                new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
             });
 
             // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
@@ -108,13 +107,9 @@ public class Scheduler {
             allConfirmedExchange.stream()
                     .filter(exchange -> !availableExchangesWithApi.contains(exchange))
                     .forEach(exchange -> {
-                        outboundFeatures.add(new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate));
+                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
                     });
 
-
-            CompletableFuture.allOf(outboundFeatures.stream().toArray(CompletableFuture[]::new)).join();
-
-            CompletableFuture.allOf(inboundFeatures.stream().toArray(CompletableFuture[]::new)).join();
 
             messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
 
@@ -131,7 +126,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(600);
+        windowStart = windowEnd.minusMinutes(800);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
