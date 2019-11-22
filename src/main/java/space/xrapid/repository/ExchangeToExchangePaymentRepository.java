@@ -8,7 +8,7 @@ import space.xrapid.domain.ExchangeToExchangePayment;
 import java.util.List;
 
 @Repository
-public interface ExchangeToExchangePaymentRepository extends JpaRepository<ExchangeToExchangePayment, String> {
+public interface ExchangeToExchangePaymentRepository extends JpaRepository<ExchangeToExchangePayment, Integer> {
 
     @Query(value = "SELECT * FROM exchange_payment ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
     List<ExchangeToExchangePayment> findTop(int limit);
@@ -18,6 +18,9 @@ public interface ExchangeToExchangePaymentRepository extends JpaRepository<Excha
 
     @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
     Double getVolumeBetween(long startTimestamp, long endTimestamp);
+
+    @Query(value = "SELECT * FROM exchange_payment ep WHERE ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
+    List<ExchangeToExchangePayment> findByDate(long startTimestamp, long endTimestamp);
 
     @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.source = ? AND ep.destination = ? AND ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
     Double getVolumeBySourceAndDestinationBetween(String source, String destination, long startTimestamp, long endTimestamp);

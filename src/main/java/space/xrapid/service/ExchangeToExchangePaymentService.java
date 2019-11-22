@@ -9,10 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.Currency;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.Stats;
+import space.xrapid.exception.UnauthorizedException;
+import space.xrapid.repository.ApiKeyRepository;
 import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +29,9 @@ public class ExchangeToExchangePaymentService {
 
     @Autowired
     private ExchangeToExchangePaymentRepository repository;
+
+    @Autowired
+    private ApiKeyRepository apiKeyRepository;
 
     private Map<OffsetDateTime, Double> dailyVolumes = new HashMap<>();
 
@@ -138,5 +147,11 @@ public class ExchangeToExchangePaymentService {
     @Cacheable(value = "lastOdlCache", key = "1")
     public List<ExchangeToExchangePayment> getLasts() {
         return repository.findTop(300);
+    }
+
+
+
+    public List<ExchangeToExchangePayment> getPayments(long from, long to) {
+        return repository.findByDate(from, to);
     }
 }
