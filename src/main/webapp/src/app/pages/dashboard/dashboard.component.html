@@ -1,9 +1,11 @@
-
-
 <div *ngIf="isDisclaimerNotRead()" class="alert alert-warning alert-dismissible fade show" role="alert">
-    <p><strong>Utility-Scan.com</strong> provides this website, charts and its contents for informational purposes only. <br>
-    You should not construe any information presented here as financial, investment, tax, legal or other advice. Trading and investing in cryptocurrencies involves significant risk of loss and is not suitable for every investor. <br>
-    Please consult your financial advisor before investing. Utility-Scan.com is independent of Ripple and has not been authorized, endorsed, sponsored or otherwise approved by Ripple or its affiliates.</p>
+    <p><strong>Utility-Scan.com</strong> provides this website, charts and its contents for informational purposes only.
+        <br>
+        You should not construe any information presented here as financial, investment, tax, legal or other advice.
+        Trading and investing in cryptocurrencies involves significant risk of loss and is not suitable for every
+        investor. <br>
+        Please consult your financial advisor before investing. Utility-Scan.com is independent of Ripple and has not
+        been authorized, endorsed, sponsored or otherwise approved by Ripple or its affiliates.</p>
 
     <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="setDisclaimerRead()">
         <span aria-hidden="true">&times;</span>
@@ -12,21 +14,21 @@
 
 
 <div class=" content">
-      <div class=" row">
+    <div class=" row">
         <div class=" col-lg-6">
             <div class="card-volume  card card-chart">
-                    <div class=" card-header">
-                        <h5 class=" card-category">USD Day Volume</h5>
-                        <h3 class=" card-title">
-                            <!--            <i class=" tim-icons icon-bell-55 text-danger-states"> </i> 9000,215-->
-                        </h3>
-                    </div>
-                    <div class=" card-body">
-                        <div class=" chart-area">
-                            <canvas id="chart1"></canvas>
-                        </div>
+                <div class=" card-header">
+                    <h5 class=" card-category">USD Day Volume</h5>
+                    <h3 class=" card-title">
+                        <!--            <i class=" tim-icons icon-bell-55 text-danger-states"> </i> 9000,215-->
+                    </h3>
+                </div>
+                <div class=" card-body">
+                    <div class=" chart-area">
+                        <canvas id="chart1"></canvas>
                     </div>
                 </div>
+            </div>
 
 
             <div class="card-summary  card card-chart">
@@ -39,7 +41,7 @@
                 <div class=" card-body">
                     <div class="chart-area last-trx">
                         <p><b>All Time Volume : </b> {{stats.allTimeVolume | currency}}</p>
-                        <p><b>Since :  </b> {{stats.allTimeFrom | date:'medium'}}</p>
+                        <p><b>Since : </b> {{stats.allTimeFrom | date:'medium'}}</p>
                         <p><b>Daily Volume ATH : </b> {{stats.athDaylyVolume | currency}}</p>
                         <p><b>Last ODL spotted {{trxSecondsAgo | dateAgo}}</b></p>
                         <p><b>USD Value : </b> {{lastTransaction.usdValue | currency}}</p>
@@ -47,28 +49,39 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
 
 
-    <div class="col-lg-6">
-      <div class="card-24  card card-chart">
-        <div class=" card-header">
-          <h5 class=" card-category">USD 24H Volume per Corridor</h5>
-          <h3 class=" card-title">
-    <!--            <i class=" tim-icons icon-bell-55 text-danger-states"> </i> {{stats.allTimeVolume}}-->
-          </h3>
+        <div class="col-lg-6">
+            <div class="card-24  card card-chart">
+                <div class=" card-header">
+                    <h5 class=" card-category">USD 24H Volume per Corridor</h5>
+                    <h3 class=" card-title">
+                        <!--            <i class=" tim-icons icon-bell-55 text-danger-states"> </i> {{stats.allTimeVolume}}-->
+                    </h3>
+                </div>
+                <div class=" card-body">
+                    <div class=" chart-area">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class=" card-body">
-          <div class=" chart-area">
-            <canvas id="chart2"></canvas>
-          </div>
-        </div>
-      </div>
     </div>
 
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-24  card card-speed">
+                <div class=" card-header">
+                    <h5 class=" card-category">Speedometer Test</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="speedo"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-
-  </div>
 </div>
