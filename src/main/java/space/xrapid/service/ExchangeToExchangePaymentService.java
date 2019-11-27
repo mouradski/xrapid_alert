@@ -3,22 +3,22 @@ package space.xrapid.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.Currency;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.Stats;
-import space.xrapid.exception.UnauthorizedException;
-import space.xrapid.repository.ApiKeyRepository;
 import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ public class ExchangeToExchangePaymentService {
     private ExchangeToExchangePaymentRepository repository;
 
     @Autowired
-    private ApiKeyRepository apiKeyRepository;
+    private EntityManager em;
 
     private Map<OffsetDateTime, Double> dailyVolumes = new HashMap<>();
 
@@ -140,6 +140,32 @@ public class ExchangeToExchangePaymentService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<ExchangeToExchangePayment> search(Long from, Long to, Currency source, Currency destination) {
+
+        return repository.findAll((Specification<ExchangeToExchangePayment>) (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (source != null) {
+                predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("sourceFiat"), source)));
+            }
+
+            if (destination != null) {
+                predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("destinationFiat"), destination)));
+            }
+
+            if (from != null) {
+                predicates.add(criteriaBuilder.and(criteriaBuilder.ge(root.get("timestamp"), from)));
+            }
+
+            if (to != null) {
+                predicates.add(criteriaBuilder.and(criteriaBuilder.le(root.get("timestamp"), to)));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+        });
+
+    }
+
     private double roundVolume(double volume) {
         return Math.round(volume * 100.0) / 100.0;
     }
@@ -148,7 +174,6 @@ public class ExchangeToExchangePaymentService {
     public List<ExchangeToExchangePayment> getLasts() {
         return repository.findTop(300);
     }
-
 
 
     public List<ExchangeToExchangePayment> getPayments(long from, long to) {
