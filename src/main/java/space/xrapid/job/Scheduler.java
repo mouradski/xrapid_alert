@@ -6,10 +6,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import space.xrapid.domain.Currency;
-import space.xrapid.domain.Exchange;
-import space.xrapid.domain.ExchangeToExchangePayment;
-import space.xrapid.domain.Trade;
+import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
 import space.xrapid.listener.inbound.InboundXrapidCorridors;
@@ -90,10 +87,11 @@ public class Scheduler {
                 availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat).searchXrapidPayments(payments, allTrades, rate);
+                            Stream.of(30, 60, 120, 180).forEach(delta -> {
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat, delta, delta).searchXrapidPayments(payments, allTrades, rate);
+                            });
                         });
             });
-
 
 
             // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
@@ -111,7 +109,11 @@ public class Scheduler {
                     });
 
 
-            messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+            Stats stats = exchangeToExchangePaymentService.calculateStats();
+
+            if (stats != null) {
+                messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+            }
 
         } catch (Exception e) {
             log.error("", e);

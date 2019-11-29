@@ -12,11 +12,7 @@ import space.xrapid.domain.Stats;
 import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -53,68 +49,72 @@ public class ExchangeToExchangePaymentService {
 
     @Cacheable(value = "statsCache", key = "1")
     public Stats calculateStats() {
-        OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
-        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-        double allTimeVolume = repository.getAllTimeVolume();
-        Double todayVolume = repository.getVolumeBetween(today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+        try {
+            OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
+            OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
+            double allTimeVolume = repository.getAllTimeVolume();
+            Double todayVolume = repository.getVolumeBetween(today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
 
-        if (todayVolume == null) {
-            todayVolume = 0d;
-        }
+            if (todayVolume == null) {
+                todayVolume = 0d;
+            }
 
-        Map<String, Double> volumes = new HashMap<>();
+            Map<String, Double> volumes = new HashMap<>();
 
-        List<Currency> currencies = Arrays.stream(Currency.values()).collect(Collectors.toList());
-        for (Currency source : currencies) {
-            for (Currency destination : currencies) {
-                if (source.equals(destination)) {
-                    continue;
-                }
-
-                try {
-                    Double volume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source.toString(), destination.toString(),
-                            now.minusDays(1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
-                    if (volume != null) {
-                        String key = source + "-" + destination;
-                        if (volumes.containsKey(key)) {
-                            volumes.put(key, roundVolume(volume) + volumes.get(key));
-                        } else {
-                            volumes.put(key, roundVolume(volume));
-                        }
+            List<Currency> currencies = Arrays.stream(Currency.values()).collect(Collectors.toList());
+            for (Currency source : currencies) {
+                for (Currency destination : currencies) {
+                    if (source.equals(destination)) {
+                        continue;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+                    try {
+                        Double volume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source.toString(), destination.toString(),
+                                now.minusDays(1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+                        if (volume != null) {
+                            String key = source + "-" + destination;
+                            if (volumes.containsKey(key)) {
+                                volumes.put(key, roundVolume(volume) + volumes.get(key));
+                            } else {
+                                volumes.put(key, roundVolume(volume));
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
 
-        double[] volumePerDay = new double[11];
-        volumePerDay[10] = roundVolume(todayVolume);
-        for (int i = 9; i >= 0; i--) {
-            Double volume = repository.getVolumeBetween(today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
+            double[] volumePerDay = new double[11];
+            volumePerDay[10] = roundVolume(todayVolume);
+            for (int i = 9; i >= 0; i--) {
+                Double volume = repository.getVolumeBetween(today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
 
-            if (volume == null) {
-                volumePerDay[9 - i] = 0;
+                if (volume == null) {
+                    volumePerDay[9 - i] = 0;
 
-            } else {
-                volumePerDay[9 - i] = roundVolume(volume);
+                } else {
+                    volumePerDay[9 - i] = roundVolume(volume);
+                }
             }
+
+            calculateDailyVolumes();
+
+            double athDayVolume = dailyVolumes.values().stream()
+                    .mapToDouble(v -> v.doubleValue())
+                    .max().getAsDouble();
+
+            return Stats.builder()
+                    .allTimeVolume(roundVolume(allTimeVolume))
+                    .todayVolume(roundVolume(todayVolume))
+                    .topVolumes(volumes)
+                    .allTimeFrom(repository.getFirstOdl().getDateTime())
+                    .last5DaysOdlVolume(volumePerDay)
+                    .athDaylyVolume(athDayVolume)
+                    .build();
+        } catch (Exception e) {
+            return null;
         }
-
-        calculateDailyVolumes();
-
-        double athDayVolume = dailyVolumes.values().stream()
-                .mapToDouble(v -> v.doubleValue())
-                .max().getAsDouble();
-
-        return Stats.builder()
-                .allTimeVolume(roundVolume(allTimeVolume))
-                .todayVolume(roundVolume(todayVolume))
-                .topVolumes(volumes)
-                .allTimeFrom(repository.getFirstOdl().getDateTime())
-                .last5DaysOdlVolume(volumePerDay)
-                .athDaylyVolume(athDayVolume)
-                .build();
     }
 
     private void calculateDailyVolumes() {

@@ -12,8 +12,6 @@ import space.xrapid.service.ExchangeToExchangePaymentService;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,7 +32,13 @@ public abstract class XrapidCorridors {
 
     protected SimpMessageSendingOperations messagingTemplate;
 
+    protected long buyDelta;
+    protected long sellDelta;
+
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude) {
+
+        this.buyDelta = 60;
+        this.sellDelta = 60;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -178,14 +182,14 @@ public abstract class XrapidCorridors {
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond();
-            return diff >= 1 && diff < 60;
+            return diff >= 1 && diff < buyDelta;
         };
     }
 
     private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond();
-            return diff >= 1 && diff < 60;
+            return diff >= 1 && diff < sellDelta;
         };
     }
 
