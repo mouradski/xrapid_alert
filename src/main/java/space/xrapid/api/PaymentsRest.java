@@ -34,7 +34,13 @@ public class PaymentsRest {
     @GET
     @Produces("application/json")
     @Path("/search")
-    public List<ExchangeToExchangePayment> search(@QueryParam("from") Long from, @QueryParam("to") Long to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination) {
+    public List<ExchangeToExchangePayment> search(@QueryParam("key") String apiKey, @QueryParam("from") Long from, @QueryParam("to") Long to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination) {
+
+        if (apiKey != null && from != null && to != null) {
+            apiKeyService.validateKey(apiKey);
+            return exchangeToExchangePaymentService.getPayments(from, to);
+        }
+
         return exchangeToExchangePaymentService.search(from, to, source, destination);
     }
 
