@@ -1,6 +1,7 @@
 package space.xrapid.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.Stats;
 import space.xrapid.service.ApiKeyService;
@@ -28,6 +29,19 @@ public class PaymentsRest {
             return exchangeToExchangePaymentService.getPayments(from, to);
         }
         return exchangeToExchangePaymentService.getLasts().stream().sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime)).collect(Collectors.toList());
+    }
+
+    @GET
+    @Produces("application/json")
+    @Path("/search")
+    public List<ExchangeToExchangePayment> search(@QueryParam("key") String apiKey, @QueryParam("from") Long from, @QueryParam("to") Long to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination) {
+
+        if (apiKey != null && from != null && to != null) {
+            apiKeyService.validateKey(apiKey);
+            return exchangeToExchangePaymentService.getPayments(from, to);
+        }
+
+        return exchangeToExchangePaymentService.search(from, to, source, destination);
     }
 
     @GET
