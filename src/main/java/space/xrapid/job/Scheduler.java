@@ -82,7 +82,7 @@ public class Scheduler {
             // Scan all XRPL TRX between exchanges that providing API
             List<CompletableFuture<List<ExchangeToExchangePayment>>> endToEndFeatures = new ArrayList<>();
             destinationFiats.forEach(fiat -> {
-                availableExchangesWithApi.stream()
+                availableExchangesWithApi.parallelStream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             Stream.of(30, 60, 120, 180).forEach(delta -> {
