@@ -52,6 +52,8 @@ public enum Exchange {
     COINFIELD_EUR("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_AED("coinfield", true, AED, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
 
+    BINANCE_RUB("binance", true, RUB, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
+
     WAZIRX("Wazirx", true, INR, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "\trJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
     KRAKEN_USD("kraken", true, USD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),

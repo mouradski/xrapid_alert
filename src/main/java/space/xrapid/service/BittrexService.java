@@ -20,8 +20,6 @@ public class BittrexService implements TradeService {
 
     private String apiUrl = "https://api.bittrex.com/api/v1.1/public/getmarkethistory?market=USD-XRP&limit=10";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
@@ -57,9 +55,5 @@ public class BittrexService implements TradeService {
                 .rate(Double.valueOf(trade.getPrice()))
                 .side(trade.getOrderType().toLowerCase())
                 .build();
-    }
-
-    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return trade -> begin.minusMinutes(2).isBefore(trade.getDateTime());
     }
 }

@@ -19,8 +19,6 @@ public class BraziliexService implements TradeService {
 
     private String apiUrl = "https://braziliex.com/api/v1/public/tradehistory/xrp_brl/{TIMESTAMP}";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         String urlGet = apiUrl.replace("{TIMESTAMP}", String.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond() * 1000));

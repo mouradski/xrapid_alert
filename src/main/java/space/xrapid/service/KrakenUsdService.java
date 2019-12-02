@@ -21,8 +21,6 @@ public class KrakenUsdService implements TradeService {
 
     private String apiUrl = "https://api.kraken.com/0/public/Trades?pair={pair}";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();

@@ -21,8 +21,6 @@ public class BitcoinTradeService implements TradeService {
 
     private String url = "https://api.bitcointrade.com.br/v2/public/BRLXRP/trades?start_time={start_time}&page_size=1000&current_page={current_page}";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
 
@@ -82,9 +80,5 @@ public class BitcoinTradeService implements TradeService {
 
     private String transformDate(String date) {
         return date.replaceAll("\\..+", "+00:00");
-    }
-
-    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.minusMinutes(2).isBefore(p.getDateTime());
     }
 }

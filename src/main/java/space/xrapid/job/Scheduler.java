@@ -85,7 +85,7 @@ public class Scheduler {
                 availableExchangesWithApi.parallelStream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            Stream.of(30, 60, 120, 180).forEach(delta -> {
+                            Stream.of(30, 60, 90, 120, 180, 240).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat, delta, delta).searchXrapidPayments(payments, allTrades, rate);
                             });
                         });

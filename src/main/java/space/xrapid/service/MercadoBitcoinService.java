@@ -23,8 +23,6 @@ public class MercadoBitcoinService implements TradeService {
 
     private String apiUrl = "https://www.mercadobitcoin.net/api/XRP/trades/{FROM}/{TO}/";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();

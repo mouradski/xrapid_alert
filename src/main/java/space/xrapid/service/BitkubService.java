@@ -19,9 +19,6 @@ import java.util.stream.Collectors;
 @Service
 public class BitkubService implements TradeService {
 
-    private RestTemplate restTemplate = new RestTemplate();
-
-
     private String apiUrl = "https://api.bitkub.com/api/market/trades?sym=THB_XRP&lmt=10000";
 
     @Override
@@ -59,7 +56,4 @@ public class BitkubService implements TradeService {
                 .build();
     }
 
-    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.minusMinutes(2).isBefore(p.getDateTime());
-    }
 }

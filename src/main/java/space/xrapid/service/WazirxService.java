@@ -20,8 +20,6 @@ public class WazirxService implements TradeService {
 
     private String apiUrl = "https://api.wazirx.com/api/v2/trades?market=xrpinr";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
@@ -45,10 +43,6 @@ public class WazirxService implements TradeService {
                 .rate(Double.valueOf(trade.getPrice()))
                 .side("buy".equals(trade.getSide()) ? "buy" : "sell")
                 .build();
-    }
-
-    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return trade -> begin.minusMinutes(2).isBefore(trade.getDateTime());
     }
 
     @Override

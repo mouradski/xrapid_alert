@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 @Service
 public class BitstampUsdService implements TradeService {
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd";
 
     private boolean firstCall = true;

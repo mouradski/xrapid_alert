@@ -24,8 +24,6 @@ public class BitsoService implements TradeService {
 
     private String url = "https://api.bitso.com/v3/trades/?book=xrp_mxn&sort=desc&limit=100";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
     public List<Trade> fetchTrades(OffsetDateTime begin) {
@@ -66,7 +64,7 @@ public class BitsoService implements TradeService {
 
     private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
-                .filter(filterTradePerDate(begin))
+                .filter(filterBitsoTradePerDate(begin))
                 .map(space.xrapid.domain.bitso.Trade::getTid)
                 .sorted()
                 .findFirst()
@@ -75,9 +73,9 @@ public class BitsoService implements TradeService {
 
     private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
-                .filter(filterTradePerDate(begin))
                 .sorted(Comparator.comparing(space.xrapid.domain.bitso.Trade::getCreatedAt))
                 .map(this::mapTrade)
+                .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
@@ -92,7 +90,7 @@ public class BitsoService implements TradeService {
                 .build();
     }
 
-    private Predicate<space.xrapid.domain.bitso.Trade> filterTradePerDate(OffsetDateTime begin) {
+    private Predicate<space.xrapid.domain.bitso.Trade> filterBitsoTradePerDate(OffsetDateTime begin) {
         return p -> begin.minusMinutes(2).isBefore(OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
     }
 

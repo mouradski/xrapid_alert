@@ -11,7 +11,6 @@ import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.Stats;
 import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -25,9 +24,6 @@ public class ExchangeToExchangePaymentService {
 
     @Autowired
     private ExchangeToExchangePaymentRepository repository;
-
-    @Autowired
-    private EntityManager em;
 
     private Map<OffsetDateTime, Double> dailyVolumes = new HashMap<>();
 

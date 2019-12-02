@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 @Service
 public class BxService implements TradeService {
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     private String apiUrl = "https://bx.in.th/api/trade/?pairing=xrp";
 
     @PostConstruct

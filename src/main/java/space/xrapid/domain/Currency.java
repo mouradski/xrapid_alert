@@ -13,5 +13,6 @@ public enum Currency {
     CAD,
     JPY,
     AED,
-    INR
+    INR,
+    RUB
 }

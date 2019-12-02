@@ -20,8 +20,6 @@ public class BtcMarketsService implements TradeService {
 
     private String url = "https://api.btcmarkets.net/v3/markets/XRP-AUD/trades";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
 
@@ -57,10 +55,6 @@ public class BtcMarketsService implements TradeService {
                 .rate(trade.getPrice())
                 .exchange(Exchange.BTC_MARKETS)
                 .build();
-    }
-
-    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return trade -> begin.minusMinutes(2).isBefore(trade.getDateTime());
     }
 
     private String transformDate(String date) {
