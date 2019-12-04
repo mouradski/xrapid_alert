@@ -48,8 +48,10 @@ public class ExchangeToExchangePaymentService {
         try {
             OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
             OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-            double allTimeVolume = repository.getAllTimeVolume();
+            Double allTimeVolume = repository.getAllTimeVolume();
             Double todayVolume = repository.getVolumeBetween(today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+
+            String[] days = new String[11];
 
             if (todayVolume == null) {
                 todayVolume = 0d;
@@ -83,6 +85,9 @@ public class ExchangeToExchangePaymentService {
 
             double[] volumePerDay = new double[11];
             volumePerDay[10] = roundVolume(todayVolume);
+
+            days[10] = "Today";
+
             for (int i = 9; i >= 0; i--) {
                 Double volume = repository.getVolumeBetween(today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
 
@@ -92,6 +97,8 @@ public class ExchangeToExchangePaymentService {
                 } else {
                     volumePerDay[9 - i] = roundVolume(volume);
                 }
+
+                days[9 - i] = today.minusDays(1 * (i + 1)).toString().substring(0, 10);
             }
 
             calculateDailyVolumes();
@@ -107,6 +114,7 @@ public class ExchangeToExchangePaymentService {
                     .allTimeFrom(repository.getFirstOdl().getDateTime())
                     .last5DaysOdlVolume(volumePerDay)
                     .athDaylyVolume(athDayVolume)
+                    .days(days)
                     .build();
         } catch (Exception e) {
             return null;

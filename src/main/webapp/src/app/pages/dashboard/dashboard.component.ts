@@ -44,7 +44,7 @@ export class DashboardComponent implements OnInit {
     this.lastTransaction = new Payment();
     this.httpClient.get<Stats>('/api/payments/stats').subscribe(data => {
       _this.stats = data;
-      this.draw5DaysHistory(data.last5DaysOdlVolume);
+      this.draw5DaysHistory(data.last5DaysOdlVolume, data.days);
       this.drawVolumesByCorridor(data.topVolumes);
     })
 
@@ -107,7 +107,7 @@ export class DashboardComponent implements OnInit {
   }
 
 
-  draw5DaysHistory(updatedData:Array<number>) {
+  draw5DaysHistory(updatedData:Array<number>, days:Array<string>) {
     let gradientChartOptionsConfigurationWithTooltipRed: any = {
       maintainAspectRatio: false,
       legend: {
@@ -188,6 +188,7 @@ export class DashboardComponent implements OnInit {
 
     if (updatedData) {
       data.datasets[0].data = updatedData;
+      data.labels = days;
     } else {
       data.datasets[0].data = [0,0,0,0,0,0];
     }
@@ -310,4 +311,5 @@ export class Stats {
   allTimeFrom: string;
   last5DaysOdlVolume: Array<number>;
   topVolumes: Map<string, number>;
+  days: Array<string>;
 }
