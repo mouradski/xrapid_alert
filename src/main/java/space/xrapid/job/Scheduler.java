@@ -52,6 +52,7 @@ public class Scheduler {
     @Autowired
     private RateService rateService;
 
+    private ForkJoinPool customThreadPool = new ForkJoinPool(3);
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
@@ -91,7 +92,6 @@ public class Scheduler {
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
-            ForkJoinPool customThreadPool = new ForkJoinPool(3);
 
             destinationFiats.forEach(fiat -> {
                 customThreadPool.submit(() -> availableExchangesWithApi.parallelStream()
@@ -136,7 +136,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(400);
+        windowStart = windowEnd.minusMinutes(500);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
