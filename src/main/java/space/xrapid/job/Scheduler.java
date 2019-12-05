@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Stats;
 import space.xrapid.domain.Trade;
@@ -21,13 +22,9 @@ import space.xrapid.service.XrpLedgerService;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-
-import space.xrapid.domain.Currency;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,8 +49,6 @@ public class Scheduler {
     @Autowired
     private RateService rateService;
 
-    private ForkJoinPool customThreadPool = new ForkJoinPool(3);
-
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
@@ -65,9 +60,8 @@ public class Scheduler {
         OffsetDateTime windowStartRollback = windowStart;
         OffsetDateTime windowEndRollback = windowEnd;
 
-        List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).filter(exchange -> exchange.isConfirmed()).collect(Collectors.toList());
-        List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).collect(Collectors.toList());
-
+        List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).filter(Exchange::isConfirmed).collect(Collectors.toList());
+        List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).filter(Exchange::isConfirmed).collect(Collectors.toList());
 
         Set<Currency> destinationFiats = availableExchangesWithApi.stream().map(Exchange::getLocalFiat).collect(Collectors.toSet());
 
@@ -84,7 +78,6 @@ public class Scheduler {
                 }
             });
 
-
             double rate = rateService.getXrpUsdRate();
 
             log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(5), windowEnd);
@@ -94,15 +87,14 @@ public class Scheduler {
             // Scan all XRPL TRX between exchanges that providing API
 
             destinationFiats.forEach(fiat -> {
-                customThreadPool.submit(() -> availableExchangesWithApi.parallelStream()
+            availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            Arrays.asList(30, 60, 90, 120, 180, 300).forEach(delta -> {
+                            Arrays.asList(30, 60, 90, 120, 180, 260).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat, delta, delta).searchXrapidPayments(payments, allTrades, rate);
                             });
-                        }));
+                        });
             });
-
 
             // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
             availableExchangesWithApi.forEach(exchange -> {
@@ -129,14 +121,14 @@ public class Scheduler {
             windowStart = windowStartRollback;
             windowEnd = windowEndRollback;
 
-            Thread.sleep(60000);
+            Thread.sleep(30000);
         }
 
     }
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(500);
+        windowStart = windowEnd.minusMinutes(60);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
