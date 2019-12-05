@@ -45,41 +45,41 @@ public enum Exchange {
 
 
 
-    COINFIELD_USD("coinfield", true, USD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-    COINFIELD_CAD("coinfield", true, CAD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_USD("coinfield", false, USD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_CAD("coinfield", false, CAD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_JPY("coinfield", true, JPY, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_GBP("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_EUR("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_AED("coinfield", true, AED, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
 
-    BINANCE_RUB("binance", true, RUB, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
+    BINANCE_RUB("binance", false, RUB, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
 
     WAZIRX("Wazirx", true, INR, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "\trJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
-    KRAKEN_USD("kraken", true, USD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-    KRAKEN_EUR("kraken", true, EUR, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-    KRAKEN_JPY("kraken", true, JPY, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-    KRAKEN_CAD("kraken", true, CAD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+    KRAKEN_USD("kraken", false, USD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+    KRAKEN_EUR("kraken", false, EUR, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+    KRAKEN_JPY("kraken", false, JPY, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+    KRAKEN_CAD("kraken", false, CAD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
 
     COIN_PH("coin.ph", true, PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
     COINBENE("coinbene", false, BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
-    MERCADO("mercado", false, BRL, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
+    MERCADO("mercado", true, BRL, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
 
-    BRAZILIEX("braziliex", false, BRL,
+    BRAZILIEX("braziliex", true, BRL,
             "__UNKNOW__"),
 
-    BITCOIN_TRADE("bitcoin_trade", false, BRL, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),
+    BITCOIN_TRADE("bitcoin_trade", true, BRL, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),
 
 
-    BITREX("bitrex", true, USD,
+    BITREX("bitrex", false, USD,
             "_TO_DELETE_"),
 
     BITTREX("bitrex", true, USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
 
-    DCEX("dcex", true, USD, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
+    DCEX("dcex", false, USD, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
 
     BTC_MARKETS("btc_market", true, AUD, "r94JFtstbXmyG21h3RHKcNfkAHxAQ6HSGC", "rL3ggCUKaiR1iywkGW6PACbn3Y8g5edWiY", "rU7xJs7QmjbiyxpEozNYUFQxaRD5kueY7z"),
 
