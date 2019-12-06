@@ -73,10 +73,9 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .filter(this::xrpToFiatTradesExists)
-                .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(payment -> persistPayment(payment, true));
+                .forEach(payment -> persistPayment(payment, true));
 
-            paymentsToProcess.stream()
+        paymentsToProcess.stream()
                     .map(this::mapPayment)
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
@@ -116,6 +115,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             xrapidInboundAddressService.add(exchangeToFiatPayment);
             log.info("{}:{} added as ODL destination candidate.", exchangeToFiatPayment.getDestinationAddress(), exchangeToFiatPayment.getTag());
         }
-       super.persistPayment(exchangeToFiatPayment);
+
+        super.persistPayment(exchangeToFiatPayment);
     }
 }

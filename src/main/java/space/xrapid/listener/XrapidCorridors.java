@@ -198,7 +198,8 @@ public abstract class XrapidCorridors {
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
             return false;
         }
-        exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestinationFiat());
+
+
 
         List<List<Trade>> candidates = new ArrayList<>();
 
@@ -228,6 +229,8 @@ public abstract class XrapidCorridors {
 
             exchangeToExchangePayment.setOutTradeFound(true);
             exchangeToExchangePayment.setTradeOutIds(tradeIds);
+
+            exchangeToExchangePayment.setSourceFiat(trades.get(0).getExchange().getLocalFiat());
 
             tradesIdAlreadyProcessed.addAll(trades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
 

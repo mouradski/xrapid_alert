@@ -19,7 +19,7 @@ public class XrapidInboundAddressService {
     @Transactional
     public void add(ExchangeToExchangePayment payment) {
 
-        XrapidInboundAddress inboundXrapidCorridors = xrapidInboundAddressRepository.getByAddressAndTag(payment.getDestinationAddress(), payment.getTag());
+        XrapidInboundAddress inboundXrapidCorridors = xrapidInboundAddressRepository.getByAddressAndTagAndSourceFiat(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat());
 
         if (inboundXrapidCorridors == null) {
             inboundXrapidCorridors = XrapidInboundAddress.builder().address(payment.getDestinationAddress()).tag(payment.getTag()).sourceFiat(payment.getSourceFiat()).recurrence(1).build();

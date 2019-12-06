@@ -10,6 +10,6 @@ import java.util.Set;
 @Repository
 public interface XrapidInboundAddressRepository extends JpaRepository<XrapidInboundAddress, Integer> {
     boolean existsByAddressAndTag(String address, long tag);
-    XrapidInboundAddress getByAddressAndTag(String address, long tag);
+    XrapidInboundAddress getByAddressAndTagAndSourceFiat(String address, long tag, Currency sourceFiat);
     boolean existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(String address, Long tag, Currency sourceFiat, int minRecurrence);
 }
