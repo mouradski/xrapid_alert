@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.XrapidInboundAddress;
+import space.xrapid.listener.inbound.InboundXrapidCorridors;
 import space.xrapid.repository.XrapidInboundAddressRepository;
 
 @Service
@@ -17,26 +18,20 @@ public class XrapidInboundAddressService {
     private XrapidInboundAddressRepository xrapidInboundAddressRepository;
 
     @Transactional
-    public void add(XrapidInboundAddress xrapidInboundAddress) {
-        if (!isXrapidInbound(xrapidInboundAddress.getAddress(), xrapidInboundAddress.getTag())) {
-            xrapidInboundAddressRepository.save(xrapidInboundAddress);
-        }
-    }
-
-    @Transactional
     public void add(ExchangeToExchangePayment payment) {
-        if (!isXrapidInbound(payment.getSourceAddress(), payment.getTag())) {
-            add(payment.getSourceAddress(), payment.getTag());
+
+        XrapidInboundAddress inboundXrapidCorridors = xrapidInboundAddressRepository.getByAddressAndTag(payment.getDestinationAddress(), payment.getTag());
+
+        if (inboundXrapidCorridors == null) {
+            inboundXrapidCorridors = XrapidInboundAddress.builder().address(payment.getDestinationAddress()).tag(payment.getTag()).recurrence(1).build();
+        } else {
+            inboundXrapidCorridors.setRecurrence(inboundXrapidCorridors.getRecurrence() + 1);
         }
+
+        xrapidInboundAddressRepository.save(inboundXrapidCorridors);
     }
 
-    @Transactional
-    public void add(String address, Long tag) {
-        log.info("Persistance tag xrapid : {}:{}", address, tag );
-        add(XrapidInboundAddress.builder().address(address).tag(tag).build());
-    }
-
-    public boolean isXrapidInbound(String address, Long tag) {
-        return xrapidInboundAddressRepository.existsByAddressAndTag(address, tag);
+    public boolean isXrapidDestination(ExchangeToExchangePayment payment) {
+        return xrapidInboundAddressRepository.existsByAddressAndTagAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), 30);
     }
 }

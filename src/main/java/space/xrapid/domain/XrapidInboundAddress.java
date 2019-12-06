@@ -21,4 +21,6 @@ public class XrapidInboundAddress {
 
     private String address;
     private Long tag;
+
+    private int recurrence;
 }

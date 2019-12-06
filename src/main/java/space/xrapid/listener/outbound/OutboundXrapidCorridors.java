@@ -11,10 +11,8 @@ import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,20 +34,19 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
     }
 
     @Override
-    protected List<ExchangeToExchangePayment> submit(List<Payment> payments) {
+    protected void submit(List<Payment> payments) {
         List<Payment> paymentsToProcess = payments.stream()
                 .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
         if (paymentsToProcess.isEmpty()) {
-            return new ArrayList<>();
+            return;
         }
 
-        return paymentsToProcess.stream()
+        paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(this::persistPayment)
-                .collect(Collectors.toList());
+                .peek(this::persistPayment);
     }
 
     @Override

@@ -14,10 +14,7 @@ import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
 import space.xrapid.listener.inbound.InboundXrapidCorridors;
 import space.xrapid.listener.outbound.OutboundXrapidCorridors;
-import space.xrapid.service.ExchangeToExchangePaymentService;
-import space.xrapid.service.RateService;
-import space.xrapid.service.TradeService;
-import space.xrapid.service.XrpLedgerService;
+import space.xrapid.service.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -41,6 +38,9 @@ public class Scheduler {
 
     @Autowired
     private ExchangeToExchangePaymentService exchangeToExchangePaymentService;
+
+    @Autowired
+    private XrapidInboundAddressService xrapidInboundAddressService;
 
 
     @Autowired
@@ -93,7 +93,7 @@ public class Scheduler {
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             Arrays.asList(30, 60, 90, 120, 180).forEach(delta -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat, delta, delta).searchXrapidPayments(payments, allTrades, rate);
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta).searchXrapidPayments(payments, allTrades, rate);
                             });
                         });
             });

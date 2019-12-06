@@ -237,15 +237,15 @@ public abstract class XrapidCorridors {
         return false;
     }
 
-    protected List<ExchangeToExchangePayment> submit(List<Payment> payments) {
+    protected void submit(List<Payment> payments) {
         List<Payment> paymentsToProcess = payments.stream()
                 .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
         if (paymentsToProcess.isEmpty()) {
-            return new ArrayList<>();
+            return;
         }
 
-        return paymentsToProcess.stream()
+        paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::xrpToFiatTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))

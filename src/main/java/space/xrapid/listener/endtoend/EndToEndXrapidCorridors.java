@@ -2,23 +2,24 @@ package space.xrapid.listener.endtoend;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.scheduling.annotation.Async;
 import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class EndToEndXrapidCorridors extends XrapidCorridors {
+
+    private XrapidInboundAddressService xrapidInboundAddressService;
+
     private Exchange destinationExchange;
 
     private Currency sourceFiat;
@@ -31,9 +32,11 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         return sourceFiat;
     }
 
-    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta) {
+    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta) {
 
         super(exchangeToExchangePaymentService, messagingTemplate, null);
+
+        this.xrapidInboundAddressService = xrapidInboundAddressService;
 
         this.buyDelta = buyDelta;
         this.sellDelta = sellDelta;
@@ -57,21 +60,26 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     }
 
     @Override
-    protected List<ExchangeToExchangePayment> submit(List<Payment> payments) {
+    protected void submit(List<Payment> payments) {
         List<Payment> paymentsToProcess = payments.stream()
                 .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
         if (paymentsToProcess.isEmpty()) {
-            return new ArrayList<>();
+            return;
         }
 
-        return paymentsToProcess.stream()
+        paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .filter(this::xrpToFiatTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(this::persistPayment)
-                .collect(Collectors.toList());
+                .peek(payment -> persistPayment(payment, true));
+
+        paymentsToProcess.stream()
+                .map(this::mapPayment)
+                .filter(xrapidInboundAddressService::isXrapidDestination)
+                .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
+                .peek(payment -> persistPayment(payment, false));
     }
 
     @Override
@@ -99,5 +107,12 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment, boolean includetag) {
+        if (includetag) {
+            xrapidInboundAddressService.add(exchangeToFiatPayment);
+        }
+       super.persistPayment(exchangeToFiatPayment);
     }
 }

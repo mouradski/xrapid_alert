@@ -4,7 +4,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.kraken.Trades;
@@ -32,7 +31,10 @@ public class KrakenUsdService implements TradeService {
                 .stream()
                 .findFirst().get();
 
-        return trades.stream().map(this::mapTrade).collect(Collectors.toList());
+        return trades.stream()
+                .map(this::mapTrade)
+                .filter(filterTradePerDate(begin))
+                .collect(Collectors.toList());
     }
 
     @Override
