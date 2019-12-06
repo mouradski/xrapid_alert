@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.XrapidInboundAddress;
-import space.xrapid.listener.inbound.InboundXrapidCorridors;
 import space.xrapid.repository.XrapidInboundAddressRepository;
 
 @Service
@@ -23,7 +22,7 @@ public class XrapidInboundAddressService {
         XrapidInboundAddress inboundXrapidCorridors = xrapidInboundAddressRepository.getByAddressAndTag(payment.getDestinationAddress(), payment.getTag());
 
         if (inboundXrapidCorridors == null) {
-            inboundXrapidCorridors = XrapidInboundAddress.builder().address(payment.getDestinationAddress()).tag(payment.getTag()).recurrence(1).build();
+            inboundXrapidCorridors = XrapidInboundAddress.builder().address(payment.getDestinationAddress()).tag(payment.getTag()).sourceFiat(payment.getSourceFiat()).recurrence(1).build();
         } else {
             inboundXrapidCorridors.setRecurrence(inboundXrapidCorridors.getRecurrence() + 1);
         }
@@ -32,7 +31,7 @@ public class XrapidInboundAddressService {
     }
 
     public boolean isXrapidDestination(ExchangeToExchangePayment payment) {
-        boolean result =  xrapidInboundAddressRepository.existsByAddressAndTagAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), 30);
+        boolean result =  xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat(), 30);
         log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
         return result;
     }

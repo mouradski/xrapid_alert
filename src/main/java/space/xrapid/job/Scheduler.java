@@ -6,10 +6,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import space.xrapid.domain.Currency;
-import space.xrapid.domain.Exchange;
-import space.xrapid.domain.Stats;
-import space.xrapid.domain.Trade;
+import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
 import space.xrapid.listener.inbound.InboundXrapidCorridors;
@@ -53,8 +50,9 @@ public class Scheduler {
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 120000)
     public void odl() throws Exception {
+
 
         OffsetDateTime lastWindowEndRollback = lastWindowEnd;
         OffsetDateTime windowStartRollback = windowStart;
@@ -132,7 +130,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(300);
+        windowStart = windowEnd.minusMinutes(100);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

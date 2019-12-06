@@ -1,17 +1,14 @@
 package space.xrapid.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class XrapidInboundAddress {
 
@@ -20,7 +17,10 @@ public class XrapidInboundAddress {
     private Integer id;
 
     private String address;
-    private Long tag;
+    private long tag;
+
+    @Enumerated(EnumType.STRING)
+    private Currency sourceFiat;
 
     private int recurrence;
 }

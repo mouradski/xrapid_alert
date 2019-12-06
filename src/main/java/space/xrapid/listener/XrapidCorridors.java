@@ -111,7 +111,7 @@ public abstract class XrapidCorridors {
 
             if (exchangeToFiatPayment.getFiatToXrpTrades() != null) {
                 exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getFiatToXrpTrades().get(0).getExchange().getLocalFiat());
-            } else {
+            } else if (exchangeToFiatPayment.getSourceFiat() == null) {
                 exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
             }
 

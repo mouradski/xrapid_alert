@@ -68,6 +68,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             return;
         }
 
+
         paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
@@ -75,13 +76,12 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .peek(payment -> persistPayment(payment, true));
 
-        paymentsToProcess.stream()
-                .map(this::mapPayment)
-                .filter(payment -> payment.getSource().getLocalFiat().equals(this.getSourceFiat()))
-                .filter(payment -> payment.getDestination().equals(this.getDestinationExchange()))
-                .filter(xrapidInboundAddressService::isXrapidDestination)
-                .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(payment -> persistPayment(payment, false));
+            paymentsToProcess.stream()
+                    .map(this::mapPayment)
+                    .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
+                    .peek(payment -> payment.setSourceFiat(this.sourceFiat))
+                    .filter(xrapidInboundAddressService::isXrapidDestination)
+                    .forEach(payment -> persistPayment(payment, false));
     }
 
     @Override
