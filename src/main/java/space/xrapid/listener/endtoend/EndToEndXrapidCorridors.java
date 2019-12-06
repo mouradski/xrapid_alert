@@ -77,6 +77,8 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
         paymentsToProcess.stream()
                 .map(this::mapPayment)
+                .filter(payment -> payment.getSource().getLocalFiat().equals(this.getSourceFiat()))
+                .filter(payment -> payment.getDestination().equals(this.getDestinationExchange()))
                 .filter(xrapidInboundAddressService::isXrapidDestination)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .peek(payment -> persistPayment(payment, false));
