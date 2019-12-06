@@ -30,6 +30,7 @@ public class BinanceRubService implements TradeService {
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
+                .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
