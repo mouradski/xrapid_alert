@@ -74,7 +74,9 @@ public class Scheduler {
                 .filter(service -> service.getExchange().isConfirmed())
                 .forEach(tradeService -> {
                 try {
-                    allTrades.addAll(tradeService.fetchTrades(windowStart));
+                    List<Trade> trades = tradeService.fetchTrades(windowStart);
+                    allTrades.addAll(trades);
+                    log.info("{} trades fetched from {}", trades.size(), tradeService.getExchange());
                 } catch (Exception e) {
                     log.error("Error fetching {} trades", tradeService.getExchange());
                 }

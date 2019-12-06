@@ -114,6 +114,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment, boolean includetag) {
         if (includetag) {
             xrapidInboundAddressService.add(exchangeToFiatPayment);
+            log.info("{}:{} added as ODL destination candidate.", exchangeToFiatPayment.getDestinationAddress(), exchangeToFiatPayment.getTag());
         }
        super.persistPayment(exchangeToFiatPayment);
     }

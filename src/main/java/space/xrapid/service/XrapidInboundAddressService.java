@@ -32,6 +32,8 @@ public class XrapidInboundAddressService {
     }
 
     public boolean isXrapidDestination(ExchangeToExchangePayment payment) {
-        return xrapidInboundAddressRepository.existsByAddressAndTagAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), 30);
+        boolean result =  xrapidInboundAddressRepository.existsByAddressAndTagAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), 30);
+        log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
+        return result;
     }
 }
