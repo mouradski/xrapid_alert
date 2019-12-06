@@ -76,6 +76,8 @@ public enum Exchange {
     BITREX("bitrex", false, USD,
             "_TO_DELETE_"),
 
+    EXMO("exmo", true, UAH, "rUocf1ixKzTuEe34kmVhRvGqNCofY1NJzV", "rUCjhpLHCcuwL1oyQfzPVeWHsjZHaZS6t2", "rsTv5cJK2EMJhYqUUni4sYBonVk7KqTxZg", "rLJPjRYGDVVEjv4VrJtouzqzyJ51YtdZKY"),
+
     BITTREX("bitrex", true, USD,
             "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy"),
 
