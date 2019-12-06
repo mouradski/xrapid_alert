@@ -70,7 +70,9 @@ public class Scheduler {
 
             List<Trade> allTrades = new ArrayList<>();
 
-            tradeServices.forEach(tradeService -> {
+            tradeServices.stream()
+                .filter(service -> service.getExchange().isConfirmed())
+                .forEach(tradeService -> {
                 try {
                     allTrades.addAll(tradeService.fetchTrades(windowStart));
                 } catch (Exception e) {
@@ -80,8 +82,8 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(5), windowEnd);
-            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(5), windowEnd);
+            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(3), windowEnd);
+            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(3), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
@@ -90,7 +92,7 @@ public class Scheduler {
             availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            Arrays.asList(30, 60, 90, 120, 180, 260).forEach(delta -> {
+                            Arrays.asList(30, 60, 90, 120, 180).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, fiat, delta, delta).searchXrapidPayments(payments, allTrades, rate);
                             });
                         });
@@ -128,7 +130,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(60);
+        windowStart = windowEnd.minusMinutes(300);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

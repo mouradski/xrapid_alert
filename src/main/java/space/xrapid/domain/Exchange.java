@@ -49,7 +49,7 @@ public enum Exchange {
     COINFIELD_CAD("coinfield", false, CAD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_JPY("coinfield", true, JPY, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_GBP("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-    COINFIELD_EUR("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_EUR("coinfield", false, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_AED("coinfield", true, AED, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
 
     BINANCE_RUB("binance", false, RUB, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
@@ -63,7 +63,7 @@ public enum Exchange {
 
     COIN_PH("coin.ph", true, PHP, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
-    COINBENE("coinbene", false, BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
+    COINBENE("coinbene", true, BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
     MERCADO("mercado", true, BRL, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
 

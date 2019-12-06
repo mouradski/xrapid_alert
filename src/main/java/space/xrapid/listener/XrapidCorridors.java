@@ -37,8 +37,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude) {
 
-        this.buyDelta = 60;
-        this.sellDelta = 60;
+        this.buyDelta = 90;
+        this.sellDelta = 90;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -257,11 +257,7 @@ public abstract class XrapidCorridors {
 
         double sum = partial.stream().mapToDouble(Trade::getAmount).sum();
 
-        double tolerence = 1;
-
-        if (trxAmount > 1000) {
-            tolerence = 5;
-        }
+        double tolerence = 0.05;
 
         if (trxAmount > 20000) {
             tolerence = 500;
