@@ -30,7 +30,7 @@ public class InboundXrapidCorridors extends XrapidCorridors {
 
         tradesIdAlreadyProcessed = new HashSet<>();
 
-       submit(payments);
+        submit(payments);
     }
 
     @Override
