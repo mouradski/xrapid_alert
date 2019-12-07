@@ -24,6 +24,8 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
     private Currency sourceFiat;
 
+    private boolean requirEndToEnd;
+
     public Exchange getDestinationExchange() {
         return destinationExchange;
     }
@@ -32,7 +34,9 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         return sourceFiat;
     }
 
-    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta) {
+
+    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
+                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requirEndToEnd) {
 
         super(exchangeToExchangePaymentService, messagingTemplate, null);
 
@@ -40,6 +44,8 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
         this.buyDelta = buyDelta;
         this.sellDelta = sellDelta;
+
+        this.requirEndToEnd = requirEndToEnd;
 
         this.sourceFiat = sourceFiat;
         this.destinationExchange = destinationExchange;
@@ -68,19 +74,20 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             return;
         }
 
-
         paymentsToProcess.stream()
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .filter(this::xrpToFiatTradesExists)
                 .forEach(payment -> persistPayment(payment, true));
 
-        paymentsToProcess.stream()
+        if (!requirEndToEnd) {
+            paymentsToProcess.stream()
                     .map(this::mapPayment)
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)
                     .forEach(payment -> persistPayment(payment, false));
+        }
     }
 
     @Override

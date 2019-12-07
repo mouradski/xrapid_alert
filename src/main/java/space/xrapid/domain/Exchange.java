@@ -14,7 +14,7 @@ public enum Exchange {
             "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
             "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
 
-    BITSTAMP_EUR("bitstamp", true, EUR,
+    BITSTAMP_EUR("bitstamp", false, EUR,
             "rrpNnNLKrartuEqfJGpqyDwPj1AFPg9vn1",
             "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
             "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
@@ -47,14 +47,14 @@ public enum Exchange {
 
     COINFIELD_USD("coinfield", false, USD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_CAD("coinfield", false, CAD, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-    COINFIELD_JPY("coinfield", true, JPY, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-    COINFIELD_GBP("coinfield", true, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_JPY("coinfield", false, JPY, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_GBP("coinfield", false, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_EUR("coinfield", false, GBP, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-    COINFIELD_AED("coinfield", true, AED, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_AED("coinfield", false, AED, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
 
     BINANCE_RUB("binance", false, RUB, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
 
-    WAZIRX("Wazirx", true, INR, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "\trJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
+    WAZIRX("Wazirx", false, INR, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "\trJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
     KRAKEN_USD("kraken", false, USD, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
     KRAKEN_EUR("kraken", false, EUR, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),

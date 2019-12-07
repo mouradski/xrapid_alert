@@ -2,6 +2,7 @@ package space.xrapid.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,6 +47,9 @@ public class Scheduler {
     @Autowired
     private RateService rateService;
 
+    @Value("${odl.endtoend.require:true}")
+    private boolean requireEndToEnd;
+
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
@@ -58,8 +62,8 @@ public class Scheduler {
         OffsetDateTime windowStartRollback = windowStart;
         OffsetDateTime windowEndRollback = windowEnd;
 
-        List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).filter(Exchange::isConfirmed).collect(Collectors.toList());
-        List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).filter(Exchange::isConfirmed).collect(Collectors.toList());
+        List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).collect(Collectors.toList());
+        List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).collect(Collectors.toList());
 
         Set<Currency> destinationFiats = availableExchangesWithApi.stream().map(Exchange::getLocalFiat).collect(Collectors.toSet());
 
@@ -82,8 +86,8 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(3), windowEnd);
-            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(3), windowEnd);
+            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(12), windowEnd);
+            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(12), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
@@ -92,8 +96,9 @@ public class Scheduler {
             availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            Arrays.asList(30, 60, 90, 120, 180).forEach(delta -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta).searchXrapidPayments(payments, allTrades, rate);
+                            Arrays.asList(30, 60, 90, 180, 360).forEach(delta -> {
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, requireEndToEnd)
+                                        .searchXrapidPayments(payments, allTrades, rate);
                             });
                         });
             });

@@ -46,7 +46,7 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(this::persistPayment);
+                .forEach(this::persistPayment);
     }
 
     @Override

@@ -34,11 +34,12 @@ public abstract class XrapidCorridors {
 
     protected long buyDelta;
     protected long sellDelta;
+    private static long DEFAULT_TIME_DELTA = 45;
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude) {
 
-        this.buyDelta = 90;
-        this.sellDelta = 90;
+        this.buyDelta = 120;
+        this.sellDelta = 120;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -83,7 +84,7 @@ public abstract class XrapidCorridors {
 
     protected boolean isXrapidCandidate(Payment payment) {
         try {
-            return Double.valueOf(payment.getAmount()) > 10 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
+            return Double.valueOf(payment.getAmount()) > 100 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
 
         } catch (Exception e) {
             return false;
@@ -158,7 +159,7 @@ public abstract class XrapidCorridors {
                     .filter(trade -> trade.getExchange().equals(getDestinationExchange()))
                     .filter(filterXrpToFiatTradePerDate(exchangeToExchangePayment))
                     .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
-                    .collect(Collectors.toList()), exchangeToExchangePayment.getAmount(), candidates);
+                    .collect(Collectors.toList()), exchangeToExchangePayment, candidates);
         });
 
         if (!candidates.isEmpty()) {
@@ -182,6 +183,9 @@ public abstract class XrapidCorridors {
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond();
+            if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
+                return diff >= 1 && diff < DEFAULT_TIME_DELTA;
+            }
             return diff >= 1 && diff < buyDelta;
         };
     }
@@ -189,16 +193,19 @@ public abstract class XrapidCorridors {
     private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             double diff = trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond();
+            if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
+                return diff >= 1 && diff < DEFAULT_TIME_DELTA;
+            }
             return diff >= 1 && diff < sellDelta;
         };
     }
 
     protected boolean fiatToXrpTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
 
-        if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
+        if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())
+                || exchangeToExchangePayment.getSource() == null || exchangeToExchangePayment.getDestination() == null) {
             return false;
         }
-
 
 
         List<List<Trade>> candidates = new ArrayList<>();
@@ -212,9 +219,9 @@ public abstract class XrapidCorridors {
                         .filter(trade -> trade.getExchange().equals(exchangeToExchangePayment.getSource()))
                         .filter(filterFiatToXrpTradePerDate(exchangeToExchangePayment))
                         .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
-                        .collect(Collectors.toList()), exchangeToExchangePayment.getAmount(), candidates);
+                        .collect(Collectors.toList()), exchangeToExchangePayment, candidates);
             } catch (Throwable e) {
-                log.error("Error where trying to find trades candidates for TRX {}", exchangeToExchangePayment);
+                log.error("Error where trying to find trades candidates for TRX {}", exchangeToExchangePayment, e);
             }
         });
 
@@ -252,33 +259,37 @@ public abstract class XrapidCorridors {
                 .map(this::mapPayment)
                 .filter(this::xrpToFiatTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(this::persistPayment)
-                .collect(Collectors.toList());
+                .forEach(this::persistPayment);
     }
 
-    void recursiveFindCandidates(ArrayList<Trade> trades, double trxAmount, ArrayList<Trade> partial, List<List<Trade>> candidates) {
+    void recursiveFindCandidates(ArrayList<Trade> trades, ExchangeToExchangePayment payment, ArrayList<Trade> partial, List<List<Trade>> candidates) {
 
         double sum = partial.stream().mapToDouble(Trade::getAmount).sum();
 
         double tolerence = 0.05;
 
-        if (trxAmount > 20000) {
-            tolerence = 500;
+        if (payment.getDestination().isConfirmed() && payment.getSource().isConfirmed()) {
+
+            tolerence = 0.1;
+
+            if (payment.getAmount() > 20000) {
+                tolerence = 500;
+            }
+
+            if (payment.getAmount() > 40000) {
+                tolerence = 1500;
+            }
+
+            if (payment.getAmount() > 100000) {
+                tolerence = 10000;
+            }
         }
 
-        if (trxAmount > 40000) {
-            tolerence = 1500;
-        }
-
-        if (trxAmount > 100000) {
-            tolerence = 8000;
-        }
-
-        if (Math.abs(sum - trxAmount) < tolerence) {
+        if (Math.abs(sum - payment.getAmount()) < tolerence) {
             candidates.add(partial);
         }
-        
-        if (sum >= trxAmount) {
+
+        if (sum >= payment.getAmount()) {
             return;
         }
 
@@ -289,12 +300,12 @@ public abstract class XrapidCorridors {
 
             partialRec.add(trades.get(i));
 
-            recursiveFindCandidates(remaining, trxAmount, partialRec, candidates);
+            recursiveFindCandidates(remaining, payment, partialRec, candidates);
         }
     }
 
-    void findCandidates(ArrayList<Trade> trades, double trxAmount, List<List<Trade>> candidates) {
-        recursiveFindCandidates(trades, trxAmount, new ArrayList<>(), candidates);
+    void findCandidates(ArrayList<Trade> trades, ExchangeToExchangePayment payment, List<List<Trade>> candidates) {
+        recursiveFindCandidates(trades, payment, new ArrayList<>(), candidates);
     }
 
 }
