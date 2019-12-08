@@ -12,9 +12,9 @@
     </cache>
     <cache alias="lastOdlCache">
         <expiry>
-            <ttl unit="seconds">20</ttl>
+            <ttl unit="seconds">40</ttl>
         </expiry>
-        <heap unit="entries">300</heap>
+        <heap unit="entries">1000</heap>
     </cache>
 
 
