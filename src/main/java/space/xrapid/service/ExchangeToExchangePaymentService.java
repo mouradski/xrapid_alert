@@ -98,7 +98,7 @@ public class ExchangeToExchangePaymentService {
                     volumePerDay[9 - i] = roundVolume(volume);
                 }
 
-                days[9 - i] = today.minusDays(1 * (i + 1)).toString().substring(0, 10);
+                days[9 - i] = today.minusDays(1 * (i + 1)).toString().substring(2, 10);
             }
 
             calculateDailyVolumes();
