@@ -40,9 +40,16 @@
             {{ payment.tradeOutIds }}
           </li>
           <li *ngIf="payment.tradeIds">
-            <span
-              class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
+            <span class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
             {{ payment.tradeIds }}
+          </li>
+          <li *ngIf="!payment.tradeIds && !payment.tradeIds">
+            <span class="modal-desc">
+              ODL based on identified Destination Tag on {{payment.destination}}</span>
+            <br>
+            Probably concerns an ODL client internal liquidity management between two exchanges.
+            <br>
+            This tag was involved in hundreds of ODL transactions spotted at end to end.
           </li>
           <li>
             <span class="modal-desc">Transaction Hash :</span>

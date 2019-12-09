@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.*;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
 import space.xrapid.listener.inbound.InboundXrapidCorridors;
@@ -16,10 +17,7 @@ import space.xrapid.service.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,7 +45,7 @@ public class Scheduler {
     @Autowired
     private RateService rateService;
 
-    @Value("${odl.endtoend.require:true}")
+    @Value("${odl.endtoend.require:false}")
     private boolean requireEndToEnd;
 
     private OffsetDateTime lastWindowEnd;
@@ -96,8 +94,9 @@ public class Scheduler {
             availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
-                            Arrays.asList(30, 60, 90, 180, 360).forEach(delta -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, requireEndToEnd)
+                            final Set<String> tradeIds = new HashSet<>();
+                            Arrays.asList(30, 60, 90, 180).forEach(delta -> {
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, requireEndToEnd, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
                         });

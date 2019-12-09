@@ -21,7 +21,7 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
     private Exchange destinationExchange;
 
     public OutboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, List<Exchange> exchangesWithApi) {
-        super(exchangeToExchangePaymentService, null, messagingTemplate, exchangesWithApi);
+        super(exchangeToExchangePaymentService, null, messagingTemplate, exchangesWithApi, null);
         this.destinationExchange = destinationExchange;
     }
 

@@ -22,8 +22,8 @@ public abstract class XrapidCorridors {
 
     protected List<Trade> trades = new ArrayList<>();
 
-    protected List<String> allExchangeAddresses;
-    protected Set<String> tradesIdAlreadyProcessed = new HashSet<>();
+    protected Set<String> allExchangeAddresses;
+    protected Set<String> tradesIdAlreadyProcessed;
 
     protected double rate;
 
@@ -37,9 +37,9 @@ public abstract class XrapidCorridors {
 
     protected long buyDelta;
     protected long sellDelta;
-    private static long DEFAULT_TIME_DELTA = 45;
+    private static long DEFAULT_TIME_DELTA = 60;
 
-    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude) {
+    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
 
         this.buyDelta = 120;
         this.sellDelta = 120;
@@ -52,8 +52,15 @@ public abstract class XrapidCorridors {
         this.exchangeToExchangePaymentService = exchangeToExchangePaymentService;
         this.xrapidInboundAddressService = xrapidInboundAddressService;
         this.messagingTemplate = messagingTemplate;
+
+        if (usedTradeIds == null) {
+            this.tradesIdAlreadyProcessed = new HashSet<>();
+        } else {
+            this.tradesIdAlreadyProcessed = usedTradeIds;
+        }
+
         allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public abstract Exchange getDestinationExchange();
@@ -215,9 +222,7 @@ public abstract class XrapidCorridors {
             return false;
         }
 
-
         List<List<Trade>> candidates = new ArrayList<>();
-
 
         Stream.of("buy", "sell").forEach(side -> {
             try {
@@ -274,11 +279,9 @@ public abstract class XrapidCorridors {
 
         double sum = partial.stream().mapToDouble(Trade::getAmount).sum();
 
-        double tolerence = 0.05;
+        double tolerence = 0.1;
 
         if (payment.getDestination().isConfirmed() && payment.getSource().isConfirmed()) {
-
-            tolerence = 0.1;
 
             if (payment.getAmount() > 20000) {
                 tolerence = 500;
