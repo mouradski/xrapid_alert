@@ -14,6 +14,10 @@ public interface ExchangeToExchangePaymentRepository extends CrudRepository<Exch
     @Query(value = "SELECT * FROM exchange_payment ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
     List<ExchangeToExchangePayment> findTop(int limit);
 
+
+    @Query(value = "SELECT * FROM exchange_payment WHERE spotted_at = 'DESTINATION_TAG'  ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
+    List<ExchangeToExchangePayment> findTopWithTrades(int limit);
+
     @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep", nativeQuery = true)
     Double getAllTimeVolume();
 

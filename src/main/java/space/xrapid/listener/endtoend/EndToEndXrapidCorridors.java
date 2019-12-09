@@ -10,7 +10,6 @@ import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +23,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
     private Currency sourceFiat;
 
-    private boolean requirEndToEnd;
+    private boolean requireEndToEnd;
 
     public Exchange getDestinationExchange() {
         return destinationExchange;
@@ -36,7 +35,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
 
     public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
-                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requirEndToEnd) {
+                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd) {
 
         super(exchangeToExchangePaymentService, messagingTemplate, null);
 
@@ -45,7 +44,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         this.buyDelta = buyDelta;
         this.sellDelta = sellDelta;
 
-        this.requirEndToEnd = requirEndToEnd;
+        this.requireEndToEnd = requireEndToEnd;
 
         this.sourceFiat = sourceFiat;
         this.destinationExchange = destinationExchange;
@@ -78,15 +77,16 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
                 .map(this::mapPayment)
                 .filter(this::fiatToXrpTradesExists)
                 .filter(this::xrpToFiatTradesExists)
-                .forEach(payment -> persistPayment(payment, true));
+                .forEach(payment -> persistPayment(payment));
 
-        if (!requirEndToEnd) {
+        if (!requireEndToEnd) {
             paymentsToProcess.stream()
                     .map(this::mapPayment)
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)
-                    .forEach(payment -> persistPayment(payment, false));
+                    .peek(payment -> payment.setSpottedAt(SpottedAt.DESTINATION_TAG))
+                    .forEach(payment -> persistPayment(payment));
         }
     }
 
@@ -117,8 +117,8 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         }
     }
 
-    protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment, boolean includetag) {
-        if (includetag) {
+    protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
+        if (SpottedAt.SOURCE_AND_DESTINATION.equals(exchangeToFiatPayment.getSpottedAt())) {
             xrapidInboundAddressService.add(exchangeToFiatPayment);
             log.info("{}:{} added as ODL destination candidate.", exchangeToFiatPayment.getDestinationAddress(), exchangeToFiatPayment.getTag());
         }

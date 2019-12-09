@@ -176,7 +176,7 @@ public class ExchangeToExchangePaymentService {
 
     @Cacheable(value = "lastOdlCache", key = "1")
     public List<ExchangeToExchangePayment> getLasts() {
-        return repository.findTop(1000);
+        return repository.findTopWithTrades(1000);
     }
 
 

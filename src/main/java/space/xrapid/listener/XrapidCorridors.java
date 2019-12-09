@@ -127,7 +127,7 @@ public abstract class XrapidCorridors {
                 return;
             }
 
-            if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
+            if (exchangeToExchangePaymentService.save(exchangeToFiatPayment) && !SpottedAt.DESTINATION_TAG.equals(exchangeToFiatPayment.getSpottedAt())) {
                 notify(exchangeToFiatPayment);
             }
         } catch (Throwable e) {
