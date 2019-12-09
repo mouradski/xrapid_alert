@@ -8,6 +8,7 @@ import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +29,8 @@ public abstract class XrapidCorridors {
 
     protected ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
+    protected XrapidInboundAddressService xrapidInboundAddressService;
+
     protected List<Exchange> exchangesToExclude;
 
     protected SimpMessageSendingOperations messagingTemplate;
@@ -36,7 +39,7 @@ public abstract class XrapidCorridors {
     protected long sellDelta;
     private static long DEFAULT_TIME_DELTA = 45;
 
-    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude) {
+    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude) {
 
         this.buyDelta = 120;
         this.sellDelta = 120;
@@ -47,6 +50,7 @@ public abstract class XrapidCorridors {
             this.exchangesToExclude = exchangesToExclude;
         }
         this.exchangeToExchangePaymentService = exchangeToExchangePaymentService;
+        this.xrapidInboundAddressService = xrapidInboundAddressService;
         this.messagingTemplate = messagingTemplate;
         allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
                 .collect(Collectors.toList());
@@ -128,6 +132,10 @@ public abstract class XrapidCorridors {
             }
 
             if (exchangeToExchangePaymentService.save(exchangeToFiatPayment) && !SpottedAt.DESTINATION_TAG.equals(exchangeToFiatPayment.getSpottedAt())) {
+                if (SpottedAt.SOURCE_AND_DESTINATION.equals(exchangeToFiatPayment.getSpottedAt()) && xrapidInboundAddressService != null) {
+                    xrapidInboundAddressService.add(exchangeToFiatPayment);
+                    log.info("{}:{} added as ODL destination candidate.", exchangeToFiatPayment.getDestinationAddress(), exchangeToFiatPayment.getTag());
+                }
                 notify(exchangeToFiatPayment);
             }
         } catch (Throwable e) {

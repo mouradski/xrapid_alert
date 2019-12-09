@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EndToEndXrapidCorridors extends XrapidCorridors {
 
-    private XrapidInboundAddressService xrapidInboundAddressService;
-
     private Exchange destinationExchange;
 
     private Currency sourceFiat;
@@ -37,9 +35,8 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
                                    SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd) {
 
-        super(exchangeToExchangePaymentService, messagingTemplate, null);
+        super(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, null);
 
-        this.xrapidInboundAddressService = xrapidInboundAddressService;
 
         this.buyDelta = buyDelta;
         this.sellDelta = sellDelta;
@@ -115,14 +112,5 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
-        if (SpottedAt.SOURCE_AND_DESTINATION.equals(exchangeToFiatPayment.getSpottedAt())) {
-            xrapidInboundAddressService.add(exchangeToFiatPayment);
-            log.info("{}:{} added as ODL destination candidate.", exchangeToFiatPayment.getDestinationAddress(), exchangeToFiatPayment.getTag());
-        }
-
-        super.persistPayment(exchangeToFiatPayment);
     }
 }
