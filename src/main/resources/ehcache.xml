@@ -17,6 +17,10 @@
         <heap unit="entries">1000</heap>
     </cache>
 
-
-
+    <cache alias="tags">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+        <heap unit="entries">1000</heap>
+    </cache>
 </config>

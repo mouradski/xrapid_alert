@@ -84,8 +84,8 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(12), windowEnd);
-            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(12), windowEnd);
+            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(4), windowEnd);
+            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(4), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
@@ -95,7 +95,7 @@ public class Scheduler {
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(30, 60, 90, 180).forEach(delta -> {
+                            Arrays.asList(30, 60, 90, 180, 240).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, requireEndToEnd, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });

@@ -41,8 +41,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
 
-        this.buyDelta = 120;
-        this.sellDelta = 120;
+        this.buyDelta = 90;
+        this.sellDelta = 90;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -138,7 +138,7 @@ public abstract class XrapidCorridors {
                 return;
             }
 
-            if (exchangeToExchangePaymentService.save(exchangeToFiatPayment) && !SpottedAt.DESTINATION_TAG.equals(exchangeToFiatPayment.getSpottedAt())) {
+            if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
                 if (SpottedAt.SOURCE_AND_DESTINATION.equals(exchangeToFiatPayment.getSpottedAt()) && xrapidInboundAddressService != null) {
                     xrapidInboundAddressService.add(exchangeToFiatPayment);
                     log.info("{}:{} added as ODL destination candidate.", exchangeToFiatPayment.getDestinationAddress(), exchangeToFiatPayment.getTag());
@@ -187,7 +187,7 @@ public abstract class XrapidCorridors {
             exchangeToExchangePayment.setInTradeFound(true);
             exchangeToExchangePayment.setTradeIds(tradeIds);
 
-            tradesIdAlreadyProcessed.addAll(trades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+            tradesIdAlreadyProcessed.addAll(trades.stream().map(Trade::getOrderId).collect(Collectors.toSet()));
 
             return true;
         }
@@ -279,7 +279,7 @@ public abstract class XrapidCorridors {
 
         double sum = partial.stream().mapToDouble(Trade::getAmount).sum();
 
-        double tolerence = 0.1;
+        double tolerence = 0.2;
 
         if (payment.getDestination().isConfirmed() && payment.getSource().isConfirmed()) {
 
