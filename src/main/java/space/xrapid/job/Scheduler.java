@@ -45,14 +45,12 @@ public class Scheduler {
     @Autowired
     private RateService rateService;
 
-    @Value("${odl.endtoend.require:false}")
-    private boolean requireEndToEnd;
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
-    @Scheduled(fixedDelay = 120000)
+    @Scheduled(fixedDelay = 45000)
     public void odl() throws Exception {
 
 
@@ -84,8 +82,8 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(12), windowEnd);
-            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(12), windowEnd);
+            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(8), windowEnd);
+            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(8), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
@@ -95,12 +93,15 @@ public class Scheduler {
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(30, 60, 90, 180).forEach(delta -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, requireEndToEnd, tradeIds)
+
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 120, 120, true, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
-                            });
+
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 120, 120, false, tradeIds)
+                                    .searchXrapidPayments(payments, allTrades, rate);
                         });
             });
+
 
             // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
             availableExchangesWithApi.forEach(exchange -> {
@@ -134,7 +135,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(100);
+        windowStart = windowEnd.minusMinutes(5);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

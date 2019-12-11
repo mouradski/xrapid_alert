@@ -71,13 +71,14 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             return;
         }
 
-        paymentsToProcess.stream()
-                .map(this::mapPayment)
-                .filter(this::fiatToXrpTradesExists)
-                .filter(this::xrpToFiatTradesExists)
-                .forEach(payment -> persistPayment(payment));
+        if (requireEndToEnd) {
+            paymentsToProcess.stream()
+                    .map(this::mapPayment)
+                    .filter(this::fiatToXrpTradesExists)
+                    .filter(this::xrpToFiatTradesExists)
+                    .forEach(payment -> persistPayment(payment));
 
-        if (!requireEndToEnd) {
+        } else {
             paymentsToProcess.stream()
                     .map(this::mapPayment)
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
