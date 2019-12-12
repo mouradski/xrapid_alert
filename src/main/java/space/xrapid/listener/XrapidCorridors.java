@@ -295,9 +295,7 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean validateAmount(ExchangeToExchangePayment exchangeToExchangePayment, double tradesAmountSum) {
-
         return (Math.abs(exchangeToExchangePayment.getAmount() - tradesAmountSum) < getTolerence(exchangeToExchangePayment));
-
     }
 
     protected double sum(List<Trade> trades) {
@@ -312,7 +310,7 @@ public abstract class XrapidCorridors {
         }
 
         if (payment.getAmount() > 40000) {
-            tolerence = 1000;
+            tolerence = 2000;
         }
 
         if (payment.getAmount() > 80000) {
