@@ -15,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 public abstract class XrapidCorridors {
@@ -35,14 +34,9 @@ public abstract class XrapidCorridors {
 
     protected SimpMessageSendingOperations messagingTemplate;
 
-    protected long buyDelta;
-    protected long sellDelta;
     private static long DEFAULT_TIME_DELTA = 60;
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
-
-        this.buyDelta = 120;
-        this.sellDelta = 120;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -167,8 +161,14 @@ public abstract class XrapidCorridors {
 
         List<List<Trade>> candidates = new ArrayList<>();
 
+        if ("5B122B18FD101D30CDC7CF267044352DB2F43C33DCCB261A0540EC9266CCC4BF".equals(exchangeToExchangePayment.getTransactionHash())) {
+            System.out.println("");
+        }
+
+
         candidates.addAll(getAggregatedInTrades(exchangeToExchangePayment, "sell").values());
         candidates.addAll(getAggregatedInTrades(exchangeToExchangePayment, "buy").values());
+
 
         if (!candidates.isEmpty()) {
 
@@ -204,7 +204,7 @@ public abstract class XrapidCorridors {
             if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
                 return diff >= 1 && diff < DEFAULT_TIME_DELTA;
             }
-            return diff >= 1 && diff < buyDelta;
+            return diff >= 1 && diff < exchangeToExchangePayment.getSource().getBuyDelay();
         };
     }
 
@@ -214,7 +214,7 @@ public abstract class XrapidCorridors {
             if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
                 return diff >= 1 && diff < DEFAULT_TIME_DELTA;
             }
-            return diff >= 1 && diff < sellDelta;
+            return diff >= 1 && diff < exchangeToExchangePayment.getDestination().getSellDelay();
         };
     }
 
@@ -226,7 +226,6 @@ public abstract class XrapidCorridors {
         }
 
         List<List<Trade>> candidates = new ArrayList<>();
-
 
         candidates.addAll(getAggregatedOutTrades(exchangeToExchangePayment, "sell").values());
         candidates.addAll(getAggregatedOutTrades(exchangeToExchangePayment, "buy").values());
@@ -315,14 +314,14 @@ public abstract class XrapidCorridors {
         double tolerence = 0.5;
 
         if (payment.getAmount() > 5000) {
-            tolerence = 10;
+            tolerence = 1;
         } else if (payment.getAmount() > 5000) {
-            tolerence = 500;
+            tolerence = 50;
         } else if (payment.getAmount() > 40000) {
-            tolerence = 3000;
+            tolerence = 100;
         }
         if (payment.getAmount() > 80000) {
-            tolerence = 8000;
+            tolerence = 500;
         }
 
         return tolerence;
@@ -332,24 +331,7 @@ public abstract class XrapidCorridors {
 
         double sum = partial.stream().mapToDouble(Trade::getAmount).sum();
 
-        double tolerence = 0.1;
-
-        if (payment.getDestination().isConfirmed() && payment.getSource().isConfirmed()) {
-
-            if (payment.getAmount() > 20000) {
-                tolerence = 500;
-            }
-
-            if (payment.getAmount() > 40000) {
-                tolerence = 1500;
-            }
-
-            if (payment.getAmount() > 100000) {
-                tolerence = 10000;
-            }
-        }
-
-        if (Math.abs(sum - payment.getAmount()) < tolerence) {
+        if (Math.abs(sum - payment.getAmount()) < getTolerence(payment)) {
             candidates.add(partial);
         }
 

@@ -2,13 +2,14 @@ package space.xrapid.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import space.xrapid.domain.*;
 import space.xrapid.domain.Currency;
+import space.xrapid.domain.Exchange;
+import space.xrapid.domain.Stats;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
 import space.xrapid.listener.inbound.InboundXrapidCorridors;
@@ -17,7 +18,10 @@ import space.xrapid.service.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,16 +73,16 @@ public class Scheduler {
             List<Trade> allTrades = new ArrayList<>();
 
             tradeServices.stream()
-                .filter(service -> service.getExchange().isConfirmed())
-                .forEach(tradeService -> {
-                try {
-                    List<Trade> trades = tradeService.fetchTrades(windowStart);
-                    allTrades.addAll(trades);
-                    log.info("{} trades fetched from {}", trades.size(), tradeService.getExchange());
-                } catch (Exception e) {
-                    log.error("Error fetching {} trades", tradeService.getExchange());
-                }
-            });
+                    .filter(service -> service.getExchange().isConfirmed())
+                    .forEach(tradeService -> {
+                        try {
+                            List<Trade> trades = tradeService.fetchTrades(windowStart);
+                            allTrades.addAll(trades);
+                            log.info("{} trades fetched from {}", trades.size(), tradeService.getExchange());
+                        } catch (Exception e) {
+                            log.error("Error fetching {} trades", tradeService.getExchange());
+                        }
+                    });
 
             double rate = rateService.getXrpUsdRate();
 
@@ -87,17 +91,16 @@ public class Scheduler {
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
-
             destinationFiats.forEach(fiat -> {
-            availableExchangesWithApi.stream()
+                availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
 
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 120, 120, true, tradeIds)
-                                        .searchXrapidPayments(payments, allTrades, rate);
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, true, tradeIds)
+                                    .searchXrapidPayments(payments, allTrades, rate);
 
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 120, 120, false, tradeIds)
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, false, tradeIds)
                                     .searchXrapidPayments(payments, allTrades, rate);
                         });
             });
@@ -135,7 +138,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(5);
+        windowStart = windowEnd.minusMinutes(100);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

@@ -34,13 +34,9 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
 
     public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
-                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds) {
+                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, boolean requireEndToEnd, Set<String> tradeIds) {
 
         super(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, null, tradeIds);
-
-
-        this.buyDelta = buyDelta;
-        this.sellDelta = sellDelta;
 
         this.requireEndToEnd = requireEndToEnd;
 
