@@ -10,6 +10,7 @@ import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,9 +35,13 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
 
     public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
-                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, boolean requireEndToEnd, Set<String> tradeIds) {
+                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds) {
 
         super(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, null, tradeIds);
+
+
+        this.buyDelta = buyDelta;
+        this.sellDelta = sellDelta;
 
         this.requireEndToEnd = requireEndToEnd;
 
@@ -72,6 +77,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
                     .map(this::mapPayment)
                     .filter(this::fiatToXrpTradesExists)
                     .filter(this::xrpToFiatTradesExists)
+                    .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
                     .forEach(payment -> persistPayment(payment));
 
         } else {
@@ -81,6 +87,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)
                     .peek(payment -> payment.setSpottedAt(SpottedAt.DESTINATION_TAG))
+                    .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
                     .forEach(payment -> persistPayment(payment));
         }
     }

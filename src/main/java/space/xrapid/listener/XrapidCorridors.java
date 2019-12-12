@@ -34,9 +34,14 @@ public abstract class XrapidCorridors {
 
     protected SimpMessageSendingOperations messagingTemplate;
 
+    protected long buyDelta;
+    protected long sellDelta;
     private static long DEFAULT_TIME_DELTA = 60;
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
+
+        this.buyDelta = 120;
+        this.sellDelta = 120;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -199,7 +204,7 @@ public abstract class XrapidCorridors {
             if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
                 return diff >= 1 && diff < DEFAULT_TIME_DELTA;
             }
-            return diff >= 1 && diff < exchangeToExchangePayment.getSource().getBuyDelay();
+            return diff >= 1 && diff < buyDelta;
         };
     }
 
@@ -209,7 +214,7 @@ public abstract class XrapidCorridors {
             if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
                 return diff >= 1 && diff < DEFAULT_TIME_DELTA;
             }
-            return diff >= 1 && diff < exchangeToExchangePayment.getDestination().getSellDelay();
+            return diff >= 1 && diff < sellDelta;
         };
     }
 
@@ -299,15 +304,15 @@ public abstract class XrapidCorridors {
         double tolerence = 0.5;
 
         if (payment.getAmount() > 5000) {
-            tolerence = 200;
+            tolerence = 10;
         }
 
         if (payment.getAmount() > 30000) {
-            tolerence = 2000;
+            tolerence = 200;
         }
 
         if (payment.getAmount() > 80000) {
-            tolerence = 5000;
+            tolerence = 500;
         }
 
         return tolerence;
