@@ -40,8 +40,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
 
-        this.buyDelta = 120;
-        this.sellDelta = 120;
+        this.buyDelta = 180;
+        this.sellDelta = 180;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -308,11 +308,11 @@ public abstract class XrapidCorridors {
         }
 
         if (payment.getAmount() > 30000) {
-            tolerence = 200;
+            tolerence = 500;
         }
 
         if (payment.getAmount() > 80000) {
-            tolerence = 500;
+            tolerence = 2000;
         }
 
         return tolerence;
