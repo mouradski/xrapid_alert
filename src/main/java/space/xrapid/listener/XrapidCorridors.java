@@ -157,7 +157,7 @@ public abstract class XrapidCorridors {
         }
 
 
-        if ("19F8C415CD378192722503961F58EC5DF486B64EC223DBAA070D194E900D07E4".equals(exchangeToExchangePayment.getTransactionHash())) {
+        if ("5A4DE5382634057B5C1D59F2C2C182D36EEFF7E77BE318B0E277D935B1548C4C".equals(exchangeToExchangePayment.getTransactionHash())) {
             System.out.println("");
         }
 
@@ -219,7 +219,7 @@ public abstract class XrapidCorridors {
         }
 
 
-        if ("19F8C415CD378192722503961F58EC5DF486B64EC223DBAA070D194E900D07E4".equals(exchangeToExchangePayment.getTransactionHash())) {
+        if ("5A4DE5382634057B5C1D59F2C2C182D36EEFF7E77BE318B0E277D935B1548C4C".equals(exchangeToExchangePayment.getTransactionHash())) {
             System.out.println("");
         }
 
@@ -281,7 +281,7 @@ public abstract class XrapidCorridors {
     }
 
     protected Map<String, List<Trade>> getAggregatedOutTrades(ExchangeToExchangePayment exchangeToExchangePayment, String side) {
-        if ("19F8C415CD378192722503961F58EC5DF486B64EC223DBAA070D194E900D07E4".equals(exchangeToExchangePayment.getTransactionHash())) {
+        if ("5A4DE5382634057B5C1D59F2C2C182D36EEFF7E77BE318B0E277D935B1548C4C".equals(exchangeToExchangePayment.getTransactionHash())) {
             System.out.println("");
         }
 
@@ -309,7 +309,7 @@ public abstract class XrapidCorridors {
             tolerence = 200;
         }
 
-        if (payment.getAmount() > 40000) {
+        if (payment.getAmount() > 30000) {
             tolerence = 2000;
         }
 
