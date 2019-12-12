@@ -90,6 +90,11 @@ public class Scheduler {
             List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(8), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
+
+
+            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, Exchange.BITSO, Currency.USD, true, null)
+                    .searchXrapidPayments(payments, allTrades, rate);
+
             // Scan all XRPL TRX between exchanges that providing API
             destinationFiats.forEach(fiat -> {
                 availableExchangesWithApi.stream()
@@ -97,26 +102,26 @@ public class Scheduler {
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
 
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, true, tradeIds)
-                                    .searchXrapidPayments(payments, allTrades, rate);
+//                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, true, tradeIds)
+//                                    .searchXrapidPayments(payments, allTrades, rate);
 
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, false, tradeIds)
-                                    .searchXrapidPayments(payments, allTrades, rate);
+//                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, false, tradeIds)
+//                                    .searchXrapidPayments(payments, allTrades, rate);
                         });
             });
 
 
-            // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
-            availableExchangesWithApi.forEach(exchange -> {
-                new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
-            });
-
-            // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
-            allConfirmedExchange.stream()
-                    .filter(exchange -> !availableExchangesWithApi.contains(exchange))
-                    .forEach(exchange -> {
-                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
-                    });
+//            // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
+//            availableExchangesWithApi.forEach(exchange -> {
+//                new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+//            });
+//
+//            // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
+//            allConfirmedExchange.stream()
+//                    .filter(exchange -> !availableExchangesWithApi.contains(exchange))
+//                    .forEach(exchange -> {
+//                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
+//                    });
 
 
             Stats stats = exchangeToExchangePaymentService.calculateStats();
@@ -138,7 +143,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(20);
+        windowStart = windowEnd.minusMinutes(130);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

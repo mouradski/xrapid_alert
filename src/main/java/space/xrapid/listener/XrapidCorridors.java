@@ -188,6 +188,13 @@ public abstract class XrapidCorridors {
             }
         });
 
+        if (!exchangeToExchangePayment.isInTradeFound() && SpottedAt.SOURCE_AND_DESTINATION.equals(getSpottedAt())) {
+            exchangeToExchangePayment.getFiatToXrpTrades().stream()
+                    .map(Trade::getOrderId).forEach(orderId -> {
+                tradesIdAlreadyProcessed.remove(orderId);
+            });
+        }
+
         return exchangeToExchangePayment.isInTradeFound();
     }
 
