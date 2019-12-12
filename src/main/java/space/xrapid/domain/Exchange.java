@@ -6,7 +6,7 @@ import static space.xrapid.domain.Currency.*;
 
 public enum Exchange {
 
-    BITSTAMP("bitstamp", true, USD, 180, 180,
+    BITSTAMP("bitstamp", true, USD, 60, 60,
             "rrpNnNLKrartuEqfJGpqyDwPj1AFPg9vn1",
             "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
             "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
@@ -22,7 +22,7 @@ public enum Exchange {
             "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
             "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
 
-    BITSO("bitso",true, MXN, 300, 300,
+    BITSO("bitso",true, MXN, 180, 180,
             "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
             "rHZaDC6tsGN2JWGeXhjKL6664RNCq5hu4B",
             "raXLsnnJVaLMDixEoXHXe56WQXKczbD8ub",

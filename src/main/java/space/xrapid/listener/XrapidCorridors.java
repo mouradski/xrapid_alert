@@ -156,11 +156,6 @@ public abstract class XrapidCorridors {
             return false;
         }
 
-
-        if ("5A4DE5382634057B5C1D59F2C2C182D36EEFF7E77BE318B0E277D935B1548C4C".equals(exchangeToExchangePayment.getTransactionHash())) {
-            System.out.println("");
-        }
-
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestinationFiat());
 
 
@@ -225,12 +220,6 @@ public abstract class XrapidCorridors {
             return false;
         }
 
-
-        if ("5A4DE5382634057B5C1D59F2C2C182D36EEFF7E77BE318B0E277D935B1548C4C".equals(exchangeToExchangePayment.getTransactionHash())) {
-            System.out.println("");
-        }
-
-
         Arrays.asList(getAggregatedOutTrades(exchangeToExchangePayment, "sell").values(),
                 getAggregatedOutTrades(exchangeToExchangePayment, "buy").values()).forEach(aggregatedTrades -> {
             if (!aggregatedTrades.isEmpty()) {
@@ -288,9 +277,6 @@ public abstract class XrapidCorridors {
     }
 
     protected Map<String, List<Trade>> getAggregatedOutTrades(ExchangeToExchangePayment exchangeToExchangePayment, String side) {
-        if ("5A4DE5382634057B5C1D59F2C2C182D36EEFF7E77BE318B0E277D935B1548C4C".equals(exchangeToExchangePayment.getTransactionHash())) {
-            System.out.println("");
-        }
 
         return trades.stream()
                 .filter(trade -> trade.getOrderId() != null)
