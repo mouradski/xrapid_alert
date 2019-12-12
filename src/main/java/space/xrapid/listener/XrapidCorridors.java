@@ -157,45 +157,38 @@ public abstract class XrapidCorridors {
         }
 
 
-        exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestinationFiat());
-
-        List<List<Trade>> candidates = new ArrayList<>();
-
-        if ("5B122B18FD101D30CDC7CF267044352DB2F43C33DCCB261A0540EC9266CCC4BF".equals(exchangeToExchangePayment.getTransactionHash())) {
+        if ("A8A2CED5E2E01283B076864929131C45BAFCB708724328E41428BB3BADEB8CA4".equals(exchangeToExchangePayment.getTransactionHash())) {
             System.out.println("");
         }
 
-
-        candidates.addAll(getAggregatedInTrades(exchangeToExchangePayment, "sell").values());
-        candidates.addAll(getAggregatedInTrades(exchangeToExchangePayment, "buy").values());
+        exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestinationFiat());
 
 
-        if (!candidates.isEmpty()) {
+        Arrays.asList(getAggregatedInTrades(exchangeToExchangePayment, "sell").values(),
+                getAggregatedInTrades(exchangeToExchangePayment, "buy").values()).forEach(aggregatedTrades -> {
 
-            List<List<Trade>> result = new ArrayList<>();
+            if (!aggregatedTrades.isEmpty()) {
 
-            findCandidates(candidates.stream().flatMap(List::stream).collect(Collectors.toList()), exchangeToExchangePayment, result);
+                List<List<Trade>> result = new ArrayList<>();
+
+                findCandidates(aggregatedTrades.stream().flatMap(List::stream).collect(Collectors.toList()), exchangeToExchangePayment, result);
 
 
-            List<Trade> trades = takeClosesTrades(exchangeToExchangePayment, result);
+                List<Trade> trades = takeClosesTrades(exchangeToExchangePayment, result);
 
+                if (validateAmount(exchangeToExchangePayment, sum(trades))) {
+                    exchangeToExchangePayment.setXrpToFiatTrades(trades);
 
-            if (!validateAmount(exchangeToExchangePayment, sum(trades))) {
-                return false;
+                    String tradeIds = trades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
+                    exchangeToExchangePayment.setInTradeFound(true);
+                    exchangeToExchangePayment.setTradeIds(tradeIds);
+
+                    tradesIdAlreadyProcessed.addAll(trades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+                }
             }
+        });
 
-            exchangeToExchangePayment.setXrpToFiatTrades(trades);
-
-            String tradeIds = trades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
-            exchangeToExchangePayment.setInTradeFound(true);
-            exchangeToExchangePayment.setTradeIds(tradeIds);
-
-            tradesIdAlreadyProcessed.addAll(trades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
-
-            return true;
-        }
-
-        return false;
+        return exchangeToExchangePayment.isInTradeFound();
     }
 
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
@@ -225,40 +218,32 @@ public abstract class XrapidCorridors {
             return false;
         }
 
-        List<List<Trade>> candidates = new ArrayList<>();
+        Arrays.asList(getAggregatedOutTrades(exchangeToExchangePayment, "sell").values(),
+                getAggregatedOutTrades(exchangeToExchangePayment, "buy").values()).forEach(aggregatedTrades -> {
+            if (!aggregatedTrades.isEmpty()) {
 
-        candidates.addAll(getAggregatedOutTrades(exchangeToExchangePayment, "sell").values());
-        candidates.addAll(getAggregatedOutTrades(exchangeToExchangePayment, "buy").values());
+                List<List<Trade>> result = new ArrayList<>();
 
+                findCandidates(aggregatedTrades.stream().flatMap(List::stream).collect(Collectors.toList()), exchangeToExchangePayment, result);
 
-        if (!candidates.isEmpty()) {
-            List<List<Trade>> result = new ArrayList<>();
+                List<Trade> trades = takeClosesTrades(exchangeToExchangePayment, result);
 
-            findCandidates(candidates.stream().flatMap(List::stream).collect(Collectors.toList()), exchangeToExchangePayment, result);
+                if (validateAmount(exchangeToExchangePayment, sum(trades))) {
+                    exchangeToExchangePayment.setFiatToXrpTrades(trades);
 
+                    String tradeIds = trades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
 
-            List<Trade> trades = takeClosesTrades(exchangeToExchangePayment, result);
+                    exchangeToExchangePayment.setOutTradeFound(true);
+                    exchangeToExchangePayment.setTradeOutIds(tradeIds);
 
+                    exchangeToExchangePayment.setSourceFiat(trades.get(0).getExchange().getLocalFiat());
 
-            if (!validateAmount(exchangeToExchangePayment, sum(trades))) {
-                return false;
+                    tradesIdAlreadyProcessed.addAll(trades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+                }
             }
+        });
 
-            exchangeToExchangePayment.setFiatToXrpTrades(trades);
-
-            String tradeIds = trades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
-
-            exchangeToExchangePayment.setOutTradeFound(true);
-            exchangeToExchangePayment.setTradeOutIds(tradeIds);
-
-            exchangeToExchangePayment.setSourceFiat(trades.get(0).getExchange().getLocalFiat());
-
-            tradesIdAlreadyProcessed.addAll(trades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
-
-            return true;
-        }
-
-        return false;
+        return exchangeToExchangePayment.isOutTradeFound();
     }
 
     protected void submit(List<Payment> payments) {
@@ -315,13 +300,14 @@ public abstract class XrapidCorridors {
 
         if (payment.getAmount() > 5000) {
             tolerence = 1;
-        } else if (payment.getAmount() > 5000) {
-            tolerence = 50;
-        } else if (payment.getAmount() > 40000) {
-            tolerence = 100;
         }
+
+        if (payment.getAmount() > 40000) {
+            tolerence = 50;
+        }
+
         if (payment.getAmount() > 80000) {
-            tolerence = 500;
+            tolerence = 400;
         }
 
         return tolerence;
