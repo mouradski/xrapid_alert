@@ -18,10 +18,7 @@ import space.xrapid.service.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,10 +94,12 @@ public class Scheduler {
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
 
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, true, tradeIds)
-                                    .searchXrapidPayments(payments, allTrades, rate);
+                            Arrays.asList(60, 90, 120, 180, 240).forEach(delta -> {
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
+                                        .searchXrapidPayments(payments, allTrades, rate);
+                            });
 
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, false, tradeIds)
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, tradeIds)
                                     .searchXrapidPayments(payments, allTrades, rate);
                         });
             });
@@ -138,7 +137,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(600);
+        windowStart = windowEnd.minusMinutes(1440);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
