@@ -27,7 +27,7 @@ public interface TradeService {
     }
 
     default Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return trade -> begin.minusMinutes(2).isBefore(trade.getDateTime());
+        return trade -> begin.minusMinutes(8).isBefore(trade.getDateTime());
     }
 
     Exchange getExchange();

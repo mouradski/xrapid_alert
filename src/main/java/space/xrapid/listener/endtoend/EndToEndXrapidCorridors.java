@@ -10,6 +10,7 @@ import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,19 +72,22 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             return;
         }
 
-        paymentsToProcess.stream()
-                .map(this::mapPayment)
-                .filter(this::fiatToXrpTradesExists)
-                .filter(this::xrpToFiatTradesExists)
-                .forEach(payment -> persistPayment(payment));
+        if (requireEndToEnd) {
+            paymentsToProcess.stream()
+                    .map(this::mapPayment)
+                    .filter(this::fiatToXrpTradesExists)
+                    .filter(this::xrpToFiatTradesExists)
+                    .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
+                    .forEach(payment -> persistPayment(payment));
 
-        if (!requireEndToEnd) {
+        } else {
             paymentsToProcess.stream()
                     .map(this::mapPayment)
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)
                     .peek(payment -> payment.setSpottedAt(SpottedAt.DESTINATION_TAG))
+                    .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
                     .forEach(payment -> persistPayment(payment));
         }
     }
