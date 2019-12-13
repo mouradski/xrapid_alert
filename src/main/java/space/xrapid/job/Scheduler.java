@@ -93,7 +93,7 @@ public class Scheduler {
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
                             Arrays.asList(30, 60, 90, 180).forEach(delta -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, requireEndToEnd, tradeIds)
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
 
