@@ -99,7 +99,8 @@
     .modal-header .close{
         color: $danger;
         text-shadow: none;
-
+        right: 23px;
+        top: 19px;
         &:hover,
         &:focus{
             opacity: 1;
@@ -164,13 +165,17 @@
 }
 .modal-header{
   background: #4f13c1;
-  padding: 24px;
+  padding: 20px;
   .modal-title{
     color: white!important;
   }
 }
 .modal-dialog{
   max-width: 960px;
+  /* debug mobile */
+  transform: translate(0, 0)!important;
+  -webkit-transform: translate(0, 0)!important;
+
   @media (max-width: 960px){
     max-width: 100%;
   }
@@ -178,6 +183,8 @@
 
 
 .modal-body{
+  height: 75vh;
+  overflow-y: auto;
 
   ul{
     margin: 0 10px;
@@ -192,5 +199,20 @@
       list-style-type: none;
       border-bottom: 1px solid #efefef;
     }
+  }
+}
+
+/* Tag id */
+.tag-w{
+  display: flex;
+  flex-wrap: wrap;
+  .trade-tag{
+    padding: 3px 7px;
+    background: #efefef;
+    color: #464646;
+    margin: 4px;
+    font-size: 14px;
+    line-height: normal;
+    border-radius: 4px;
   }
 }

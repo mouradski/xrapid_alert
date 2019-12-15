@@ -44,7 +44,13 @@ public class ExchangeToExchangePayment extends Payment {
     private List<Trade> xrpToFiatTrades;
 
     @Transient
+    private List<String> xrpToFiatTradeIds;
+
+    @Transient
     private List<Trade> fiatToXrpTrades;
+
+    @Transient
+    private List<String> fiatToXrpTradeIds;
 
     private double usdValue;
 

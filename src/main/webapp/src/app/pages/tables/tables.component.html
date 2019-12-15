@@ -36,18 +36,20 @@
             {{payment.tag}}
           </li>
           <li *ngIf="payment.tradeOutIds">
-            <span class="modal-desc">Trades on source exchange ({{payment.source}})</span>
-            {{ payment.tradeOutIds }}
+            <span class="modal-desc">Trades on {{payment.source}}</span>
+            <div class="tag-w">
+            <span class="trade-tag" *ngFor="let id of payment.fiatToXrpTradeIds">{{id}}</span>
+            </div>
           </li>
           <li *ngIf="payment.tradeIds">
-            <span class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
-            {{ payment.tradeIds }}
+            <span class="modal-desc">Trades on {{payment.destination}}</span>
+            <div class="tag-w">
+            <span class="trade-tag" *ngFor="let id of payment.xrpToFiatTradeIds">{{id}}</span>
+            </div>
           </li>
-          <li *ngIf="!payment.tradeIds && !payment.tradeIds">
+          <li *ngIf="!payment.tradeIds && !payment.tradeOutIds">
             <span class="modal-desc">
               ODL based on identified Destination Tag on {{payment.destination}}</span>
-            <br>
-            Probably concerns an ODL client's internal liquidity management between two exchanges.
             <br>
             This tag was involved in hundreds of ODL transactions spotted at end to end.
           </li>
@@ -56,14 +58,7 @@
             <a href="https://xrpscan.com/tx/{{payment.transactionHash}}" target="_blank">{{payment.transactionHash}}</a>
           </li>
         </ul>
-
       </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-      </div>
-
-
     </div>
   </div>
 </div>

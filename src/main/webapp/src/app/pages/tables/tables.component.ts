@@ -177,5 +177,7 @@ export class Payment {
   tradeOutIds: string;
   usdValue: number;
   spottedAt: String;
+  xrpToFiatTradeIds: Array<string>;
+  fiatToXrpTradeIds: Array<string>;
   tag:number;
 }
