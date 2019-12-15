@@ -71,7 +71,7 @@ public class Scheduler {
                     .filter(service -> service.getExchange().isConfirmed())
                     .forEach(tradeService -> {
                         try {
-                            List<Trade> trades = tradeService.fetchTrades(windowStart);
+                            List<Trade> trades = tradeService.fetchTrades(windowStart.minusMinutes(4));
                             allTrades.addAll(trades);
                             log.info("{} trades fetched from {}", trades.size(), tradeService.getExchange());
                         } catch (Exception e) {
@@ -81,38 +81,50 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(12), windowEnd);
-            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(12), windowEnd);
+            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(8), windowEnd);
+            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(8), windowEnd);
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
+            final Set<String> test = new HashSet<>();
+//            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, Exchange.BITSO, Currency.USD, 60, 60, true, test)
+//                                        .searchXrapidPayments(payments, allTrades, rate);
+//
+//            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, Exchange.BITSO, Currency.USD, 90, 90, true, test)
+//                    .searchXrapidPayments(payments, allTrades, rate);
+//
+//            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, Exchange.BITSO, Currency.USD, 120, 120, true, test)
+//                    .searchXrapidPayments(payments, allTrades, rate);
+//
+//            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, Exchange.BITSO, Currency.USD, 240, 240, true, test)
+//                    .searchXrapidPayments(payments, allTrades, rate);
 
             destinationFiats.forEach(fiat -> {
             availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(30, 60, 90, 180).forEach(delta -> {
+                            Arrays.asList(60, 90, 180, 200, 340).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
 
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, tradeIds)
-                                    .searchXrapidPayments(payments, allTrades, rate);
+//                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, tradeIds)
+//                                    .searchXrapidPayments(payments, allTrades, rate);
                         });
             });
 
 
             // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
             availableExchangesWithApi.forEach(exchange -> {
-                new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                //new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
             });
 
             // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
             allConfirmedExchange.stream()
                     .filter(exchange -> !availableExchangesWithApi.contains(exchange))
                     .forEach(exchange -> {
-                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
+                       // new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
                     });
 
 
@@ -135,7 +147,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(100);
+        windowStart = windowEnd.minusMinutes(60);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
