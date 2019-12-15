@@ -97,12 +97,8 @@ public class Scheduler {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
-
-//                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, tradeIds)
-//                                    .searchXrapidPayments(payments, allTrades, rate);
                         });
             });
-
 
             // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
             availableExchangesWithApi.forEach(exchange -> {
@@ -115,6 +111,17 @@ public class Scheduler {
                     .forEach(exchange -> {
                         new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
                     });
+
+
+
+            destinationFiats.forEach(fiat -> {
+                availableExchangesWithApi.stream()
+                        .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
+                        .forEach(exchange -> {
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, tradeIds)
+                                    .searchXrapidPayments(payments, allTrades, rate);
+                        });
+            });
 
 
             Stats stats = exchangeToExchangePaymentService.calculateStats();
