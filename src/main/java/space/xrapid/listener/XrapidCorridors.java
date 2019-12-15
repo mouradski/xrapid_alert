@@ -44,8 +44,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
 
-        this.buyDelta = 140;
-        this.sellDelta = 140;
+        this.buyDelta = 200;
+        this.sellDelta = 200;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
