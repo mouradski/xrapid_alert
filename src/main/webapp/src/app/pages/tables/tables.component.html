@@ -39,9 +39,12 @@
             <span class="modal-desc">Trades on source exchange ({{payment.source}})</span>
             {{ payment.tradeOutIds }}
           </li>
+
           <li *ngIf="payment.tradeIds">
             <span class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
-            {{ payment.tradeIds }}
+            <div class="tag-w">
+              <span class="trade-tag">{{ payment.tradeIds }}</span>
+            </div>
           </li>
           <li *ngIf="!payment.tradeIds && !payment.tradeIds">
             <span class="modal-desc">
@@ -56,14 +59,7 @@
             <a href="https://xrpscan.com/tx/{{payment.transactionHash}}" target="_blank">{{payment.transactionHash}}</a>
           </li>
         </ul>
-
       </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-      </div>
-
-
     </div>
   </div>
 </div>
