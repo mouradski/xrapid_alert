@@ -250,7 +250,7 @@ public abstract class XrapidCorridors {
                     tradesGroups.add(TradesGroup.builder().sum(e.getValue().stream().mapToDouble(Trade::getAmount).sum()).id(e.getKey()).build());
                 }
 
-                findCandidates(tradesGroups, exchangeToExchangePayment, result, exchangeToExchangePayment.getDestination().isMaxTolerence());
+                findCandidates(tradesGroups, exchangeToExchangePayment, result, exchangeToExchangePayment.getSource().isMaxTolerence());
 
                 List<TradesGroup> closestGroups = takeClosesTrades(exchangeToExchangePayment, result);
 
