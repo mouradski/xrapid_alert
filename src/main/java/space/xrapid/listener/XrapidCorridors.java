@@ -330,7 +330,7 @@ public abstract class XrapidCorridors {
 
         if (maxTolerence) {
             if (payment.getAmount() > 1000) {
-                tolerence = payment.getAmount() * 0.01;
+                tolerence = payment.getAmount() * 0.05;
             }
 
             if (payment.getAmount() > 40000) {
