@@ -192,6 +192,7 @@ public abstract class XrapidCorridors {
                     List<Trade> closestTrades = closestGroups.stream().map(tradesGroup -> aggregatedTrades.get(tradesGroup.getId())).flatMap(List::stream).collect(Collectors.toList());
 
                     exchangeToExchangePayment.setXrpToFiatTrades(closestTrades);
+                    exchangeToExchangePayment.setXrpToFiatTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
 
                     String tradeIds = closestTrades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
                     exchangeToExchangePayment.setInTradeFound(true);
@@ -261,7 +262,7 @@ public abstract class XrapidCorridors {
                     List<Trade> closestTrades = closestGroups.stream().map(tradesGroup -> aggregatedTrades.get(tradesGroup.getId())).flatMap(List::stream).collect(Collectors.toList());
 
                     exchangeToExchangePayment.setFiatToXrpTrades(closestTrades);
-
+                    exchangeToExchangePayment.setFiatToXrpTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
                     String tradeIds = closestTrades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
                     exchangeToExchangePayment.setOutTradeFound(true);
                     exchangeToExchangePayment.setTradeOutIds(tradeIds);
