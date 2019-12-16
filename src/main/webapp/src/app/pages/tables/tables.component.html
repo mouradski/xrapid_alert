@@ -36,13 +36,14 @@
             {{payment.tag}}
           </li>
           <li *ngIf="payment.tradeOutIds">
-            <span class="modal-desc">Trades on {{payment.source}}</span>
+            <span class="modal-desc">Trades on {{payment.source}} :</span>
             <div class="tag-w">
             <span class="trade-tag" *ngFor="let id of payment.fiatToXrpTradeIds">{{id}}</span>
             </div>
           </li>
+
           <li *ngIf="payment.tradeIds">
-            <span class="modal-desc">Trades on {{payment.destination}}</span>
+            <span class="modal-desc">Trades on {{payment.destination}} :</span>
             <div class="tag-w">
             <span class="trade-tag" *ngFor="let id of payment.xrpToFiatTradeIds">{{id}}</span>
             </div>
