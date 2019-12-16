@@ -1,7 +1,12 @@
 server:
   port: 80
 
+
+
 spring:
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
   jpa:
     hibernate.ddl-auto: update
     database-platform: org.hibernate.dialect.H2Dialect

@@ -1,7 +1,9 @@
 .wrapper{
     position: relative;
     top: 0;
-    height: 100vh;
+    height: auto;
+    display: flex;
+    justify-content: center;
 
     &.wrapper-full-page{
         min-height: 100vh;

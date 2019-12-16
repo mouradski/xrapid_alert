@@ -2,9 +2,7 @@ package space.xrapid.listener.inbound;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.scheduling.annotation.Async;
 import space.xrapid.domain.Exchange;
-import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
@@ -13,7 +11,6 @@ import space.xrapid.service.ExchangeToExchangePaymentService;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public class InboundXrapidCorridors extends XrapidCorridors {
@@ -21,12 +18,11 @@ public class InboundXrapidCorridors extends XrapidCorridors {
     private Exchange destinationExchange;
 
     public InboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, List<Exchange> exchangesWithApi) {
-        super(exchangeToExchangePaymentService, messagingTemplate, exchangesWithApi);
+        super(exchangeToExchangePaymentService, null, messagingTemplate, exchangesWithApi, null);
         this.destinationExchange = destinationExchange;
     }
 
-    @Async
-    public CompletableFuture<List<ExchangeToExchangePayment>> searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
+    public void searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
 
         this.rate = rate;
 
@@ -34,7 +30,7 @@ public class InboundXrapidCorridors extends XrapidCorridors {
 
         tradesIdAlreadyProcessed = new HashSet<>();
 
-        return CompletableFuture.completedFuture(submit(payments));
+        submit(payments);
     }
 
     @Override

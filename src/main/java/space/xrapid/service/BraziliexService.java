@@ -3,7 +3,6 @@ package space.xrapid.service;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
@@ -19,8 +18,6 @@ public class BraziliexService implements TradeService {
 
     private String apiUrl = "https://braziliex.com/api/v1/public/tradehistory/xrp_brl/{TIMESTAMP}";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         String urlGet = apiUrl.replace("{TIMESTAMP}", String.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond() * 1000));
@@ -32,7 +29,7 @@ public class BraziliexService implements TradeService {
     }
 
     private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
-        long beginTimestamp = begin.minusMinutes(2).toEpochSecond() * 1000;
+        long beginTimestamp = begin.minusMinutes(8).toEpochSecond() * 1000;
         return Arrays.stream(response.getBody())
                 .filter(p -> beginTimestamp < p.getTimestamp())
                 .sorted(Comparator.comparing(space.xrapid.domain.braziliex.Trade::getTimestamp))

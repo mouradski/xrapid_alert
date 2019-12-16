@@ -1,23 +1,30 @@
 package space.xrapid.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import space.xrapid.domain.ExchangeToExchangePayment;
 
 import java.util.List;
 
 @Repository
-public interface ExchangeToExchangePaymentRepository extends JpaRepository<ExchangeToExchangePayment, String> {
+public interface ExchangeToExchangePaymentRepository extends CrudRepository<ExchangeToExchangePayment,Integer>, JpaSpecificationExecutor<ExchangeToExchangePayment> {
 
     @Query(value = "SELECT * FROM exchange_payment ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
     List<ExchangeToExchangePayment> findTop(int limit);
+
+    @Query(value = "SELECT * FROM exchange_payment WHERE in_trade_found IS TRUE OR out_trade_found IS TRUE ORDER BY date_time DESC LIMIT ?", nativeQuery = true)
+    List<ExchangeToExchangePayment> findTopWithTrades(int limit);
 
     @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep", nativeQuery = true)
     Double getAllTimeVolume();
 
     @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
     Double getVolumeBetween(long startTimestamp, long endTimestamp);
+
+    @Query(value = "SELECT * FROM exchange_payment ep WHERE ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
+    List<ExchangeToExchangePayment> findByDate(long startTimestamp, long endTimestamp);
 
     @Query(value = "SELECT SUM(ep.usd_value) FROM exchange_payment ep WHERE ep.source = ? AND ep.destination = ? AND ep.timestamp >= ? AND ep.timestamp <= ?", nativeQuery = true)
     Double getVolumeBySourceAndDestinationBetween(String source, String destination, long startTimestamp, long endTimestamp);

@@ -39,7 +39,7 @@
 @media screen and (max-width: 991px){
   .main-panel {
       .content {
-      padding-left: 30px !important;
+
     }
   }
   .fixed-plugin .dropdown-toggle:after{
@@ -60,6 +60,16 @@
       img{
         height: 38px;
 
+      }
+    }
+    .beta{
+      margin-left: 20px;
+      color: white;
+      padding-top: 6px;
+
+      span{
+        font-weight: bold;
+        font-size: 13px;
       }
     }
   }

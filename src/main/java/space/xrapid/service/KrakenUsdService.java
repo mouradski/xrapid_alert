@@ -4,7 +4,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.kraken.Trades;
@@ -21,8 +20,6 @@ public class KrakenUsdService implements TradeService {
 
     private String apiUrl = "https://api.kraken.com/0/public/Trades?pair={pair}";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
@@ -34,7 +31,10 @@ public class KrakenUsdService implements TradeService {
                 .stream()
                 .findFirst().get();
 
-        return trades.stream().map(this::mapTrade).collect(Collectors.toList());
+        return trades.stream()
+                .map(this::mapTrade)
+                .filter(filterTradePerDate(begin))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class KrakenUsdService implements TradeService {
     }
 
     private Trade mapTrade(List trade) {
-        OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Math.round((double)trade.get(2))), ZoneId.of("UTC"));
+        OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Math.round(Double.valueOf(trade.get(2).toString()))), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(Double.valueOf(trade.get(1).toString())))
                 .exchange(getExchange())
                 .timestamp(date.toEpochSecond() * 1000)

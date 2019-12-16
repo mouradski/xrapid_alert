@@ -4,7 +4,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.bitcointrade.Response;
@@ -13,15 +12,12 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
 public class BitcoinTradeService implements TradeService {
 
     private String url = "https://api.bitcointrade.com.br/v2/public/BRLXRP/trades?start_time={start_time}&page_size=1000&current_page={current_page}";
-
-    private RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
@@ -82,9 +78,5 @@ public class BitcoinTradeService implements TradeService {
 
     private String transformDate(String date) {
         return date.replaceAll("\\..+", "+00:00");
-    }
-
-    private Predicate<Trade> filterTradePerDate(OffsetDateTime begin) {
-        return p -> begin.minusMinutes(2).isBefore(p.getDateTime());
     }
 }

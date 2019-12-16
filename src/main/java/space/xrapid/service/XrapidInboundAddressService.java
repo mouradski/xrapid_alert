@@ -2,6 +2,7 @@ package space.xrapid.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.ExchangeToExchangePayment;
@@ -17,26 +18,26 @@ public class XrapidInboundAddressService {
     private XrapidInboundAddressRepository xrapidInboundAddressRepository;
 
     @Transactional
-    public void add(XrapidInboundAddress xrapidInboundAddress) {
-        if (!isXrapidInbound(xrapidInboundAddress.getAddress(), xrapidInboundAddress.getTag())) {
-            xrapidInboundAddressRepository.save(xrapidInboundAddress);
-        }
-    }
-
-    @Transactional
     public void add(ExchangeToExchangePayment payment) {
-        if (!isXrapidInbound(payment.getSourceAddress(), payment.getTag())) {
-            add(payment.getSourceAddress(), payment.getTag());
+
+        XrapidInboundAddress inboundXrapidCorridors = xrapidInboundAddressRepository.getByAddressAndTagAndSourceFiat(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat());
+
+        if (inboundXrapidCorridors == null) {
+            inboundXrapidCorridors = XrapidInboundAddress.builder().address(payment.getDestinationAddress()).tag(payment.getTag()).sourceFiat(payment.getSourceFiat()).recurrence(1).build();
+        } else {
+            inboundXrapidCorridors.setRecurrence(inboundXrapidCorridors.getRecurrence() + 1);
         }
+
+        xrapidInboundAddressRepository.save(inboundXrapidCorridors);
     }
 
-    @Transactional
-    public void add(String address, Long tag) {
-        log.info("Persistance tag xrapid : {}:{}", address, tag );
-        add(XrapidInboundAddress.builder().address(address).tag(tag).build());
-    }
-
-    public boolean isXrapidInbound(String address, Long tag) {
-        return xrapidInboundAddressRepository.existsByAddressAndTag(address, tag);
+    @Cacheable(value="tags",
+            key="{ #payment.destinationAddress, #payment.tag }")
+    public boolean isXrapidDestination(ExchangeToExchangePayment payment) {
+        boolean result =  xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat(), 7);
+        if (result) {
+            log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
+        }
+        return result;
     }
 }

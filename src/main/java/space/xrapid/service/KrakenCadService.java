@@ -5,6 +5,7 @@ import space.xrapid.domain.Exchange;
 
 @Service
 public class KrakenCadService extends KrakenUsdService {
+
     protected String getPair() {
         return "XRPCAD";
     }

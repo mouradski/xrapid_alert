@@ -2,26 +2,28 @@ package space.xrapid.listener.endtoend;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.scheduling.annotation.Async;
 import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class EndToEndXrapidCorridors extends XrapidCorridors {
+
     private Exchange destinationExchange;
 
     private Currency sourceFiat;
+
+    private boolean requireEndToEnd;
 
     public Exchange getDestinationExchange() {
         return destinationExchange;
@@ -31,21 +33,29 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         return sourceFiat;
     }
 
-    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat) {
-        super(exchangeToExchangePaymentService, messagingTemplate, null);
+
+    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
+                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds) {
+
+        super(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, null, tradeIds);
+
+
+        this.buyDelta = buyDelta;
+        this.sellDelta = sellDelta;
+
+        this.requireEndToEnd = requireEndToEnd;
 
         this.sourceFiat = sourceFiat;
         this.destinationExchange = destinationExchange;
     }
 
-    @Async
-    public CompletableFuture<List<ExchangeToExchangePayment>> searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
+    public void searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
         this.rate = rate;
 
         tradesIdAlreadyProcessed = new HashSet<>();
 
         this.trades = trades;
-        return CompletableFuture.completedFuture(submit(payments));
+        submit(payments);
     }
 
     @Override
@@ -54,21 +64,32 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     }
 
     @Override
-    protected List<ExchangeToExchangePayment> submit(List<Payment> payments) {
+    protected void submit(List<Payment> payments) {
         List<Payment> paymentsToProcess = payments.stream()
                 .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
         if (paymentsToProcess.isEmpty()) {
-            return new ArrayList<>();
+            return;
         }
 
-        return paymentsToProcess.stream()
-                .map(this::mapPayment)
-                .filter(this::fiatToXrpTradesExists)
-                .filter(this::xrpToFiatTradesExists)
-                .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
-                .peek(this::persistPayment)
-                .collect(Collectors.toList());
+        if (requireEndToEnd) {
+            paymentsToProcess.stream()
+                    .map(this::mapPayment)
+                    .filter(this::fiatToXrpTradesExists)
+                    .filter(this::xrpToFiatTradesExists)
+                    .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
+                    .forEach(payment -> persistPayment(payment));
+
+        } else {
+            paymentsToProcess.stream()
+                    .map(this::mapPayment)
+                    .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
+                    .peek(payment -> payment.setSourceFiat(this.sourceFiat))
+                    .filter(xrapidInboundAddressService::isXrapidDestination)
+                    .peek(payment -> payment.setSpottedAt(SpottedAt.DESTINATION_TAG))
+                    .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
+                    .forEach(payment -> persistPayment(payment));
+        }
     }
 
     @Override

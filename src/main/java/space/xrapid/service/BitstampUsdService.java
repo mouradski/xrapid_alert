@@ -4,7 +4,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
@@ -18,27 +17,29 @@ import java.util.stream.Collectors;
 @Service
 public class BitstampUsdService implements TradeService {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd";
 
-    protected String apiUrl = "https://www.bitstamp.net/api/v2/transactions/xrpusd?time=day";
+    private boolean firstCall = true;
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.bitstamp.Trade[]> response = restTemplate.exchange(apiUrl,
+        ResponseEntity<space.xrapid.domain.bitstamp.Trade[]> response = restTemplate.exchange(firstCall ? apiUrl + "?time=day" : apiUrl,
                 HttpMethod.GET, entity, space.xrapid.domain.bitstamp.Trade[].class);
+
+        firstCall = false;
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
-                .filter(p -> begin.minusMinutes(2).isBefore(p.getDateTime()))
+                .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
     private Trade mapTrade(space.xrapid.domain.bitstamp.Trade trade) {
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-                .exchange(Exchange.BITSTAMP)
+                .exchange(getExchange())
                 .timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getTid())

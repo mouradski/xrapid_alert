@@ -16,21 +16,21 @@ export class DateAgoPipe implements PipeTransform {
             if (seconds < 3) {
                 return 'Just Now';
             } else {
-                return seconds + " seconds ago";
+                return seconds + " sec ago";
             }
         } else {
 
             if (minutes < 2) {
                 if (seconds < 2) {
-                    return minutes + ' minute and ' + seconds + ' second ago';
+                    return minutes + ' min and ' + seconds + ' sec ago';
                 } else {
-                    return minutes + ' minute and ' + seconds + ' seconds ago';
+                    return minutes + ' min and ' + seconds + ' sec ago';
                 }
             } else {
                 if (seconds < 2) {
-                    return minutes + ' minutes and ' + seconds + ' second ago';
+                    return minutes + ' min and ' + seconds + ' sec ago';
                 } else {
-                    return minutes + ' minutes and ' + seconds + ' seconds ago';
+                    return minutes + ' min and ' + seconds + ' sec ago';
                 }
             }
         }

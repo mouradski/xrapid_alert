@@ -36,27 +36,30 @@
             {{payment.tag}}
           </li>
           <li *ngIf="payment.tradeOutIds">
-            <span class="modal-desc">Trades on source exchange ({{payment.source}})</span>
-            {{ payment.tradeOutIds }}
+            <span class="modal-desc">Trades on {{payment.source}} :</span>
+            <div class="tag-w">
+            <span class="trade-tag" *ngFor="let id of payment.fiatToXrpTradeIds">{{id}}</span>
+            </div>
           </li>
+
           <li *ngIf="payment.tradeIds">
-            <span
-              class="modal-desc">Trades on destination exchange ({{payment.destination}})</span>
-            {{ payment.tradeIds }}
+            <span class="modal-desc">Trades on {{payment.destination}} :</span>
+            <div class="tag-w">
+            <span class="trade-tag" *ngFor="let id of payment.xrpToFiatTradeIds">{{id}}</span>
+            </div>
+          </li>
+          <li *ngIf="!payment.tradeIds && !payment.tradeOutIds">
+            <span class="modal-desc">
+              ODL based on identified Destination Tag on {{payment.destination}}</span>
+            <br>
+            This tag was involved in hundreds of ODL transactions spotted at end to end.
           </li>
           <li>
             <span class="modal-desc">Transaction Hash :</span>
-            <a href="https://xrpscan.com/tx/{{payment.transactionHash}}" target="_blank">{{payment.transactionHash}}</a>
+            <a href="https://bithomp.com/explorer/{{payment.transactionHash}}" target="_blank">{{payment.transactionHash}}</a>
           </li>
         </ul>
-
       </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-      </div>
-
-
     </div>
   </div>
 </div>
@@ -66,9 +69,24 @@
   <div class=" row">
     <div class=" col-md-12">
       <div class=" card card-plain">
-        <div class=" card-header">
+        <div class="card-header">
           <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
-          <p class=" category">We consider a transaction as ODL when 4 factors are combined : 1 / Purchase of XRP with FIAT (local currency of origin) on an Exchange, 2 / Send XRP through the XRPL, 3 / Sale of the same amount of XRP for FIAT on other exchange ( local currency of destination ), 4 / The total time from start to finish should be about 60 seconds.  We use the exchange APIs to track end-to-end ODL transactions, except for coins.ph and possible other future exchanges without API.</p>
+          <span class="info-icon">
+            <i class="far fa-question-circle"></i>
+          </span>
+
+          <div id="infoODL" class="alert alert-success" role="alert">
+            <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> We consider a transaction as ODL only when those 4 criteria are met :</span>
+            <p class="category">
+              - XRP initially bought at one exchange in local fiat<br>
+              - XRP being sent across the XRPL<br>
+              - the exact amount of XRP finally sold back at the destination exchange in local fiat<br>
+              - the total timeframe should roughly last  60 seconds<br><br>
+
+              The exchange API allows us to track end-to-end ODL transactions, except for http://coins.ph and all future exchanges without API.<br>
+            </p>
+          </div>
+
         </div>
         <div class=" card-body">
           <div class=" table-responsive">
@@ -138,9 +156,9 @@
 
               <thead class=" text-primary">
               <tr>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>USD Value</th>
+                <th class="date">Date</th>
+                <th class="amount">Amount</th>
+                <th class="value">USD Value</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Source Fiat</th>
@@ -150,9 +168,9 @@
               </thead>
               <tbody>
               <tr *ngFor="let payment of currentPage">
-                <td>{{ payment.dateTime | date:'medium' }}</td>
-                <td>{{ payment.amount | number}} XRP</td>
-                <td>{{ payment.usdValue | currency }}</td>
+                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
+                <td class="amount">{{ payment.amount | number}} XRP</td>
+                <td  class="value">{{ payment.usdValue | currency }}</td>
                 <td>{{ payment.source }}</td>
                 <td>{{ payment.destination }}</td>
                 <td>{{ payment.sourceFiat }}</td>
@@ -181,7 +199,7 @@
     </div>
   </div>
 </div>
-<div id="david" class="{{notif == null ? '' : 'active'}}" >
+<div id="david" [className]="notifClass" >
   <div class="talk-bubble tri-right round right-in">
     <div class="talktext">
       <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>

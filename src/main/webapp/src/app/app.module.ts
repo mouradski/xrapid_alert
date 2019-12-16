@@ -15,6 +15,7 @@ import {ComponentsModule} from "./components/components.module";
 import {AdminLayoutModule} from "./layouts/admin-layout/admin-layout.module";
 
 import {CookieService} from 'ngx-cookie-service';
+import {DeviceDetectorModule, DeviceDetectorService} from 'ngx-device-detector';
 
 @NgModule({
   imports: [
@@ -25,11 +26,12 @@ import {CookieService} from 'ngx-cookie-service';
     NgbModule,
     RouterModule,
     AppRoutingModule,
+    DeviceDetectorModule,
     ToastrModule.forRoot(),
     AdminLayoutModule
   ],
   declarations: [AppComponent, AdminLayoutComponent],
-  providers: [CookieService],
+  providers: [CookieService, DeviceDetectorService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

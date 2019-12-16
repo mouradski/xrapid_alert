@@ -17,5 +17,6 @@ public class Stats {
     private long averageTimeBetweetTransactions;
     private OffsetDateTime allTimeFrom;
     private double[] last5DaysOdlVolume;
+    private String[] days;
     Map<String, Double> topVolumes;
 }

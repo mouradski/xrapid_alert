@@ -5,7 +5,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
@@ -23,8 +22,6 @@ public class MercadoBitcoinService implements TradeService {
 
     private String apiUrl = "https://www.mercadobitcoin.net/api/XRP/trades/{FROM}/{TO}/";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
@@ -36,7 +33,7 @@ public class MercadoBitcoinService implements TradeService {
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
-                .filter(p -> begin.minusMinutes(2).isBefore(p.getDateTime()))
+                .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
