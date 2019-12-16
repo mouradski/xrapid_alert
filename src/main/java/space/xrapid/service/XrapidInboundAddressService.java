@@ -34,7 +34,7 @@ public class XrapidInboundAddressService {
     @Cacheable(value="tags",
             key="{ #payment.destinationAddress, #payment.tag }")
     public boolean isXrapidDestination(ExchangeToExchangePayment payment) {
-        boolean result =  xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat(), 100);
+        boolean result =  xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat(), 7);
         if (result) {
             log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
         }

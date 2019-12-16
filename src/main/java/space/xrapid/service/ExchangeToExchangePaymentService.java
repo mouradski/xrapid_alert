@@ -176,7 +176,20 @@ public class ExchangeToExchangePaymentService {
 
     @Cacheable(value = "lastOdlCache", key = "1")
     public List<ExchangeToExchangePayment> getLasts() {
-        return repository.findTop(1000);
+        List<ExchangeToExchangePayment> payments =  repository.findTop(1000);
+
+        payments.forEach(payment -> {
+            if (payment.getTradeIds() != null && !payment.getTradeIds().isEmpty()) {
+                payment.setXrpToFiatTradeIds(Arrays.asList(payment.getTradeIds().split(";")));
+            }
+
+            if (payment.getTradeOutIds() != null && !payment.getTradeOutIds().isEmpty()) {
+                payment.setFiatToXrpTradeIds(Arrays.asList(payment.getTradeOutIds().split(";")));
+            }
+
+        });
+
+        return payments;
     }
 
 
