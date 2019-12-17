@@ -2,7 +2,6 @@ package space.xrapid.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.ExchangeToExchangePayment;
@@ -31,9 +30,11 @@ public class XrapidInboundAddressService {
         xrapidInboundAddressRepository.save(inboundXrapidCorridors);
     }
 
-    @Cacheable(value="tags",
-            key="{ #payment.destinationAddress, #payment.tag }")
     public boolean isXrapidDestination(ExchangeToExchangePayment payment) {
+
+        if ("D95AF573665685646BBB7C79A3FECEDD8583C7AFAADF67CD0AC91933E564FCF6".equals(payment.getTransactionHash())) {
+            System.out.println("XXX");
+        }
         boolean result =  xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat(), 7);
         if (result) {
             log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());

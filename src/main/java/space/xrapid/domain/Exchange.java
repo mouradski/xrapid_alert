@@ -22,7 +22,7 @@ public enum Exchange {
             "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
             "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
 
-    BITSO("bitso",true, MXN, false,
+    BITSO("bitso",true, MXN, true,
             "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
             "rHZaDC6tsGN2JWGeXhjKL6664RNCq5hu4B",
             "raXLsnnJVaLMDixEoXHXe56WQXKczbD8ub",
@@ -42,6 +42,9 @@ public enum Exchange {
             "rN5wo76mqvdNvShMbi5zwsnHWm2KVaqW4m",
             "rLzFjyD1gYJx3XQc1tEj9pNa4DD1SY6DeR",
             "r9x4D7c2nfa3UJefLR4fpN31zZQvByHSLQ"),
+
+    CEX_IO("cex.io", true, USD, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
+    CEX_IO_EUR("cex.io", true, EUR, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
 
 
 
@@ -84,7 +87,7 @@ public enum Exchange {
 
     DCEX("dcex", false, USD, false, "r9W22DnkmktvdSdsdWS5CXJAxfWVRtbDD9", "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
 
-    BTC_MARKETS("btc_market", true, AUD, false,"r94JFtstbXmyG21h3RHKcNfkAHxAQ6HSGC", "rL3ggCUKaiR1iywkGW6PACbn3Y8g5edWiY", "rU7xJs7QmjbiyxpEozNYUFQxaRD5kueY7z"),
+    BTC_MARKETS("btc_market", true, AUD, true,"r94JFtstbXmyG21h3RHKcNfkAHxAQ6HSGC", "rL3ggCUKaiR1iywkGW6PACbn3Y8g5edWiY", "rU7xJs7QmjbiyxpEozNYUFQxaRD5kueY7z"),
 
     BITKUB("bitkub", true, BAHT, false,"rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW");
 

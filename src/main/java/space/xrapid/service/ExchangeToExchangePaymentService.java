@@ -144,7 +144,6 @@ public class ExchangeToExchangePaymentService {
         }
     }
 
-    @Transactional(readOnly = true)
     public List<ExchangeToExchangePayment> search(Long from, Long to, Currency source, Currency destination) {
 
         return repository.findAll((Specification<ExchangeToExchangePayment>) (root, query, criteriaBuilder) -> {

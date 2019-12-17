@@ -93,7 +93,7 @@ public class Scheduler {
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(60, 90, 180, 200, 340, 400).forEach(delta -> {
+                            Arrays.asList(60).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
@@ -143,7 +143,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(200);
+        windowStart = windowEnd.minusMinutes(500);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

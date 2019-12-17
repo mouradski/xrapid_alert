@@ -46,6 +46,7 @@ public class CoinfieldUsdService implements TradeService {
                 .dateTime(OffsetDateTime.parse(trade.getTimestamp().replace("Z", "+00:00"), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                 .orderId(trade.getId())
                 .rate(Double.valueOf(trade.getPrice()))
+                //FIXME
                 .side("buy")
                 .build();
     }
