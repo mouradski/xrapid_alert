@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static space.xrapid.job.Scheduler.transactionHashes;
+
 @Slf4j
 public class EndToEndXrapidCorridors extends XrapidCorridors {
 
@@ -75,14 +77,15 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         if (requireEndToEnd) {
             paymentsToProcess.stream()
                     .map(this::mapPayment)
-                    .filter(this::fiatToXrpTradesExists)
-                    .filter(this::xrpToFiatTradesExists)
+                    .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
+                    .filter(payment -> fiatToXrpTradesExists(payment) && xrpToFiatTradesExists(payment))
                     .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
                     .forEach(payment -> persistPayment(payment));
 
         } else {
             paymentsToProcess.stream()
                     .map(this::mapPayment)
+                    .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)

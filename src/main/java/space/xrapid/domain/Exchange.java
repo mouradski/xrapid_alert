@@ -45,6 +45,7 @@ public enum Exchange {
 
     CEX_IO("cex.io", true, USD, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
     CEX_IO_EUR("cex.io", true, EUR, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
+    CEX_IO_GBP("cex.io", true, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
 
 
 

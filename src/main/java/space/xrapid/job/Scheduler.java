@@ -44,6 +44,8 @@ public class Scheduler {
     @Autowired
     private RateService rateService;
 
+    public static Set<String> transactionHashes = new HashSet<>();
+
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
@@ -51,7 +53,6 @@ public class Scheduler {
 
     @Scheduled(fixedDelay = 45000)
     public void odl() throws Exception {
-
 
         OffsetDateTime lastWindowEndRollback = lastWindowEnd;
         OffsetDateTime windowStartRollback = windowStart;
@@ -71,7 +72,7 @@ public class Scheduler {
                     .filter(service -> service.getExchange().isConfirmed())
                     .forEach(tradeService -> {
                         try {
-                            List<Trade> trades = tradeService.fetchTrades(windowStart.minusMinutes(4));
+                            List<Trade> trades = tradeService.fetchTrades(windowStart.minusMinutes(3));
                             allTrades.addAll(trades);
                             log.info("{} trades fetched from {}", trades.size(), tradeService.getExchange());
                         } catch (Exception e) {
@@ -86,14 +87,13 @@ public class Scheduler {
             log.info("{} payments fetched from XRP Ledger", payments.size());
 
             // Scan all XRPL TRX between exchanges that providing API
-            final Set<String> test = new HashSet<>();
 
             destinationFiats.forEach(fiat -> {
             availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(60).forEach(delta -> {
+                            Arrays.asList(60, 90).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
@@ -143,7 +143,7 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(500);
+        windowStart = windowEnd.minusMinutes(20);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;

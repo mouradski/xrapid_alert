@@ -2,8 +2,10 @@ package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
+import space.xrapid.job.Scheduler;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.XrapidInboundAddressService;
 
@@ -16,6 +18,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static space.xrapid.job.Scheduler.transactionHashes;
 
 @Slf4j
 public abstract class XrapidCorridors {
@@ -34,9 +38,6 @@ public abstract class XrapidCorridors {
     protected List<Exchange> exchangesToExclude;
 
     protected SimpMessageSendingOperations messagingTemplate;
-
-    ExecutorService executorService = new ThreadPoolExecutor(1, 3, 1000,
-            TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
     protected long buyDelta;
     protected long sellDelta;
@@ -141,11 +142,15 @@ public abstract class XrapidCorridors {
                 return;
             }
 
+            transactionHashes.add(exchangeToFiatPayment.getTransactionHash());
+
             if (exchangeToExchangePaymentService.save(exchangeToFiatPayment)) {
                 if (SpottedAt.SOURCE_AND_DESTINATION.equals(exchangeToFiatPayment.getSpottedAt()) && xrapidInboundAddressService != null) {
                     xrapidInboundAddressService.add(exchangeToFiatPayment);
                     log.info("{}:{} added as ODL destination candidate.", exchangeToFiatPayment.getDestinationAddress(), exchangeToFiatPayment.getTag());
                 }
+
+
                 notify(exchangeToFiatPayment);
             }
         } catch (Throwable e) {
@@ -285,6 +290,7 @@ public abstract class XrapidCorridors {
 
         paymentsToProcess.stream()
                 .map(this::mapPayment)
+//                .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                 .filter(this::xrpToFiatTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .forEach(this::persistPayment);

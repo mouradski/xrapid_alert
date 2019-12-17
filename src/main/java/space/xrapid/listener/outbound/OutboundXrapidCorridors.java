@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static space.xrapid.job.Scheduler.transactionHashes;
+
 @Slf4j
 public class OutboundXrapidCorridors extends XrapidCorridors {
 
@@ -44,6 +46,7 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
 
         paymentsToProcess.stream()
                 .map(this::mapPayment)
+                //.filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                 .filter(this::fiatToXrpTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .forEach(this::persistPayment);
