@@ -4,6 +4,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.bx.MessageConverter;
@@ -20,17 +21,14 @@ public class BxService implements TradeService {
 
     private String apiUrl = "https://bx.in.th/api/trade/?pairing=xrp";
 
-    @PostConstruct
-    private void init() {
-        //BX.IN.TH send non Json contentType even we set Accept header = Json
-        restTemplate.getMessageConverters().add(new MessageConverter());
-    }
-
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<Response> response = restTemplate.exchange(apiUrl,
+        RestTemplate bxRestTemplate = new RestTemplate();
+        bxRestTemplate.getMessageConverters().add(new MessageConverter());
+
+        ResponseEntity<Response> response = bxRestTemplate.exchange(apiUrl,
                 HttpMethod.GET, entity, Response.class);
 
         return response.getBody().getTrades().stream()

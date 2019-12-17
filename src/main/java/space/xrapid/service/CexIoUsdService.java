@@ -4,14 +4,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.coinfield.Trades;
+import space.xrapid.domain.cexio.MessageConverter;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,10 @@ public class CexIoUsdService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.cexio.Trade[]> response = restTemplate.exchange(apiUrl.replace("{market}", getMarket()),
+        RestTemplate cexRestTemplate = new RestTemplate();
+        cexRestTemplate.getMessageConverters().add(new MessageConverter());
+
+        ResponseEntity<space.xrapid.domain.cexio.Trade[]> response = cexRestTemplate.exchange(apiUrl.replace("{market}", getMarket()),
                 HttpMethod.GET, entity, space.xrapid.domain.cexio.Trade[].class);
 
 
