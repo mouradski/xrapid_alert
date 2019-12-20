@@ -85,7 +85,6 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         } else {
             paymentsToProcess.stream()
                     .map(this::mapPayment)
-                    .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)

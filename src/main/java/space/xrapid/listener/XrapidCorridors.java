@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static space.xrapid.job.Scheduler.transactionHashes;
+import static space.xrapid.util.TradesCombinaisonsHelper.sum;
 
 @Slf4j
 public abstract class XrapidCorridors {
@@ -40,8 +41,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
 
-        this.buyDelta = 160;
-        this.sellDelta = 160;
+        this.buyDelta = 200;
+        this.sellDelta = 200;
 
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
@@ -94,19 +95,13 @@ public abstract class XrapidCorridors {
 
     protected boolean isXrapidCandidate(Payment payment) {
         try {
-            return Double.valueOf(payment.getAmount()) > 40 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
+            return Double.valueOf(payment.getAmount()) > 140 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
 
         } catch (Exception e) {
             return false;
         }
     }
 
-    protected List<TradesGroup> takeClosesTrades(ExchangeToExchangePayment exchangeToExchangePayment, List<List<TradesGroup>> groupedXrpTrades) {
-
-        return groupedXrpTrades.stream()
-                .sorted(Comparator.comparing(tradesGroup -> getAmountDelta(exchangeToExchangePayment, tradesGroup)))
-                .findFirst().orElse(new ArrayList<>());
-    }
 
     protected double getAmountDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<TradesGroup> tradesGroup) {
         return Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)));
@@ -120,13 +115,13 @@ public abstract class XrapidCorridors {
         try {
             exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
 
-            if (exchangeToFiatPayment.getFiatToXrpTrades() != null) {
+            if (exchangeToFiatPayment.getFiatToXrpTrades() != null && !exchangeToFiatPayment.getFiatToXrpTrades().isEmpty()) {
                 exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getFiatToXrpTrades().get(0).getExchange().getLocalFiat());
             } else if (exchangeToFiatPayment.getSourceFiat() == null) {
                 exchangeToFiatPayment.setSourceFiat(exchangeToFiatPayment.getSource().getLocalFiat());
             }
 
-            if (exchangeToFiatPayment.getXrpToFiatTrades() != null) {
+            if (exchangeToFiatPayment.getXrpToFiatTrades() != null && !exchangeToFiatPayment.getXrpToFiatTrades().isEmpty()) {
                 exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getXrpToFiatTrades().get(0).getExchange().getLocalFiat());
             } else {
                 exchangeToFiatPayment.setDestinationFiat(exchangeToFiatPayment.getDestination().getLocalFiat());
@@ -171,12 +166,11 @@ public abstract class XrapidCorridors {
                 getAggregatedInTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
 
             if (!aggregatedTrades.isEmpty()) {
-
-                List<Trade> closestTrades = TradesCombinaisonsHelper.closestGroup(aggregatedTrades, exchangeToExchangePayment.getAmount(), false);
+                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), false, sellDelta);
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                if (validateAmount(exchangeToExchangePayment, sum, exchangeToExchangePayment.getDestination().isMaxTolerence())) {
+                if (sum > 0 && validateAmount(exchangeToExchangePayment, sum, exchangeToExchangePayment.getDestination().isMaxTolerence())) {
 
                     exchangeToExchangePayment.setXrpToFiatTrades(closestTrades);
                     exchangeToExchangePayment.setXrpToFiatTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
@@ -204,9 +198,9 @@ public abstract class XrapidCorridors {
         return trade -> {
             double diff = exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond();
             if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
-                return diff >= 1 && diff < DEFAULT_TIME_DELTA;
+                return diff >= 2 && diff < DEFAULT_TIME_DELTA;
             }
-            return diff >= 1 && diff < buyDelta;
+            return diff >= 2 && diff < buyDelta;
         };
     }
 
@@ -214,9 +208,9 @@ public abstract class XrapidCorridors {
         return trade -> {
             double diff = trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond();
             if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
-                return diff >= 1 && diff < DEFAULT_TIME_DELTA;
+                return diff >= 2 && diff < DEFAULT_TIME_DELTA;
             }
-            return diff >= 1 && diff < sellDelta;
+            return diff >= 2 && diff < sellDelta;
         };
     }
 
@@ -228,13 +222,13 @@ public abstract class XrapidCorridors {
 
         Arrays.asList(getAggregatedOutTrades(exchangeToExchangePayment, "sell"),
                 getAggregatedOutTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
-            if (!aggregatedTrades.isEmpty()) {
+            if (!aggregatedTrades.isEmpty() && sum(aggregatedTrades) >= exchangeToExchangePayment.getAmount()) {
 
-                List<Trade> closestTrades = TradesCombinaisonsHelper.closestGroup(aggregatedTrades, exchangeToExchangePayment.getAmount(), true);
+                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), true, buyDelta);
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                if (validateAmount(exchangeToExchangePayment, sum, exchangeToExchangePayment.getDestination().isMaxTolerence())) {
+                if (sum > 0 && validateAmount(exchangeToExchangePayment, sum, exchangeToExchangePayment.getDestination().isMaxTolerence())) {
 
                     exchangeToExchangePayment.setFiatToXrpTrades(closestTrades);
                     exchangeToExchangePayment.setFiatToXrpTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
@@ -292,7 +286,7 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean validateAmount(ExchangeToExchangePayment exchangeToExchangePayment, double tradesAmountSum, boolean maxTolerence) {
-        return (Math.abs(exchangeToExchangePayment.getAmount() - tradesAmountSum) < getTolerence(exchangeToExchangePayment, maxTolerence));
+        return true;
     }
 
     private double getTolerence(ExchangeToExchangePayment payment, boolean maxTolerence) {
