@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static space.xrapid.job.Scheduler.transactionHashes;
-import static space.xrapid.util.TradesCombinaisonsHelper.sum;
 
 @Slf4j
 public abstract class XrapidCorridors {
@@ -170,7 +169,7 @@ public abstract class XrapidCorridors {
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                if (sum > 0 && validateAmount(exchangeToExchangePayment, sum, exchangeToExchangePayment.getDestination().isMaxTolerence())) {
+                if (sum > 0) {
 
                     exchangeToExchangePayment.setXrpToFiatTrades(closestTrades);
                     exchangeToExchangePayment.setXrpToFiatTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
@@ -222,13 +221,13 @@ public abstract class XrapidCorridors {
 
         Arrays.asList(getAggregatedOutTrades(exchangeToExchangePayment, "sell"),
                 getAggregatedOutTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
-            if (!aggregatedTrades.isEmpty() && sum(aggregatedTrades) >= exchangeToExchangePayment.getAmount()) {
+            if (!aggregatedTrades.isEmpty()) {
 
                 List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), true, buyDelta);
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                if (sum > 0 && validateAmount(exchangeToExchangePayment, sum, exchangeToExchangePayment.getDestination().isMaxTolerence())) {
+                if (sum > 0 ) {
 
                     exchangeToExchangePayment.setFiatToXrpTrades(closestTrades);
                     exchangeToExchangePayment.setFiatToXrpTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
@@ -283,18 +282,5 @@ public abstract class XrapidCorridors {
                 .filter(filterFiatToXrpTradePerDate(exchangeToExchangePayment))
                 .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
                 .collect(Collectors.toList());
-    }
-
-    protected boolean validateAmount(ExchangeToExchangePayment exchangeToExchangePayment, double tradesAmountSum, boolean maxTolerence) {
-        return true;
-    }
-
-    private double getTolerence(ExchangeToExchangePayment payment, boolean maxTolerence) {
-
-        return payment.getAmount() * 0.001;
-    }
-
-    private double getTolerence(ExchangeToExchangePayment payment) {
-        return getTolerence(payment, false);
     }
 }
