@@ -37,7 +37,7 @@ public class ExchangeToExchangePayment extends Payment {
     private boolean confirmed;
     private SpottedAt spottedAt;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String transactionHash;
 
     @Transient
