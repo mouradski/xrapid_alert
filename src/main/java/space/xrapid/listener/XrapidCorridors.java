@@ -2,7 +2,10 @@ package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import space.xrapid.domain.*;
+import space.xrapid.domain.Exchange;
+import space.xrapid.domain.ExchangeToExchangePayment;
+import space.xrapid.domain.SpottedAt;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.XrapidInboundAddressService;
@@ -10,6 +13,7 @@ import space.xrapid.util.TradesCombinaisonsHelper;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -36,7 +40,6 @@ public abstract class XrapidCorridors {
 
     protected long buyDelta;
     protected long sellDelta;
-    private static long DEFAULT_TIME_DELTA = 60;
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
 
@@ -75,7 +78,7 @@ public abstract class XrapidCorridors {
             OffsetDateTime dateTime = OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
             return ExchangeToExchangePayment.builder()
-                    .amount(Double.valueOf(payment.getDeliveredAmount()))
+                    .amount(payment.getDeliveredAmount())
                     .destination(Exchange.byAddress(payment.getDestination()))
                     .source(Exchange.byAddress(payment.getSource()))
                     .sourceAddress(payment.getSource())
@@ -90,24 +93,6 @@ public abstract class XrapidCorridors {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    protected boolean isXrapidCandidate(Payment payment) {
-        try {
-            return Double.valueOf(payment.getAmount()) > 140 && getDestinationExchange().equals(Exchange.byAddress(payment.getDestination())) && allExchangeAddresses.contains(payment.getSource());
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-
-    protected double getAmountDelta(ExchangeToExchangePayment exchangeToExchangePayment, List<TradesGroup> tradesGroup) {
-        return Double.valueOf(Math.abs(exchangeToExchangePayment.getAmount() - totalAmount(tradesGroup)));
-    }
-
-    protected double totalAmount(List<TradesGroup> trades) {
-        return trades.stream().mapToDouble(TradesGroup::getSum).sum();
     }
 
     protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
@@ -153,6 +138,19 @@ public abstract class XrapidCorridors {
         messagingTemplate.convertAndSend("/topic/payments", payment);
     }
 
+
+
+    private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
+        return trade ->
+                exchangeToExchangePayment.getDateTime().isAfter(trade.getDateTime()) && Math.abs(ChronoUnit.SECONDS.between(exchangeToExchangePayment.getDateTime(), trade.getDateTime())) < buyDelta;
+
+    }
+
+    private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
+        return trade ->
+            exchangeToExchangePayment.getDateTime().isBefore(trade.getDateTime()) && Math.abs(ChronoUnit.SECONDS.between(trade.getDateTime(), exchangeToExchangePayment.getDateTime())) < buyDelta;
+    }
+
     protected boolean xrpToFiatTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
 
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
@@ -161,11 +159,11 @@ public abstract class XrapidCorridors {
 
         exchangeToExchangePayment.setDestinationCurrencry(exchangeToExchangePayment.getDestinationFiat());
 
-        Arrays.asList(getAggregatedInTrades(exchangeToExchangePayment, "sell"),
-                getAggregatedInTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
+        Arrays.asList(getAggregatedSellTrades(exchangeToExchangePayment, "sell"),
+                getAggregatedSellTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
 
             if (!aggregatedTrades.isEmpty()) {
-                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), false, sellDelta);
+                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 
@@ -193,37 +191,17 @@ public abstract class XrapidCorridors {
         return exchangeToExchangePayment.isInTradeFound();
     }
 
-    private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
-        return trade -> {
-            double diff = exchangeToExchangePayment.getDateTime().toEpochSecond() - trade.getDateTime().toEpochSecond();
-            if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
-                return diff >= 2 && diff < DEFAULT_TIME_DELTA;
-            }
-            return diff >= 2 && diff < buyDelta;
-        };
-    }
-
-    private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
-        return trade -> {
-            double diff = trade.getDateTime().toEpochSecond() - exchangeToExchangePayment.getDateTime().toEpochSecond();
-            if (!exchangeToExchangePayment.getDestination().isConfirmed() || !exchangeToExchangePayment.getSource().isConfirmed()) {
-                return diff >= 2 && diff < DEFAULT_TIME_DELTA;
-            }
-            return diff >= 2 && diff < sellDelta;
-        };
-    }
-
     protected boolean fiatToXrpTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())
                 || exchangeToExchangePayment.getSource() == null || exchangeToExchangePayment.getDestination() == null) {
             return false;
         }
 
-        Arrays.asList(getAggregatedOutTrades(exchangeToExchangePayment, "sell"),
-                getAggregatedOutTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
+        Arrays.asList(getAggregatedBuyTrades(exchangeToExchangePayment, "sell"),
+                getAggregatedBuyTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
             if (!aggregatedTrades.isEmpty()) {
 
-                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), true, buyDelta);
+                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 
@@ -244,14 +222,12 @@ public abstract class XrapidCorridors {
     }
 
     protected void submit(List<Payment> payments) {
-        List<Payment> paymentsToProcess = payments.stream()
-                .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
-        if (paymentsToProcess.isEmpty()) {
+        if (payments.isEmpty()) {
             return;
         }
 
-        paymentsToProcess.stream()
+        payments.stream()
                 .map(this::mapPayment)
                 .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                 .filter(this::xrpToFiatTradesExists)
@@ -260,7 +236,7 @@ public abstract class XrapidCorridors {
     }
 
 
-    protected List<Trade> getAggregatedInTrades(ExchangeToExchangePayment exchangeToExchangePayment, String side) {
+    protected List<Trade> getAggregatedSellTrades(ExchangeToExchangePayment exchangeToExchangePayment, String side) {
 
         return trades.stream()
                 .filter(trade -> trade.getOrderId() != null)
@@ -273,7 +249,7 @@ public abstract class XrapidCorridors {
 
     }
 
-    protected List<Trade> getAggregatedOutTrades(ExchangeToExchangePayment exchangeToExchangePayment, String side) {
+    protected List<Trade> getAggregatedBuyTrades(ExchangeToExchangePayment exchangeToExchangePayment, String side) {
 
         return trades.stream()
                 .filter(trade -> trade.getOrderId() != null)

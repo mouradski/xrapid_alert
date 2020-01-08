@@ -48,7 +48,7 @@ public class Scheduler {
 
     public static Set<String> transactionHashes = new HashSet<>();
 
-    private static int MAX_TRADE_DELAY_IN_MINUTES = 7;
+    private static int MAX_TRADE_DELAY_IN_MINUTES = 3;
     private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
 
 
@@ -56,7 +56,7 @@ public class Scheduler {
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 25000)
     public void odl() throws Exception {
 
         OffsetDateTime lastWindowEndRollback = lastWindowEnd;
@@ -70,6 +70,17 @@ public class Scheduler {
 
         try {
             updatePaymentsWindows();
+
+            OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
+            OffsetDateTime xrplPaymentsEnd = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES);
+            log.info("Fetching payments from XRP Ledger from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
+            List<Payment> payments = xrpLedgerService.fetchOdlCandidatePayments(xrplPaymentsStart, xrplPaymentsEnd);
+
+            log.info("{} payments fetched from XRP Ledger", payments.size());
+
+            if (payments.isEmpty()) {
+                return;
+            }
 
             List<Trade> allTrades = new ArrayList<>();
 
@@ -88,12 +99,6 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
-            OffsetDateTime xrplPaymentsEnd = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES);
-            log.info("Fetching payments from XRP Ledger from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
-            List<Payment> payments = xrpLedgerService.fetchPayments(xrplPaymentsStart, xrplPaymentsEnd);
-
-            log.info("{} payments fetched from XRP Ledger", payments.size());
 
             log.info("Search all XRPL TRX between exchanges that providing API");
             destinationFiats.forEach(fiat -> {
@@ -101,7 +106,7 @@ public class Scheduler {
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(60, 180, 60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
+                            Arrays.asList(45, 60, 60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
                                 new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });

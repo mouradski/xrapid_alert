@@ -5,8 +5,6 @@ import org.springframework.stereotype.Repository;
 import space.xrapid.domain.Currency;
 import space.xrapid.domain.XrapidInboundAddress;
 
-import java.util.Set;
-
 @Repository
 public interface XrapidInboundAddressRepository extends JpaRepository<XrapidInboundAddress, Integer> {
     boolean existsByAddressAndTag(String address, long tag);

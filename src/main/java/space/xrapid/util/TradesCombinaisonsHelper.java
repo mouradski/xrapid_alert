@@ -12,9 +12,18 @@ import java.util.List;
 public class TradesCombinaisonsHelper {
 
 
-    public static List<Trade> getTrades(List<Trade> trades, double amount, boolean buy, double delta) {
+    public static List<Trade> getTrades(List<Trade> trades, double amount) {
 
-        int maxSize = trades.size() > 22 ? 22 : trades.size();
+        int maxSize = trades.size() > 9 ? 9 : trades.size();
+
+        return getTrades(trades, amount, maxSize);
+    }
+
+    private static List<Trade> getTrades(List<Trade> trades, double amount, int maxSize) {
+        List<Trade> toReturn = new ArrayList<>();
+
+        double min = 10000;
+
 
         for (int i = 1; i <= maxSize; i++) {
 
@@ -24,26 +33,29 @@ public class TradesCombinaisonsHelper {
 
             Iterator<List<Trade>> iterator = combinaisons.iterator();
 
-            if (new Date().getTime() - start > 30000) {
-                break;
-            }
-
             while (iterator.hasNext()) {
                 List<Trade> candidates = iterator.next();
 
                 double sum = sum(candidates);
-                double diff = buy ? sum - amount : amount - sum;
+                double diff = Math.abs(sum - amount);
 
-                if (diff >= 0 && diff <= 0.5) {
-                    return candidates;
+                if (diff <= 0.05 || (amount > 2000 && diff <= amount * 0.001)) {
+
+                    if (diff < min) {
+                        toReturn =  candidates;
+                        min = diff;
+
+                        if (new Date().getTime() - start > 15000) {
+                            break;
+                        }
+                    }
                 }
 
             }
         }
 
-        return new ArrayList<>();
+        return toReturn;
     }
-
 
     public static Double sum(List<Trade> groups) {
         return groups.stream().mapToDouble(Trade::getAmount).sum();
