@@ -13,9 +13,6 @@ import space.xrapid.service.ExchangeToExchangePaymentService;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static space.xrapid.job.Scheduler.transactionHashes;
 
 @Slf4j
 public class OutboundXrapidCorridors extends XrapidCorridors {
@@ -37,16 +34,13 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
 
     @Override
     protected void submit(List<Payment> payments) {
-        List<Payment> paymentsToProcess = payments.stream()
-                .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
-        if (paymentsToProcess.isEmpty()) {
+        if (payments.isEmpty()) {
             return;
         }
 
-        paymentsToProcess.stream()
+        payments.stream()
                 .map(this::mapPayment)
-                //.filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                 .filter(this::fiatToXrpTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .forEach(this::persistPayment);

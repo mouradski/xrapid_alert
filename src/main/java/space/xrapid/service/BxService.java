@@ -10,7 +10,6 @@ import space.xrapid.domain.Trade;
 import space.xrapid.domain.bx.MessageConverter;
 import space.xrapid.domain.bx.Response;
 
-import javax.annotation.PostConstruct;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

@@ -26,9 +26,9 @@ import java.util.Map;
 public class Payment {
 
     @JsonProperty("amount")
-    private String amount;
+    private double amount;
     @JsonProperty("delivered_amount")
-    private String deliveredAmount;
+    private double deliveredAmount;
     @JsonProperty("destination_balance_changes")
     private List<DestinationBalanceChange> destinationBalanceChanges = null;
     @JsonProperty("source_balance_changes")
@@ -57,22 +57,22 @@ public class Payment {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("amount")
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
     @JsonProperty("amount")
-    public void setAmount(String amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
     @JsonProperty("delivered_amount")
-    public String getDeliveredAmount() {
+    public double getDeliveredAmount() {
         return deliveredAmount;
     }
 
     @JsonProperty("delivered_amount")
-    public void setDeliveredAmount(String deliveredAmount) {
+    public void setDeliveredAmount(double deliveredAmount) {
         this.deliveredAmount = deliveredAmount;
     }
 
