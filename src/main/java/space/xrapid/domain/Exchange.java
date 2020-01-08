@@ -76,6 +76,8 @@ public enum Exchange {
 
     BITCOIN_TRADE("bitcoin_trade", true, BRL, false, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),
 
+    LIQUID("liquid", true, JPY, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p", "rMbWmirwEtRr7pNmhN4d4ysTMBvBxdvovs"),
+
 
     BITREX("bitrex", false, USD, false,
             "_TO_DELETE_"),
