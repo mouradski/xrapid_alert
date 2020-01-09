@@ -32,16 +32,8 @@ public enum Exchange {
 
     BX_IN("bx.in.th", false, BAHT, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
-    SBI_VC("sbi_vc", true, YEN, false,
-            "rHtqTcp3SvjxbhpTYMFTUWX5B1mny9KWeE",
-            "rwB2UA47taZQCfi4po3tw8vwBpt6Y6eioZ",
-            "rJLEjF9wbrHU2H5YSJKn6S7hyyq8gne7su",
-            "rEFtdHuyxgUjDL4t3gBsesQwHtnDy2W8rC",
-            "r4dYaiK2rcV9ypXZjwvwH6uLoeCTrUPceW",
-            "rMEFmh7nvypDmk6xJ3xcuqhYhKQGtXEmyK",
-            "rN5wo76mqvdNvShMbi5zwsnHWm2KVaqW4m",
-            "rLzFjyD1gYJx3XQc1tEj9pNa4DD1SY6DeR",
-            "r9x4D7c2nfa3UJefLR4fpN31zZQvByHSLQ"),
+    SBI_TRADE("sbi_trade", true, YEN, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",
+            "rKcVYzVK1f4PhRFjLhWP7QmteG5FpPgRub"),
 
     CEX_IO("cex.io", true, USD, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
     CEX_IO_EUR("cex.io", true, EUR, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
