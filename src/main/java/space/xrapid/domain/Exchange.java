@@ -61,6 +61,8 @@ public enum Exchange {
 
     COINBENE("coinbene", true, BRL, false, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
+    INDEP_RESERVE("independent reserve", true, NZD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
+
     MERCADO("mercado", true, BRL, false, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
 
     BRAZILIEX("braziliex", true, BRL, false,

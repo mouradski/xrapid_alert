@@ -15,5 +15,6 @@ public enum Currency {
     AED,
     INR,
     RUB,
-    UAH
+    UAH,
+    NZD
 }
