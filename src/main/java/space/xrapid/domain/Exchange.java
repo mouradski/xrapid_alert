@@ -14,7 +14,7 @@ public enum Exchange {
             "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
             "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
 
-    BITSTAMP_EUR("bitstamp", false, EUR, false,
+    BITSTAMP_EUR("bitstamp", true, EUR, false,
             "rrpNnNLKrartuEqfJGpqyDwPj1AFPg9vn1",
             "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
             "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
@@ -30,7 +30,7 @@ public enum Exchange {
             "rfEu1Wnr7LxStoFx8DBdzgr8M16FBUbH3K",
             "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
-    BX_IN("bx.in.th", false, BAHT, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
+    BX_IN("bx.in.th", true, BAHT, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
     SBI_TRADE("sbi_trade", true, YEN, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",
             "rKcVYzVK1f4PhRFjLhWP7QmteG5FpPgRub"),
@@ -43,14 +43,14 @@ public enum Exchange {
     COINFIELD_USD("coinfield", false, USD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_GBP("coinfield", false, GBP, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_AED("coinfield", false, AED, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-    COINFIELD_JPY("coinfield", false, JPY, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+    COINFIELD_JPY("coinfield", true, JPY, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_CAD("coinfield", false, CAD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_EUR("coinfield", false, EUR, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
 
 
     BINANCE_RUB("binance", false, RUB, false, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
 
-    WAZIRX("Wazirx", false, INR, false, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "rJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
+    WAZIRX("Wazirx", true, INR, false, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "rJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
     KRAKEN_USD("kraken", false, USD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
     KRAKEN_EUR("kraken", false, EUR, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
@@ -87,7 +87,9 @@ public enum Exchange {
 
     BITBANK("bitbank", true, JPY, true, "rLbKbPyuvs4wc1h13BEPHgbFGsRXMeFGL6", "rw7m3CtVHwGSdhFjV4MyJozmZJv3DYQnsA", "rwggnsfxvCmDb3YP9Hs1TaGvrPR7ngrn7Z"),
 
-    BITKUB("bitkub", true, BAHT, false, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW");
+    BITKUB("bitkub", true, BAHT, false, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW"),
+
+    INDODAX("indodax", true, IDR, true, "KUZ3ZFwzgaDGjKBysADByzxvohQ3C" ,"rDDrTcmnCxeTV1hycGdXiaEynYcU1QnSUg", "rB46Pb2mxdCk2zn68MNwZnFQ7Wv2Kjtddr");
 
 
     private String name;
