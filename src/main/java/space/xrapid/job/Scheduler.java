@@ -84,7 +84,7 @@ public class Scheduler {
 
             List<Trade> allTrades = new ArrayList<>();
 
-            tradeServices.stream()
+            tradeServices.parallelStream()
                     .filter(service -> service.getExchange().isConfirmed())
                     .forEach(tradeService -> {
                         try {
