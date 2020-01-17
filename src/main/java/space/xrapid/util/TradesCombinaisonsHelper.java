@@ -39,7 +39,11 @@ public class TradesCombinaisonsHelper {
                 double sum = sum(candidates);
                 double diff = Math.abs(sum - amount);
 
-                if (diff <= 0.05 || (amount > 2000 && diff <= amount * 0.001)) {
+                if (diff <= 0.05) {
+
+                    if (diff <= 0.02) {
+                        return candidates;
+                    }
 
                     if (diff < min) {
                         toReturn =  candidates;

@@ -48,7 +48,7 @@ public class Scheduler {
 
     public static Set<String> transactionHashes = new HashSet<>();
 
-    private static int MAX_TRADE_DELAY_IN_MINUTES = 3;
+    private static int MAX_TRADE_DELAY_IN_MINUTES = 4;
     private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
 
 
@@ -99,8 +99,17 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
+            log.info("Search all XRPL TRX between exchanges that providing API, basing on confirmed destination tag");
+            destinationFiats.forEach(fiat -> {
+                availableExchangesWithApi.stream()
+                        .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
+                        .forEach(exchange -> {
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, null)
+                                    .searchXrapidPayments(payments, allTrades, rate);
+                        });
+            });
 
-            log.info("Search all XRPL TRX between exchanges that providing API");
+            log.info("Search all XRPL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
             destinationFiats.forEach(fiat -> {
             availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
@@ -124,18 +133,6 @@ public class Scheduler {
                     .forEach(exchange -> {
                         new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
                     });
-
-
-            log.info("Search all XRPL TRX between exchanges that providing API, basing on xonfirmed destination tag where trades not found (too far)");
-            destinationFiats.forEach(fiat -> {
-                availableExchangesWithApi.stream()
-                        .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
-                        .forEach(exchange -> {
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, null)
-                                    .searchXrapidPayments(payments, allTrades, rate);
-                        });
-            });
-
 
             Stats stats = exchangeToExchangePaymentService.calculateStats();
 
