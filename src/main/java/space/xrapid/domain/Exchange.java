@@ -49,6 +49,7 @@ public enum Exchange {
 
 
     BINANCE_RUB("binance", false, RUB, false, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
+    BINANCE_US("binanceus", true, USD, false, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
 
     WAZIRX("Wazirx", true, INR, false, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "rJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
