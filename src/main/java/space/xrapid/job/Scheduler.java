@@ -73,10 +73,10 @@ public class Scheduler {
 
             OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
             OffsetDateTime xrplPaymentsEnd = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES);
-            log.info("Fetching payments from XRP Ledger from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
+            log.info("Fetching ODL candidates from XRP Ledger, from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
             List<Payment> payments = xrpLedgerService.fetchOdlCandidatePayments(xrplPaymentsStart, xrplPaymentsEnd);
 
-            log.info("{} payments fetched from XRP Ledger", payments.size());
+            log.info("{} ODL candidates fetched from XRP Ledger", payments.size());
 
             if (payments.isEmpty()) {
                 return;
@@ -99,7 +99,7 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            log.info("Search all XRPL TRX between exchanges that providing API, basing on confirmed destination tag");
+            log.info("Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
             destinationFiats.forEach(fiat -> {
                 availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
@@ -109,7 +109,7 @@ public class Scheduler {
                         });
             });
 
-            log.info("Search all XRPL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
+            log.info("Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
             destinationFiats.forEach(fiat -> {
             availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
@@ -122,12 +122,12 @@ public class Scheduler {
                         });
             });
 
-            log.info("Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
+            log.info("Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
             availableExchangesWithApi.forEach(exchange -> {
                 new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
             });
 
-            log.info("Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
+            log.info("Search for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
             allConfirmedExchange.stream()
                     .filter(exchange -> !availableExchangesWithApi.contains(exchange))
                     .forEach(exchange -> {
