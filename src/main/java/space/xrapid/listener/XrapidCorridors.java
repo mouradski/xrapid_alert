@@ -8,6 +8,7 @@ import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.TradesFoundCacheService;
 import space.xrapid.service.XrapidInboundAddressService;
 import space.xrapid.util.TradesCombinaisonsHelper;
 
@@ -38,14 +39,17 @@ public abstract class XrapidCorridors {
 
     protected SimpMessageSendingOperations messagingTemplate;
 
+    protected TradesFoundCacheService tradesFoundCacheService;
+
     protected long buyDelta;
     protected long sellDelta;
 
-    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
+    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
 
         this.buyDelta = 200;
         this.sellDelta = 200;
 
+        this.tradesFoundCacheService = tradesFoundCacheService;
         if (exchangesToExclude == null) {
             this.exchangesToExclude = new ArrayList<>();
         } else {
@@ -163,7 +167,16 @@ public abstract class XrapidCorridors {
                 getAggregatedSellTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
 
             if (!aggregatedTrades.isEmpty()) {
-                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
+
+
+                List<Trade> closestTrades = tradesFoundCacheService.getXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash());
+
+                if (closestTrades == null) {
+                    closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
+                    if (!closestTrades.isEmpty()) {
+                        tradesFoundCacheService.addXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash(), closestTrades);
+                    }
+                }
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 
@@ -201,7 +214,15 @@ public abstract class XrapidCorridors {
                 getAggregatedBuyTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
             if (!aggregatedTrades.isEmpty()) {
 
-                List<Trade> closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
+                List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash());
+
+                if (closestTrades == null) {
+                    closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
+
+                    if (!closestTrades.isEmpty()) {
+                        tradesFoundCacheService.addFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), closestTrades);
+                    }
+                }
 
                 double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
 

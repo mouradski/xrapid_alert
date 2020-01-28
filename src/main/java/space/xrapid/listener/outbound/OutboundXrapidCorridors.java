@@ -10,6 +10,7 @@ import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.TradesFoundCacheService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,8 +22,11 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
 
     private Exchange destinationExchange;
 
-    public OutboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, List<Exchange> exchangesWithApi) {
-        super(exchangeToExchangePaymentService, null, messagingTemplate, exchangesWithApi, null);
+    public OutboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService,
+                                   TradesFoundCacheService tradesFoundCacheService, SimpMessageSendingOperations messagingTemplate,
+                                   Exchange destinationExchange, List<Exchange> exchangesWithApi) {
+
+        super(exchangeToExchangePaymentService, tradesFoundCacheService, null, messagingTemplate, exchangesWithApi, null);
         this.destinationExchange = destinationExchange;
     }
 

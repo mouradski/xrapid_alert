@@ -6,6 +6,7 @@ import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.TradesFoundCacheService;
 import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
@@ -35,10 +36,10 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     }
 
 
-    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
+    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService,
                                    SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds) {
 
-        super(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, null, tradeIds);
+        super(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, null, tradeIds);
 
 
         this.buyDelta = buyDelta;

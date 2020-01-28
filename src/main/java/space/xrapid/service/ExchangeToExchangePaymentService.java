@@ -125,7 +125,7 @@ public class ExchangeToExchangePaymentService {
         OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
         OffsetDateTime day = today.minusDays(1);
         if (dailyVolumes.isEmpty()) {
-            for (int i = 0; i < 365; i++) {
+            for (int i = 0; i < 12; i++) {
                 Double volume = repository.getVolumeBetween(day.toEpochSecond() * 1000, day.plusDays(1).toEpochSecond() * 1000);
                 dailyVolumes.put(day, volume == null ? 0 : volume);
                 day = day.minusDays(1);
@@ -175,7 +175,7 @@ public class ExchangeToExchangePaymentService {
 
     @Cacheable(value = "lastOdlCache", key = "1")
     public List<ExchangeToExchangePayment> getLasts() {
-        List<ExchangeToExchangePayment> payments =  repository.findTop(1000);
+        List<ExchangeToExchangePayment> payments =  repository.findTop(350);
 
         payments.forEach(payment -> {
             if (payment.getTradeIds() != null && !payment.getTradeIds().isEmpty()) {
