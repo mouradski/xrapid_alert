@@ -165,25 +165,25 @@
               <thead class=" text-primary">
               <tr>
                 <th class="date">Date</th>
-                <th class="amount">Amount</th>
+                <th class="amount" *ngIf="!mobile">Amount</th>
                 <th class="value">USD Value</th>
-                <th>From</th>
-                <th>To</th>
+                <th *ngIf="!mobile">From</th>
+                <th *ngIf="!mobile">To</th>
                 <th>Source Fiat</th>
                 <th>Target Fiat</th>
-                <th></th>
+                <th *ngIf="!mobile"></th>
               </tr>
               </thead>
               <tbody>
               <tr *ngFor="let payment of currentPage">
                 <td class="date">{{ payment.dateTime | date:'medium' }}</td>
-                <td class="amount">{{ payment.amount | number}} XRP</td>
+                <td class="amount" *ngIf="!mobile" >{{ payment.amount | number}} XRP</td>
                 <td  class="value">{{ payment.usdValue | currency }}</td>
-                <td>{{ payment.source }}</td>
-                <td>{{ payment.destination }}</td>
+                <td *ngIf="!mobile">{{ payment.source }}</td>
+                <td *ngIf="!mobile">{{ payment.destination }}</td>
                 <td>{{ payment.sourceFiat }}</td>
                 <td>{{ payment.destinationFiat }}</td>
-                <td class="tab-btn">
+                <td class="tab-btn" *ngIf="!mobile">
                   <button (click)="info([[payment.transactionHash]])" type="button" class="btn btn-primary"
                           data-toggle="modal" data-target="#myModal">
                     Info
