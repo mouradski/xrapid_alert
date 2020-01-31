@@ -90,7 +90,9 @@ public enum Exchange {
 
     BITKUB("bitkub", true, BAHT, false, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW"),
 
-    INDODAX("indodax", true, IDR, true, "KUZ3ZFwzgaDGjKBysADByzxvohQ3C" ,"rDDrTcmnCxeTV1hycGdXiaEynYcU1QnSUg", "rB46Pb2mxdCk2zn68MNwZnFQ7Wv2Kjtddr");
+    INDODAX("indodax", true, IDR, true, "KUZ3ZFwzgaDGjKBysADByzxvohQ3C" ,"rDDrTcmnCxeTV1hycGdXiaEynYcU1QnSUg", "rB46Pb2mxdCk2zn68MNwZnFQ7Wv2Kjtddr"),
+
+    QUIDAX("quidax", true, NGN, true, "rMuC8SpD8GP5a1uXma2jZyHVY5wxeCK7bV", "rnNQs4WAKUHes7kJtqqRiU3Wq9q1pHuDEt");
 
 
     private String name;
