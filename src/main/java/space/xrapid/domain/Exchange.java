@@ -11,16 +11,14 @@ public enum Exchange {
             "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
             "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
             "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
-            "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
+            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD"),
 
     BITSTAMP_EUR("bitstamp", true, EUR, false,
             "rrpNnNLKrartuEqfJGpqyDwPj1AFPg9vn1",
             "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
             "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
             "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD",
-            "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"),
+            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD"),
 
     BITSO("bitso", true, MXN, true,
             "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
