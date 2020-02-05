@@ -51,7 +51,7 @@ public class ExchangeToExchangePaymentService {
             Double allTimeVolume = repository.getAllTimeVolume();
             Double todayVolume = repository.getVolumeBetween(today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
 
-            String[] days = new String[11];
+            String[] days = new String[21];
 
             if (todayVolume == null) {
                 todayVolume = 0d;
@@ -83,22 +83,22 @@ public class ExchangeToExchangePaymentService {
                 }
             }
 
-            double[] volumePerDay = new double[11];
-            volumePerDay[10] = roundVolume(todayVolume);
+            double[] volumePerDay = new double[21];
+            volumePerDay[20] = roundVolume(todayVolume);
 
-            days[10] = "Today";
+            days[20] = "Today";
 
-            for (int i = 9; i >= 0; i--) {
+            for (int i = 19; i >= 0; i--) {
                 Double volume = repository.getVolumeBetween(today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
 
                 if (volume == null) {
-                    volumePerDay[9 - i] = 0;
+                    volumePerDay[19 - i] = 0;
 
                 } else {
-                    volumePerDay[9 - i] = roundVolume(volume);
+                    volumePerDay[19 - i] = roundVolume(volume);
                 }
 
-                days[9 - i] = today.minusDays(1 * (i + 1)).toString().substring(2, 10);
+                days[19 - i] = today.minusDays(1 * (i + 1)).toString().substring(2, 10);
             }
 
             calculateDailyVolumes();
@@ -125,7 +125,7 @@ public class ExchangeToExchangePaymentService {
         OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
         OffsetDateTime day = today.minusDays(1);
         if (dailyVolumes.isEmpty()) {
-            for (int i = 0; i < 12; i++) {
+            for (int i = 0; i < 22; i++) {
                 Double volume = repository.getVolumeBetween(day.toEpochSecond() * 1000, day.plusDays(1).toEpochSecond() * 1000);
                 dailyVolumes.put(day, volume == null ? 0 : volume);
                 day = day.minusDays(1);
