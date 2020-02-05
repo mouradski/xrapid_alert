@@ -14,7 +14,7 @@ public class TradesCombinaisonsHelper {
 
     public static List<Trade> getTrades(List<Trade> trades, double amount) {
 
-        int maxSize = trades.size() > 9 ? 9 : trades.size();
+        int maxSize = trades.size() > 13 ? 13 : trades.size();
 
         return getTrades(trades, amount, maxSize);
     }
@@ -39,7 +39,7 @@ public class TradesCombinaisonsHelper {
                 double sum = sum(candidates);
                 double diff = Math.abs(sum - amount);
 
-                if (diff <= 0.05) {
+                if (diff <= 0.05005) {
 
                     if (diff <= 0.02) {
                         return candidates;

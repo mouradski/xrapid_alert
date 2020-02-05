@@ -33,6 +33,9 @@ export class TablesComponent implements OnInit {
 
   private deviceInfo = null;
 
+
+  public mobile:boolean;
+
   constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller, private deviceService: DeviceDetectorService) {
     const _this = this;
     this.payment = new Payment();
@@ -40,6 +43,8 @@ export class TablesComponent implements OnInit {
     this.notifier = 'brad';
 
     this.deviceInfo = this.deviceService.getDeviceInfo();
+
+    this.mobile = this.deviceService.isMobile();
 
     if (this.deviceService.isMobile()) {
       this.pageSize = 4;

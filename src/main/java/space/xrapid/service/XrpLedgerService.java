@@ -49,6 +49,7 @@ public class XrpLedgerService {
                     .filter(p -> p.getAmount() > 150)
                     .filter(p -> Exchange.byAddress(p.getSource()) != null)
                     .filter(p -> Exchange.byAddress(p.getDestination()) != null)
+                    .peek(p -> System.out.println(p.getTxHash()))
                     .collect(Collectors.toList()));
 
         }
