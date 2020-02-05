@@ -46,7 +46,7 @@ public class XrpLedgerService {
             }
 
             payments.addAll(response.getBody().getPayments().stream()
-                    .filter(p -> p.getAmount() > 150)
+                    .filter(p -> p.getAmount() > 50)
                     .filter(p -> Exchange.byAddress(p.getSource()) != null)
                     .filter(p -> Exchange.byAddress(p.getDestination()) != null)
                     .peek(p -> System.out.println(p.getTxHash()))
