@@ -30,7 +30,7 @@ public enum Exchange {
 
     BX_IN("bx.in.th", true, BAHT, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
-    SBI_TRADE("sbi_trade", true, YEN, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",
+    SBI_TRADE("sbi_trade", true, JPY, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",
             "rKcVYzVK1f4PhRFjLhWP7QmteG5FpPgRub"),
 
     CEX_IO("cex.io", true, USD, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
