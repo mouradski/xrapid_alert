@@ -7,7 +7,7 @@ public enum Currency {
     PHP,
     YEN,
     BRL,
-    BAHT,
+    THB,
     AUD,
     GBP,
     CAD,
