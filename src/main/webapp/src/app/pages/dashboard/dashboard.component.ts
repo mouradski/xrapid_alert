@@ -6,6 +6,7 @@ import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
 import {Payment} from "../tables/tables.component";
 import {CookieService} from 'ngx-cookie-service';
+import { CurrencyPipe } from '@angular/common';
 
 
 @Component({
@@ -122,7 +123,10 @@ export class DashboardComponent implements OnInit {
         xPadding: 12,
         mode: "nearest",
         intersect: 0,
-        position: "nearest"
+        position: "nearest",
+        callbacks: {
+          label: this.formatLabel
+        }
       },
       responsive: true,
       scales: {
@@ -168,7 +172,7 @@ export class DashboardComponent implements OnInit {
     let data = {
       labels: ['D-10', 'D-9', 'D-8', 'D-7', 'D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'D'],
       datasets: [{
-        label: "Data",
+        label: "ODL Volume",
         fill: true,
         backgroundColor: gradientStroke,
         borderColor: '#ffb422',
@@ -217,7 +221,10 @@ export class DashboardComponent implements OnInit {
         xPadding: 12,
         mode: "nearest",
         intersect: 0,
-        position: "nearest"
+        position: "nearest",
+        callbacks: {
+          label: this.formatLabel
+        }
       },
       responsive: true,
       scales: {
@@ -301,6 +308,16 @@ export class DashboardComponent implements OnInit {
   isDisclaimerNotRead() {
     return this.cookieService.get("disclaimerRead") != 'yes';
   }
+
+  formatLabel(tooltipItem, data) {
+    let label = "ODL Volume";
+    let datasetLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+    let currencyPipe = new CurrencyPipe('en');
+    let formattedNumber = currencyPipe.transform(datasetLabel, 'USD', 'symbol');
+    return label + ': ' + formattedNumber;
+  }
+
+
 }
 
 export class Stats {
