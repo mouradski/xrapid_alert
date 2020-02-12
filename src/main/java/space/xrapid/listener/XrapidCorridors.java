@@ -145,14 +145,18 @@ public abstract class XrapidCorridors {
 
 
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
-        return trade ->
-                exchangeToExchangePayment.getDateTime().isAfter(trade.getDateTime()) && Math.abs(ChronoUnit.SECONDS.between(exchangeToExchangePayment.getDateTime(), trade.getDateTime())) < buyDelta;
+        return trade -> {
+            long diff = Math.abs(ChronoUnit.SECONDS.between(exchangeToExchangePayment.getDateTime(), trade.getDateTime()));
+            return exchangeToExchangePayment.getDateTime().isAfter(trade.getDateTime()) && diff < buyDelta && diff >= 20;
+        };
 
     }
 
     private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
-        return trade ->
-            exchangeToExchangePayment.getDateTime().isBefore(trade.getDateTime()) && Math.abs(ChronoUnit.SECONDS.between(trade.getDateTime(), exchangeToExchangePayment.getDateTime())) < buyDelta;
+        return trade -> {
+            long diff = Math.abs(ChronoUnit.SECONDS.between(trade.getDateTime(), exchangeToExchangePayment.getDateTime()));
+            return exchangeToExchangePayment.getDateTime().isBefore(trade.getDateTime()) && diff < buyDelta && diff >= 20;
+        };
     }
 
     protected boolean xrpToFiatTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
