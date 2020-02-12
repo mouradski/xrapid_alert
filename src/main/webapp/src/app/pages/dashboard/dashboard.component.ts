@@ -313,7 +313,7 @@ export class DashboardComponent implements OnInit {
     let label = "ODL Volume";
     let datasetLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
     let currencyPipe = new CurrencyPipe('en');
-    let formattedNumber = currencyPipe.transform(datasetLabel, 'USD', 'symbol');
+    let formattedNumber = currencyPipe.transform(datasetLabel, 'USD', 'symbol', '1.0-0');
     return label + ': ' + formattedNumber;
   }
 
