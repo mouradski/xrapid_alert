@@ -19,6 +19,8 @@ import space.xrapid.service.*;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,17 +53,17 @@ public class Scheduler {
 
     public static Set<String> transactionHashes = new HashSet<>();
 
-    private static int MAX_TRADE_DELAY_IN_MINUTES = 5;
+    private static int MAX_TRADE_DELAY_IN_MINUTES = 3;
     private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
 
+    private ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
-    @Scheduled(fixedDelay = 25000)
+    @Scheduled(fixedRate = 55000)
     public void odl() throws Exception {
-
         OffsetDateTime lastWindowEndRollback = lastWindowEnd;
         OffsetDateTime windowStartRollback = windowStart;
         OffsetDateTime windowEndRollback = windowEnd;
@@ -118,9 +120,13 @@ public class Scheduler {
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(45, 60, 60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
-                                        .searchXrapidPayments(payments, allTrades, rate);
+                            Arrays.asList(60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
+                                executorService.execute(() -> {
+                                    new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
+                                            .searchXrapidPayments(payments, allTrades, rate);
+                                });
+
+
                             });
                         });
             });
@@ -129,14 +135,20 @@ public class Scheduler {
             log.info("Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
 
             availableExchangesWithApi.forEach(exchange -> {
-                new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                executorService.execute(() -> {
+
+                    new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                });
             });
 
             log.info("Search for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
             allConfirmedExchange.stream()
                     .filter(exchange -> !availableExchangesWithApi.contains(exchange))
                     .forEach(exchange -> {
-                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
+                        executorService.execute(() -> {
+
+                            new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
+                        });
                     });
 
             Stats stats = exchangeToExchangePaymentService.calculateStats();
@@ -144,6 +156,8 @@ public class Scheduler {
             if (stats != null) {
                 messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
             }
+
+            log.info("----------------------------------");
 
         } catch (Exception e) {
             log.error("", e);
