@@ -99,7 +99,7 @@ public abstract class XrapidCorridors {
         }
     }
 
-    protected synchronized void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
+    protected void persistPayment(ExchangeToExchangePayment exchangeToFiatPayment) {
         try {
             exchangeToFiatPayment.setUsdValue(exchangeToFiatPayment.getAmount() * rate);
 
