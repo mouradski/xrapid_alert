@@ -13,13 +13,32 @@ public class TradesCombinaisonsHelper {
 
 
     public static List<Trade> getTrades(List<Trade> trades, double amount) {
+        int maxSize = Math.min(trades.size(), 15);
 
-        int maxSize = trades.size() > 13 ? 13 : trades.size();
+        if (trades.size() > 20) {
+            List<List<Trade>> candidates = new ArrayList<>();
+            //AtomicInteger counter = new AtomicInteger();
+
+            sub(trades, 20).parallelStream().forEach(tradeGroup -> {
+                List<Trade> groupCandidate = getTrades(tradeGroup, amount, Math.min(tradeGroup.size(), 15));
+                if (!groupCandidate.isEmpty()) {
+                    candidates.add(groupCandidate);
+                }
+            });
+
+            if (!candidates.isEmpty()) {
+                return getClosestGroup(candidates, amount);
+            } else {
+                return new ArrayList<>();
+            }
+        }
+
 
         return getTrades(trades, amount, maxSize);
     }
 
     private static List<Trade> getTrades(List<Trade> trades, double amount, int maxSize) {
+
         List<Trade> toReturn = new ArrayList<>();
 
         double min = 10000;
@@ -39,7 +58,7 @@ public class TradesCombinaisonsHelper {
                 double sum = sum(candidates);
                 double diff = Math.abs(sum - amount);
 
-                if (diff <= 0.05005) {
+                if (diff <= 0.03005) {
 
                     if (diff <= 0.02) {
                         return candidates;
@@ -59,6 +78,41 @@ public class TradesCombinaisonsHelper {
         }
 
         return toReturn;
+    }
+
+    public static List<List<Trade>> sub(List<Trade> trades, int size) {
+
+        List<List<Trade>> result = new ArrayList<>();
+
+        int index = 0;
+
+        while (index < trades.size()) {
+            if ((index + size) <= trades.size()) {
+                result.add(trades.subList(index, index + size));
+            } else {
+                result.add(trades.subList(index, trades.size()));
+                break;
+            }
+            index+= 10;
+        }
+
+        return result;
+    }
+
+
+    private static List<Trade> getClosestGroup(List<List<Trade>> trades, double amount) {
+        double minDiff = 5000;
+        List<Trade> result = new ArrayList<>();
+        for (List<Trade> tradeGroup : trades) {
+            double sum = sum(tradeGroup);
+            double diff = Math.abs(sum - amount);
+            if (diff < minDiff) {
+                minDiff = diff;
+                result = tradeGroup;
+            }
+        }
+
+        return result;
     }
 
     public static Double sum(List<Trade> groups) {
