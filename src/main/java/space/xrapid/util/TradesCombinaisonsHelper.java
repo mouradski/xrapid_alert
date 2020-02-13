@@ -58,7 +58,7 @@ public class TradesCombinaisonsHelper {
                 double sum = sum(candidates);
                 double diff = Math.abs(sum - amount);
 
-                if (diff <= 0.05005) {
+                if (diff <= 0.03005) {
 
                     if (diff <= 0.02) {
                         return candidates;
