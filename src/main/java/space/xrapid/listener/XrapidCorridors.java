@@ -173,12 +173,12 @@ public abstract class XrapidCorridors {
             if (!aggregatedTrades.isEmpty()) {
 
 
-                List<Trade> closestTrades = tradesFoundCacheService.getXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash());
+                List<Trade> closestTrades = tradesFoundCacheService.getXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
 
                 if (closestTrades == null) {
                     closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
                     if (!closestTrades.isEmpty()) {
-                        tradesFoundCacheService.addXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash(), closestTrades);
+                        tradesFoundCacheService.addXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange(), closestTrades);
                     }
                 }
 
@@ -218,13 +218,13 @@ public abstract class XrapidCorridors {
                 getAggregatedBuyTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
             if (!aggregatedTrades.isEmpty()) {
 
-                List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash());
+                List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
 
                 if (closestTrades == null) {
                     closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
 
                     if (!closestTrades.isEmpty()) {
-                        tradesFoundCacheService.addFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), closestTrades);
+                        tradesFoundCacheService.addFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange(), closestTrades);
                     }
                 }
 
