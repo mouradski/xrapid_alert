@@ -147,7 +147,7 @@ public abstract class XrapidCorridors {
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             long diff = Math.abs(ChronoUnit.SECONDS.between(exchangeToExchangePayment.getDateTime(), trade.getDateTime()));
-            return exchangeToExchangePayment.getDateTime().isAfter(trade.getDateTime()) && diff < buyDelta && diff >= 15;
+            return exchangeToExchangePayment.getDateTime().isAfter(trade.getDateTime()) && diff < buyDelta && diff >= 2;
         };
 
     }
@@ -155,7 +155,7 @@ public abstract class XrapidCorridors {
     private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             long diff = Math.abs(ChronoUnit.SECONDS.between(trade.getDateTime(), exchangeToExchangePayment.getDateTime()));
-            return exchangeToExchangePayment.getDateTime().isBefore(trade.getDateTime()) && diff < buyDelta && diff >= 15;
+            return exchangeToExchangePayment.getDateTime().isBefore(trade.getDateTime()) && diff < buyDelta && diff >= 2;
         };
     }
 
@@ -170,7 +170,7 @@ public abstract class XrapidCorridors {
         Arrays.asList(getAggregatedSellTrades(exchangeToExchangePayment, "sell"),
                 getAggregatedSellTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
 
-            if (!aggregatedTrades.isEmpty()) {
+            if (!aggregatedTrades.isEmpty() && (exchangeToExchangePayment.getXrpToFiatTrades() == null || exchangeToExchangePayment.getXrpToFiatTrades().isEmpty())) {
 
 
                 List<Trade> closestTrades = tradesFoundCacheService.getXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
@@ -214,9 +214,9 @@ public abstract class XrapidCorridors {
             return false;
         }
 
-        Arrays.asList(getAggregatedBuyTrades(exchangeToExchangePayment, "sell"),
-                getAggregatedBuyTrades(exchangeToExchangePayment, "buy")).forEach(aggregatedTrades -> {
-            if (!aggregatedTrades.isEmpty()) {
+        Arrays.asList(getAggregatedBuyTrades(exchangeToExchangePayment, "buy"), getAggregatedBuyTrades(exchangeToExchangePayment, "sell"))
+                .forEach(aggregatedTrades -> {
+            if (!aggregatedTrades.isEmpty() && (exchangeToExchangePayment.getFiatToXrpTrades() == null || exchangeToExchangePayment.getFiatToXrpTrades().isEmpty())) {
 
                 List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
 
