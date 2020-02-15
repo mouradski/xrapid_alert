@@ -12,15 +12,14 @@ import java.util.List;
 public class TradesCombinaisonsHelper {
 
 
-    public static List<Trade> getTrades(List<Trade> trades, double amount) {
-        int maxSize = Math.min(trades.size(), 15);
+    public static List<Trade> getTrades(List<Trade> trades, double amount, String side) {
+        int maxSize = Math.min(trades.size(), 16);
 
         if (trades.size() > 20) {
             List<List<Trade>> candidates = new ArrayList<>();
-            //AtomicInteger counter = new AtomicInteger();
 
             sub(trades, 20).parallelStream().forEach(tradeGroup -> {
-                List<Trade> groupCandidate = getTrades(tradeGroup, amount, Math.min(tradeGroup.size(), 15));
+                List<Trade> groupCandidate = getTrades(tradeGroup, amount, Math.min(tradeGroup.size(), 16), side);
                 if (!groupCandidate.isEmpty()) {
                     candidates.add(groupCandidate);
                 }
@@ -34,10 +33,10 @@ public class TradesCombinaisonsHelper {
         }
 
 
-        return getTrades(trades, amount, maxSize);
+        return getTrades(trades, amount, maxSize, side);
     }
 
-    private static List<Trade> getTrades(List<Trade> trades, double amount, int maxSize) {
+    private static List<Trade> getTrades(List<Trade> trades, double amount, int maxSize, String side) {
 
         List<Trade> toReturn = new ArrayList<>();
 
@@ -56,7 +55,7 @@ public class TradesCombinaisonsHelper {
                 List<Trade> candidates = iterator.next();
 
                 double sum = sum(candidates);
-                double diff = Math.abs(sum - amount);
+                double diff = calculateDiff(amount, sum, side);
 
                 if (diff <= 0.03005) {
 
@@ -73,7 +72,6 @@ public class TradesCombinaisonsHelper {
                         }
                     }
                 }
-
             }
         }
 
@@ -99,6 +97,10 @@ public class TradesCombinaisonsHelper {
         return result;
     }
 
+    private static double calculateDiff(double amount, double sum, String side) {
+        double diff = "buy".equals(side) ? sum - amount : amount - sum;
+        return diff >= 0 ? diff : Double.POSITIVE_INFINITY;
+    }
 
     private static List<Trade> getClosestGroup(List<List<Trade>> trades, double amount) {
         double minDiff = 5000;

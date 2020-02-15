@@ -176,7 +176,7 @@ public abstract class XrapidCorridors {
                 List<Trade> closestTrades = tradesFoundCacheService.getXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
 
                 if (closestTrades == null) {
-                    closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
+                    closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), "sell");
                     if (!closestTrades.isEmpty()) {
                         tradesFoundCacheService.addXrpToFiatTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange(), closestTrades);
                     }
@@ -221,7 +221,7 @@ public abstract class XrapidCorridors {
                 List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
 
                 if (closestTrades == null) {
-                    closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount());
+                    closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), "buy");
 
                     if (!closestTrades.isEmpty()) {
                         tradesFoundCacheService.addFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange(), closestTrades);
