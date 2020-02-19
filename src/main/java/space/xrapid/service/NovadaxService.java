@@ -1,14 +1,13 @@
 package space.xrapid.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.bitbank.Transaction;
-import space.xrapid.domain.bitbank.Transactions;
+import space.xrapid.domain.novadax.Datum;
+import space.xrapid.domain.novadax.Trades;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -16,44 +15,42 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
-@Slf4j
-public class BitbankService implements TradeService {
+public class NovadaxService implements TradeService {
 
-    private String apiUrl = "https://public.bitbank.cc/xrp_jpy/transactions";
-
+    private String apiUrl = "https://api.novadax.com/v1/market/trades?symbol=XRP_BRL&limit=1000";
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<Transactions> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, Transactions.class);
+        ResponseEntity<Trades> response = restTemplate.exchange(apiUrl,
+                HttpMethod.GET, entity, Trades.class);
 
-        return response.getBody().getData().getTransactions().stream()
+        return response.getBody().getData().stream()
                 .map(this::mapTrade)
                 .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Exchange getExchange() {
-        return Exchange.BITBANK;
-    }
+    private Trade mapTrade(Datum trade) {
 
-    private Trade mapTrade(Transaction trade) {
-
-        OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Long.valueOf(trade.getExecutedAt() / 1000)), ZoneId.of("UTC"));
+        OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Long.valueOf(trade.getTimestamp() / 1000)), ZoneId.of("UTC"));
 
         return Trade.builder()
                 .side(trade.getSide())
-                .timestamp(trade.getExecutedAt())
+                .timestamp(trade.getTimestamp())
                 .rate(trade.getPrice())
                 .amount(trade.getAmount())
                 .exchange(getExchange())
                 .dateTime(date)
-                .orderId(trade.getTransactionId().toString())
+                // Generated ID as the api don't provide one
+                .orderId(new StringBuilder(trade.getSide()).append(trade.getTimestamp()).append("-").append(trade.getTimestamp()).toString())
                 .build();
+    }
+
+    @Override
+    public Exchange getExchange() {
+        return Exchange.NOVADAX;
     }
 }

@@ -56,6 +56,10 @@ public enum Exchange {
   KRAKEN_JPY("kraken", false, JPY, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
   KRAKEN_CAD("kraken", false, CAD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
 
+  //TODO confirm addresses
+  NOVADAX("novadax", true, BRL, true, "rE8aDxrPzx5Xqeppy2hgSXKppwNwpyEMbB",
+          "rpfFaotCi4acV7HPFQsTfMJ4eE5ky8hucd", "rnKmNMJRFKckYEwaHYLVY9uaz5C313KjEh", "rPUKuF3nok1LqXUp2n69wgisVW7319GvhZ", "rHxtRRUMVAnPZUyRgXhRSyWZ2MrHx8AvVs "),
+
   COIN_PH("coin.ph", true, PHP, false, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
   COINBENE("coinbene", true, BRL, false, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
