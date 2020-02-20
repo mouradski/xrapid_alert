@@ -1,4 +1,6 @@
 # Getting started
+![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
+
 
 * Fork this project
 * Update the `resources/application.yaml` file to customize persistence on database.
