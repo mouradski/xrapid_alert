@@ -58,7 +58,7 @@ public enum Exchange {
 
   //TODO confirm addresses
   NOVADAX("novadax", true, BRL, true, "rE8aDxrPzx5Xqeppy2hgSXKppwNwpyEMbB",
-          "rpfFaotCi4acV7HPFQsTfMJ4eE5ky8hucd", "rnKmNMJRFKckYEwaHYLVY9uaz5C313KjEh", "rPUKuF3nok1LqXUp2n69wgisVW7319GvhZ", "rHxtRRUMVAnPZUyRgXhRSyWZ2MrHx8AvVs"),
+          "rpfFaotCi4acV7HPFQsTfMJ4eE5ky8hucd", "rnKmNMJRFKckYEwaHYLVY9uaz5C313KjEh", "rHxtRRUMVAnPZUyRgXhRSyWZ2MrHx8AvVs"),
 
   COIN_PH("coin.ph", true, PHP, false, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
