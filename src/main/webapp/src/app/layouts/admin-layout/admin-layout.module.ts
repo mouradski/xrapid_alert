@@ -10,21 +10,23 @@ import {TablesComponent} from "../../pages/tables/tables.component";
 
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {DateAgoPipe} from "../../pipes/date-ago.pipe";
+import {BannerComponent} from "../../components/banner/banner.component";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forChild(AdminLayoutRoutes),
-    FormsModule,
-    HttpClientModule,
-    NgbModule,
-  ],
+    imports: [
+        CommonModule,
+        RouterModule.forChild(AdminLayoutRoutes),
+        FormsModule,
+        HttpClientModule,
+        NgbModule
+    ],
   exports: [
     TablesComponent
   ],
   declarations: [
     DashboardComponent,
-    TablesComponent, DateAgoPipe
+    TablesComponent, BannerComponent,
+      DateAgoPipe
   ]
 })
 export class AdminLayoutModule {}
