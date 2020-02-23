@@ -9,6 +9,7 @@ import { Component, AfterViewInit, Input } from "@angular/core"
 export class BannerComponent implements AfterViewInit {
 
     @Input() slotId : string;
+    @Input() delay: number;
     constructor() {
     }
 
@@ -19,5 +20,5 @@ export class BannerComponent implements AfterViewInit {
             } catch (e) {
                 console.error(e);
             }
-        }, 2000);
+        }, this.delay);
     } }
