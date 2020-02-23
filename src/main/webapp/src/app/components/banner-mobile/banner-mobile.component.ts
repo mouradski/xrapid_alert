@@ -1,12 +1,12 @@
 import { Component, AfterViewInit, Input } from "@angular/core"
 @Component({
     moduleId: module.id,
-    selector: "google-adsense",
-    templateUrl: "banner.component.html"
+    selector: "google-mobile-adsense",
+    templateUrl: "banner-mobile.component.html"
 
 })
 
-export class BannerComponent implements AfterViewInit {
+export class BannerMobileComponent implements AfterViewInit {
 
     @Input() slotId : string;
     @Input() delay: number;

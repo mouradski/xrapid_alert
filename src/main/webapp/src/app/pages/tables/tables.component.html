@@ -4,11 +4,13 @@
       <div class=" card card-plain">
           <div class="modal-body">
               <ul>
-
                   <li>
-                      <div align="center">
+                      <div *ngIf="!mobile" align="center">
                           <google-adsense [slotId]="5026269580" [delay]="1500" ></google-adsense>
                       </div>
+                    <div *ngIf="mobile" align="center">
+                      <google-adsense [slotId]="5148546759" [delay]="1500" ></google-adsense>
+                    </div>
                   </li>
               </ul>
           </div>
