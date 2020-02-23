@@ -1,94 +1,83 @@
 <div class=" content">
-  <div class=" row">
-    <div class=" col-md-12">
-      <div class=" card card-plain">
-          <div align="center">
-              <ul>
-                      <div *ngIf="!mobile" align="center">
-                          <google-adsense [slotId]="5026269580" [style]="'display:inline-block;width:728px;height:90px'" [delay]="1500" ></google-adsense>
-                      </div>
-                    <div *ngIf="mobile" align="center">
-                      <google-adsense [slotId]="5148546759" [style]="'display:inline-block;width:300px;height:250px'" [delay]="1500" ></google-adsense>
-                    </div>
-              </ul>
-          </div>
-        <div class="card-header">
-          <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
-          <span class="info-icon">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card card-plain">
+                <div align="center">
+                    <ul style="display: block;list-style-type: disc;margin-block-start: 0em;margin-block-end: 0em;margin-inline-start: 0px;margin-inline-end: 0px;padding-inline-start: 0px">
+                        <div *ngIf="!mobile" align="center">
+                            <google-adsense [slotId]="5026269580" [style]="" ] [delay]="1500" ></google-adsense>
+                        </div>
+                        <div *ngIf="mobile" align="center">
+                            <google-mobile-adsense [slotId]="5148546759" [style]="display:inline-block;width:300px;height:250px" [delay]="1500" ></google-mobile-adsense>
+                        </div>
+                    </ul>
+                </div>
+                <div class="card-header">
+                    <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
+                    <span class="info-icon">
             <i class="far fa-question-circle"></i>
           </span>
 
-          <div id="infoODL" class="alert alert-success" role="alert">
-            <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> We consider a transaction as ODL only when those 4 criteria are met :</span>
-            <p class="category">
-              - XRP initially bought at one exchange in local fiat<br>
-              - XRP being sent across the XRPL<br>
-              - the exact amount of XRP finally sold back at the destination exchange in local fiat<br>
-              - the total timeframe should roughly last  4 minutes<br><br>
+                    <div id="infoODL" class="alert alert-success" role="alert">
+                        <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> We consider a transaction as ODL only when those 4 criteria are met :</span>
+                        <p class="category">
+                            - XRP initially bought at one exchange in local fiat<br>
+                            - XRP being sent across the XRPL<br>
+                            - the exact amount of XRP finally sold back at the destination exchange in local fiat<br>
+                            - the total timeframe should roughly last  4 minutes<br><br>
 
-              The exchange API allows us to track end-to-end ODL transactions, except for http://coins.ph and all future exchanges without API.<br>
-            </p>
-          </div>
+                            The exchange API allows us to track end-to-end ODL transactions, except for http://coins.ph and all future exchanges without API.<br>
+                        </p>
+                    </div>
 
-        </div>
-        <div class=" card-body">
-          <div class=" table-responsive">
-            <table class=" table tablesorter" id="">
-              <thead class=" text-primary">
-              <tr>
-                <th class="date">Date</th>
-                <th class="amount" *ngIf="!mobile">Amount</th>
-                <th class="value">USD Value</th>
-                <th *ngIf="!mobile">From</th>
-                <th *ngIf="!mobile">To</th>
-                <th>Source Fiat</th>
-                <th>Target Fiat</th>
-                <th *ngIf="!mobile"></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let payment of currentPage">
-                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
-                <td class="amount" *ngIf="!mobile" >{{ payment.amount | number}} XRP</td>
-                <td  class="value">{{ payment.usdValue | currency }}</td>
-                <td *ngIf="!mobile">{{ payment.source }}</td>
-                <td *ngIf="!mobile">{{ payment.destination }}</td>
-                <td>{{ payment.sourceFiat }}</td>
-                <td>{{ payment.destinationFiat }}</td>
-                <td class="tab-btn" *ngIf="!mobile">
-                  <button (click)="info([[payment.transactionHash]])" type="button" class="btn btn-primary"
-                          data-toggle="modal" data-target="#myModal">
-                    Info
-                  </button>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+                </div>
+                <div class=" card-body">
+                    <div class=" table-responsive">
+                        <table class=" table tablesorter" id="">
+                            <thead class=" text-primary">
+                            <tr>
+                                <th class="date">Date</th>
+                                <th class="amount" *ngIf="!mobile">Amount</th>
+                                <th class="value">USD Value</th>
+                                <th *ngIf="!mobile">From</th>
+                                <th *ngIf="!mobile">To</th>
+                                <th>Source Fiat</th>
+                                <th>Target Fiat</th>
+                                <th *ngIf="!mobile"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let payment of currentPage">
+                                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
+                                <td class="amount" *ngIf="!mobile" >{{ payment.amount | number}} XRP</td>
+                                <td  class="value">{{ payment.usdValue | currency }}</td>
+                                <td *ngIf="!mobile">{{ payment.source }}</td>
+                                <td *ngIf="!mobile">{{ payment.destination }}</td>
+                                <td>{{ payment.sourceFiat }}</td>
+                                <td>{{ payment.destinationFiat }}</td>
+                                <td class="tab-btn" *ngIf="!mobile">
+                                    <button (click)="info([[payment.transactionHash]])" type="button" class="btn btn-primary"
+                                            data-toggle="modal" data-target="#myModal">
+                                        Info
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <div class="pagination-table">
-          <ul class="pagination">
-            <li (click)="left()"><</li>
-            <li>{{pageIndex}}</li>
-            <li (click)="right()">></li>
-          </ul>
-        </div>
+                <div class="pagination-table">
+                    <ul class="pagination">
+                        <li (click)="left()"><</li>
+                        <li>{{pageIndex}}</li>
+                        <li (click)="right()">></li>
+                    </ul>
+                </div>
 
-        <div align="center">
-          <ul style="display: block;list-style-type: disc;margin-block-start: 0em;margin-block-end: 0em;margin-inline-start: 0px;margin-inline-end: 0px;padding-inline-start: 0px">
-            <div *ngIf="!mobile" align="center">
-              <google-adsense [slotId]="7983342086" [style]="'display:inline-block;width:970px;height:250px'" [delay]="1500" ></google-adsense>
             </div>
-            <div *ngIf="mobile" align="center">
-              <google-adsense [slotId]="5148546759" [style]="'display:inline-block;width:300px;height:250px'" [delay]="1500" ></google-adsense>
-            </div>
-          </ul>
         </div>
-
-      </div>
     </div>
-  </div>
 </div>
 <!-- The Modal -->
 <div class="modal fade" id="myModal">
@@ -160,16 +149,16 @@
     </div>
 </div>
 <div id="david" [className]="notifClass" >
-  <div class="talk-bubble tri-right round right-in">
-    <div class="talktext">
-      <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>
+    <div class="talk-bubble tri-right round right-in">
+        <div class="talktext">
+            <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>
+        </div>
     </div>
-  </div>
-  <div class="david-pop">
+    <div class="david-pop">
     <span>
       <img src="./assets/images/{{notifier}}pop.gif">
     </span>
-  </div>
+    </div>
 
 </div>
 
