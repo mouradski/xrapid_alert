@@ -2,16 +2,14 @@
   <div class=" row">
     <div class=" col-md-12">
       <div class=" card card-plain">
-          <div class="modal-body">
+          <div align="center">
               <ul>
-                  <li>
                       <div *ngIf="!mobile" align="center">
                           <google-adsense [slotId]="5026269580" [delay]="1500" ></google-adsense>
                       </div>
                     <div *ngIf="mobile" align="center">
-                      <google-adsense [slotId]="5148546759" [delay]="1500" ></google-adsense>
+                      <google-mobile-adsense [slotId]="5148546759" [delay]="1500" ></google-mobile-adsense>
                     </div>
-                  </li>
               </ul>
           </div>
         <div class="card-header">
@@ -140,7 +138,7 @@
                         <a href="https://bithomp.com/explorer/{{payment.transactionHash}}" target="_blank">{{payment.transactionHash}}</a>
                     </li>
                     <li>
-                        <div class="banner" align="center">
+                        <div *ngIf="!mobile" align="center">
                             <google-adsense [slotId]="5026269580" [delay]="3000" ></google-adsense>
                         </div>
                     </li>
