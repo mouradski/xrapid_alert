@@ -15,6 +15,11 @@
 
 <div class=" content">
     <div class=" row">
+        <div class=" col-lg-2">
+            <div *ngIf="!mobile" align="center">
+                <google-vertical-adsense [slotId]="1930059302" [delay]="1200" ></google-vertical-adsense>
+            </div>
+        </div>
         <div class=" col-lg-6">
             <div class="card-volume  card card-chart">
                 <div class=" card-header">
@@ -29,8 +34,6 @@
                     </div>
                 </div>
             </div>
-
-
             <div class="card-summary  card card-chart">
                 <div class=" card-header">
                     <h5 class=" card-category">Summary</h5>
@@ -50,8 +53,6 @@
                 </div>
             </div>
         </div>
-
-
         <div class="col-lg-6">
             <div class="card-24  card card-chart">
                 <div class=" card-header">
@@ -65,6 +66,11 @@
                         <canvas id="chart2"></canvas>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class=" col-lg-2">
+            <div *ngIf="!mobile" align="center">
+                <google-vertical-adsense [slotId]="1930059302" [delay]="1200" ></google-vertical-adsense>
             </div>
         </div>
     </div>
