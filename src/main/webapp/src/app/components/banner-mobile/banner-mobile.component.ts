@@ -1,5 +1,4 @@
 import { Component, AfterViewInit, Input } from "@angular/core"
-import {BannerComponent} from "../banner/banner.component";
 @Component({
     moduleId: module.id,
     selector: "google-mobile-adsense",
@@ -7,5 +6,20 @@ import {BannerComponent} from "../banner/banner.component";
 
 })
 
-export class BannerMobileComponent extends BannerComponent {
-}
+export class BannerMobileComponent implements AfterViewInit {
+
+    @Input() slotId : string;
+    @Input() delay: number;
+    @Input() style: string;
+    constructor() {
+    }
+
+    ngAfterViewInit() {
+        setTimeout(() => {
+            try {
+                (window["adsbygoogle"] = window["adsbygoogle"] || []).push({});
+            } catch (e) {
+                console.error(e);
+            }
+        }, this.delay);
+    } }

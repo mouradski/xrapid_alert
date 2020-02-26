@@ -6,7 +6,7 @@ import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
 import {Payment} from "../tables/tables.component";
 import {CookieService} from 'ngx-cookie-service';
-import { CurrencyPipe } from '@angular/common';
+import {CurrencyPipe, ViewportScroller} from '@angular/common';
 import {DeviceDetectorService} from "ngx-device-detector";
 
 
@@ -36,11 +36,12 @@ export class DashboardComponent implements OnInit {
   private socket = null;
 
   private deviceInfo = null;
+
+
   public mobile:boolean;
 
 
   constructor(private httpClient: HttpClient, private cookieService: CookieService, private deviceService: DeviceDetectorService) {
-
     this.deviceInfo = this.deviceService.getDeviceInfo();
 
     this.mobile = this.deviceService.isMobile();

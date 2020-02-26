@@ -1,4 +1,6 @@
 <div *ngIf="isDisclaimerNotRead()" class="alert alert-warning alert-dismissible fade show" role="alert">
+     <!-- google_ad_section_start -->
+
     <p><strong>Utility-Scan.com</strong> provides this website, charts and its contents for informational purposes only.
         <br>
         You should not construe any information presented here as financial, investment, tax, legal or other advice.
@@ -6,6 +8,7 @@
         investor. <br>
         Please consult your financial advisor before investing. Utility-Scan.com is independent of Ripple and has not
         been authorized, endorsed, sponsored or otherwise approved by Ripple or its affiliates.</p>
+        <!-- google_ad_section_end -->
 
     <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="setDisclaimerRead()">
         <span aria-hidden="true">&times;</span>
@@ -29,6 +32,16 @@
                     </div>
                 </div>
             </div>
+
+            <div align="center">
+                <ul style="display: block;list-style-type: disc;margin-block-start: 0em;margin-block-end: 0em;margin-inline-start: 0px;margin-inline-end: 0px;padding-inline-start: 0px">
+                    <div *ngIf="mobile" align="center">
+                        <google-mobile-adsense [slotId]="5148546759"  [delay]="1000" ></google-mobile-adsense>
+                    </div>
+                </ul>
+            </div>
+
+
             <div class="card-summary  card card-chart">
                 <div class=" card-header">
                     <h5 class=" card-category">Summary</h5>
@@ -48,6 +61,8 @@
                 </div>
             </div>
         </div>
+
+
         <div class="col-lg-6">
             <div class="card-24  card card-chart">
                 <div class=" card-header">
