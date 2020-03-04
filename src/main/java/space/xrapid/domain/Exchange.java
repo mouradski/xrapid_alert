@@ -47,7 +47,7 @@ public enum Exchange {
 
 
   BINANCE_RUB("binance", false, RUB, false, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
-  BINANCE_US("binanceus", true, USD, false, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
+  BINANCE_US("binanceus", true, USD, false, "rEeEWeP88cpKUddKk37B2EZeiHBGiBXY3", "rMvYS27SYs5dXdFsUgpvv1CSrPsCz7ePF5"),
 
   WAZIRX("Wazirx", true, INR, false, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "rJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
@@ -75,6 +75,7 @@ public enum Exchange {
 
   LIQUID("liquid", true, JPY, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p", "rMbWmirwEtRr7pNmhN4d4ysTMBvBxdvovs"),
 
+  COINONE("coinone", true, KRW, true, "rp2diYfVtpbgEMyaoWnuaWgFCAkqCAEg28", "rPsmHDMkheWZvbAkTA8A9bVnUdadPn7XBK"),
 
   BITREX("bitrex", false, USD, false,
           "_TO_DELETE_"),
