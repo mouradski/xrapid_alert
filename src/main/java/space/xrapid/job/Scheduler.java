@@ -6,10 +6,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import space.xrapid.domain.*;
 import space.xrapid.domain.Currency;
-import space.xrapid.domain.Exchange;
-import space.xrapid.domain.Stats;
-import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
 import space.xrapid.listener.inbound.InboundXrapidCorridors;
@@ -79,7 +77,7 @@ public class Scheduler {
             OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
             OffsetDateTime xrplPaymentsEnd = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES);
             log.info("Fetching ODL candidates from XRP Ledger, from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
-            List<Payment> payments = xrpLedgerService.fetchOdlCandidatePayments(xrplPaymentsStart, xrplPaymentsEnd);
+            List<Payment> payments = xrpLedgerService.fetchOdlCandidatePayments(xrplPaymentsStart, xrplPaymentsEnd, true);
 
             log.info("{} ODL candidates fetched from XRP Ledger", payments.size());
 
@@ -179,5 +177,36 @@ public class Scheduler {
         }
 
         lastWindowEnd = windowEnd;
+    }
+
+
+    public void tags() {
+        OffsetDateTime end = OffsetDateTime.now(ZoneOffset.UTC);
+        OffsetDateTime start = end.minusHours(24);
+
+        Map<String, List<Payment>> map = xrpLedgerService.fetchOdlCandidatePayments(start, end, false).stream()
+                .filter(p -> p.getDestinationTag() != null && p.getDestinationTag() != 0)
+                .collect(Collectors.groupingBy(p -> new StringBuilder().append(p.getSource()).append(":").append(p.getDestination()).append(":").append(p.getDestination()).toString()));
+
+        for (Map.Entry<String, List<Payment>> e : map.entrySet()) {
+            String[] key = e.getKey().split(":");
+
+            String sourceAddress = key[0];
+            String destinationAddress = key[1];
+            Long destinationTag = Long.valueOf(key[2]);
+            Exchange source = Exchange.byAddress(sourceAddress);
+            Exchange destiantion = Exchange.byAddress(destinationAddress);
+
+            Long todayRepeat = Long.valueOf(e.getValue().size());
+
+            Double sum = e.getValue().stream().mapToDouble(Payment::getAmount).sum();
+
+
+            //DestinationTagRepeat destinationTagRepeat = DestinationTagRepeat.builder().sourceAddress(sourceAddress).source(source).destinationAddress(destinationAddress).destination(destiantion)
+
+
+
+        }
+
     }
 }
