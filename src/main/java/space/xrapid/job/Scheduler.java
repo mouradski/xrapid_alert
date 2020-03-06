@@ -182,8 +182,7 @@ public class Scheduler {
         lastWindowEnd = windowEnd;
     }
 
-
-    @Scheduled(fixedDelay = 24 * 60 * 60 * 1000)
+    @Scheduled(cron = "0 0 0 * * *")
     public void tags() {
         OffsetDateTime end = OffsetDateTime.now(ZoneOffset.UTC);
         OffsetDateTime start = end.minusHours(24);

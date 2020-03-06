@@ -28,6 +28,8 @@ public enum Exchange {
           "rfEu1Wnr7LxStoFx8DBdzgr8M16FBUbH3K",
           "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
+  BITFINEX("bitfinex", true, USD, true, "rLW9gnQo7BQhU6igk5keqYnH3TVrCxGRzm", "rE3hWEGquaixF2XwirNbA1ds4m55LxNZPk"),
+
   BX_IN("bx.in.th", true, THB, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
   SBI_TRADE("sbi_trade", true, JPY, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",
