@@ -23,4 +23,11 @@
         </expiry>
         <heap unit="entries">1000</heap>
     </cache>
+
+    <cache alias="tagsrepeat">
+        <expiry>
+            <ttl unit="seconds">4000</ttl>
+        </expiry>
+        <heap unit="entries">1000000</heap>
+    </cache>
 </config>

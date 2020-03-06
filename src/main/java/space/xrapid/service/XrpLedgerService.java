@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +22,7 @@ public class XrpLedgerService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public List<Payment> fetchOdlCandidatePayments(OffsetDateTime startOffset, OffsetDateTime endOffset) {
+    public List<Payment> fetchOdlCandidatePayments(OffsetDateTime startOffset, OffsetDateTime endOffset, boolean odlCandidateOnly) {
         List<Payment> payments = new ArrayList<>();
 
         String endAsString = endOffset.format(DateTimeFormatter.ISO_INSTANT);
@@ -46,15 +47,18 @@ public class XrpLedgerService {
             }
 
             payments.addAll(response.getBody().getPayments().stream()
-                    .filter(p -> p.getAmount() > 50)
-                    .filter(p -> Exchange.byAddress(p.getSource()) != null)
-                    .filter(p -> Exchange.byAddress(p.getDestination()) != null)
-                    .peek(p -> System.out.println(p.getTxHash()))
+                    .filter(p -> p.getAmount() > 150)
+                    .filter(filterPayments(odlCandidateOnly))
                     .collect(Collectors.toList()));
 
         }
 
+
         return payments;
+    }
+
+    private Predicate<Payment> filterPayments(boolean odlCandidateOnly) {
+        return p -> !odlCandidateOnly || (Exchange.byAddress(p.getSource()) != null && Exchange.byAddress(p.getDestination()) != null);
     }
 
     private boolean hasNext(ResponseEntity<Payments> response) {
