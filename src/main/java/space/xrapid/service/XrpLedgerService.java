@@ -47,9 +47,8 @@ public class XrpLedgerService {
             }
 
             payments.addAll(response.getBody().getPayments().stream()
-                    .filter(p -> p.getAmount() > 50)
+                    .filter(p -> p.getAmount() > 150)
                     .filter(filterPayments(odlCandidateOnly))
-                    .peek(p -> System.out.println(p.getTxHash()))
                     .collect(Collectors.toList()));
 
         }

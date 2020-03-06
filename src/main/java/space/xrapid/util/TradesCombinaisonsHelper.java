@@ -11,7 +11,6 @@ import java.util.List;
 
 public class TradesCombinaisonsHelper {
 
-
     public static List<Trade> getTrades(List<Trade> trades, double amount, String side) {
         int maxSize = Math.min(trades.size(), 16);
 

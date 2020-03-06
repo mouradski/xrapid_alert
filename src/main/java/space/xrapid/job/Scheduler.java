@@ -49,6 +49,9 @@ public class Scheduler {
     @Autowired
     private TradesFoundCacheService tradesFoundCacheService;
 
+    @Autowired
+    private DestinationTagRepeatService destinationTagRepeatService;
+
     public static Set<String> transactionHashes = new HashSet<>();
 
     private static int MAX_TRADE_DELAY_IN_MINUTES = 3;
@@ -180,13 +183,14 @@ public class Scheduler {
     }
 
 
+    @Scheduled(fixedDelay = 24 * 60 * 60 * 1000)
     public void tags() {
         OffsetDateTime end = OffsetDateTime.now(ZoneOffset.UTC);
         OffsetDateTime start = end.minusHours(24);
 
         Map<String, List<Payment>> map = xrpLedgerService.fetchOdlCandidatePayments(start, end, false).stream()
                 .filter(p -> p.getDestinationTag() != null && p.getDestinationTag() != 0)
-                .collect(Collectors.groupingBy(p -> new StringBuilder().append(p.getSource()).append(":").append(p.getDestination()).append(":").append(p.getDestination()).toString()));
+                .collect(Collectors.groupingBy(p -> new StringBuilder().append(p.getSource()).append(":").append(p.getDestination()).append(":").append(p.getDestinationTag()).toString()));
 
         for (Map.Entry<String, List<Payment>> e : map.entrySet()) {
             String[] key = e.getKey().split(":");
@@ -201,12 +205,9 @@ public class Scheduler {
 
             Double sum = e.getValue().stream().mapToDouble(Payment::getAmount).sum();
 
-
-            //DestinationTagRepeat destinationTagRepeat = DestinationTagRepeat.builder().sourceAddress(sourceAddress).source(source).destinationAddress(destinationAddress).destination(destiantion)
-
-
-
+            if (todayRepeat > 10) {
+                destinationTagRepeatService.add(sourceAddress, destinationAddress, source, destiantion, todayRepeat, destinationTag, sum);
+            }
         }
-
     }
 }
