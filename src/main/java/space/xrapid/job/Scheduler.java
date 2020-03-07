@@ -191,6 +191,8 @@ public class Scheduler {
                 .filter(p -> p.getDestinationTag() != null && p.getDestinationTag() != 0)
                 .collect(Collectors.groupingBy(p -> new StringBuilder().append(p.getSource()).append(":").append(p.getDestination()).append(":").append(p.getDestinationTag()).toString()));
 
+        destinationTagRepeatService.purge();
+
         for (Map.Entry<String, List<Payment>> e : map.entrySet()) {
             String[] key = e.getKey().split(":");
 

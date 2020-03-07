@@ -38,7 +38,11 @@ public class DestinationTagRepeatService {
         }
 
         destinationTagRepeatRepository.save(destinationTagRepeat);
+    }
 
+    @Transactional
+    public void purge() {
+        destinationTagRepeatRepository.deleteAll();
     }
 
     @Transactional(readOnly = true)
