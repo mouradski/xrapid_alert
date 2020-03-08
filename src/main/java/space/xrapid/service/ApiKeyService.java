@@ -12,7 +12,7 @@ public class ApiKeyService {
     private ApiKeyRepository apiKeyRepository;
 
     public void validateKey(String key) {
-        if (key == null || !apiKeyRepository.existsApiKeyByKey(key)) {
+        if (key == null || !apiKeyRepository.existsByKey(key)) {
             throw new UnauthorizedException();
         }
     }

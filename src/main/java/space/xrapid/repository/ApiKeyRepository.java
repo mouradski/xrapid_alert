@@ -6,5 +6,5 @@ import space.xrapid.domain.ApiKey;
 
 @Repository
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Integer> {
-    boolean existsApiKeyByKey(String key);
+    boolean existsByKey(String key);
 }
