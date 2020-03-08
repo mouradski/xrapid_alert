@@ -1,10 +1,9 @@
-package space.xrapid.listener.endtoend;
+package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradesFoundCacheService;
 import space.xrapid.service.XrapidInboundAddressService;

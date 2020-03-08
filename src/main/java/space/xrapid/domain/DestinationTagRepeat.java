@@ -18,10 +18,8 @@ public class DestinationTagRepeat {
     private Long repeated;
     private String sourceAddress;
     private String destinationAddress;
-    @Enumerated(EnumType.STRING)
-    private Exchange source;
-    @Enumerated(EnumType.STRING)
-    private Exchange destination;
+    private String source;
+    private String destination;
     private Long destinationTag;
     private double sum;
 

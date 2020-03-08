@@ -1,4 +1,4 @@
-package space.xrapid.listener.inbound;
+package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -6,7 +6,6 @@ import space.xrapid.domain.Exchange;
 import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradesFoundCacheService;
 

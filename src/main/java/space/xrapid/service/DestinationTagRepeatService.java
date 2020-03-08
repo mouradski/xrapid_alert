@@ -19,7 +19,7 @@ public class DestinationTagRepeatService {
     private DestinationTagRepeatRepository destinationTagRepeatRepository;
 
     @Transactional
-    public void add(String sourceAddress, String destinationAddress, Exchange source, Exchange destination, Long repeat, Long destinationTag, Double sum) {
+    public void add(String sourceAddress, String destinationAddress, String source, String destination, Long repeat, Long destinationTag, Double sum) {
         DestinationTagRepeat destinationTagRepeat = destinationTagRepeatRepository.getBySourceAddressAndDestinationAddressAndDestinationTag(sourceAddress, destinationAddress, destinationTag);
 
         if (destinationTagRepeat == null) {

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import space.xrapid.domain.*;
 import space.xrapid.domain.Currency;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
-import space.xrapid.listener.inbound.InboundXrapidCorridors;
-import space.xrapid.listener.outbound.OutboundXrapidCorridors;
+import space.xrapid.listener.EndToEndXrapidCorridors;
+import space.xrapid.listener.InboundXrapidCorridors;
+import space.xrapid.listener.OutboundXrapidCorridors;
 import space.xrapid.service.*;
 
 import java.time.OffsetDateTime;
@@ -199,8 +199,8 @@ public class Scheduler {
             String sourceAddress = key[0];
             String destinationAddress = key[1];
             Long destinationTag = Long.valueOf(key[2]);
-            Exchange source = Exchange.byAddress(sourceAddress);
-            Exchange destiantion = Exchange.byAddress(destinationAddress);
+            String source = Exchange.byAddress(sourceAddress).getName();
+            String destiantion = Exchange.byAddress(destinationAddress).getName();
 
             Long todayRepeat = Long.valueOf(e.getValue().size());
 
