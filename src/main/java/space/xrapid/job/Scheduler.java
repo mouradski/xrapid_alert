@@ -199,8 +199,17 @@ public class Scheduler {
             String sourceAddress = key[0];
             String destinationAddress = key[1];
             Long destinationTag = Long.valueOf(key[2]);
-            String source = Exchange.byAddress(sourceAddress).getName();
-            String destiantion = Exchange.byAddress(destinationAddress).getName();
+            
+            String source = null;
+            String destiantion = null;
+            
+            if (Exchange.byAddress(sourceAddress) != null) {
+                source = Exchange.byAddress(sourceAddress).getName();
+            }
+            
+            if (Exchange.byAddress(destinationAddress) != null) {
+                destiantion = Exchange.byAddress(destinationAddress).getName();
+            }
 
             Long todayRepeat = Long.valueOf(e.getValue().size());
 
