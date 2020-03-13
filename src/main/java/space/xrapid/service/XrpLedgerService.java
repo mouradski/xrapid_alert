@@ -47,6 +47,7 @@ public class XrpLedgerService {
             }
 
             payments.addAll(response.getBody().getPayments().stream()
+                    .filter(this::filterRoundAmount)
                     .filter(p -> p.getAmount() > 150)
                     .filter(filterPayments(odlCandidateOnly))
                     .collect(Collectors.toList()));
@@ -55,6 +56,10 @@ public class XrpLedgerService {
 
 
         return payments;
+    }
+
+    private boolean filterRoundAmount(Payment payment) {
+        return payment.getAmount() % 1 != 0;
     }
 
     private Predicate<Payment> filterPayments(boolean odlCandidateOnly) {
