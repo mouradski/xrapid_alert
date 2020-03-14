@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.Currency;
@@ -101,8 +102,8 @@ public class ExchangeToExchangePaymentService {
                 days[19 - i] = today.minusDays(1 * (i + 1)).toString().substring(2, 10);
             }
 
-            calculateDailyVolumes();
-
+            calculateDailyVolumes(false);
+            
             double athDayVolume = dailyVolumes.values().stream()
                     .mapToDouble(v -> v.doubleValue())
                     .max().getAsDouble();
@@ -121,11 +122,17 @@ public class ExchangeToExchangePaymentService {
         }
     }
 
-    private void calculateDailyVolumes() {
+    @Scheduled(fixedDelay = 3600000)
+    private void forceUpdateAths() {
+        calculateDailyVolumes(true);
+    }
+
+    private void calculateDailyVolumes(boolean force) {
         OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0).withSecond(0).withNano(0);
         OffsetDateTime day = today.minusDays(1);
-        if (dailyVolumes.isEmpty()) {
-            for (int i = 0; i < 22; i++) {
+
+        if (dailyVolumes.isEmpty() || force) {
+            for (int i = 0; i < 365; i++) {
                 Double volume = repository.getVolumeBetween(day.toEpochSecond() * 1000, day.plusDays(1).toEpochSecond() * 1000);
                 dailyVolumes.put(day, volume == null ? 0 : volume);
                 day = day.minusDays(1);
@@ -145,7 +152,6 @@ public class ExchangeToExchangePaymentService {
     }
 
     public List<ExchangeToExchangePayment> search(Long from, Long to, Currency source, Currency destination) {
-
         return repository.findAll((Specification<ExchangeToExchangePayment>) (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (source != null) {
