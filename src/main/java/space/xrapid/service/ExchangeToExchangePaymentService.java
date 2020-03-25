@@ -123,7 +123,7 @@ public class ExchangeToExchangePaymentService {
     }
 
     @Scheduled(fixedDelay = 3600000)
-    private void forceUpdateAths() {
+    public void forceUpdateAths() {
         calculateDailyVolumes(true);
     }
 
