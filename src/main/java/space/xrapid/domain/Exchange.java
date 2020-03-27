@@ -66,6 +66,10 @@ public enum Exchange {
 
   COINBENE("coinbene", true, BRL, false, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
+  BITHUMB("bithumb", true, KRW, true, "rEtC4xAYJvtwDLJ9jZ4kHRHKbNoLLxSnfb", "rPMM1dRp7taeRkbT74Smx2a25kTAHdr4N5",
+          "rNTkgxs5WG5mU5Sz26YoDVrHim5Y5ohC7", "r9hUMZBc3MWRc4YdsdZgNCW5Qef8wNSXpb", "rD7XQw67JWBXuo2WPX2gZRsGKNsDUGTbx5", "r9LHiNDZvpLoWPoKnbH2JWjFET8zoYT4Y5",
+          "rBF3GWchod3QL8TEYicwSeMu6sjXqKFaQ2", "rDFCAUDVB5QhB61ETGT6tf8Rm1zBsj8LHU", "rDxfhNRgCDNDckm45zT5ayhKDC4Ljm7UoP", "rsdd66csGZkTzk42NDpJun7PNrGsC7WJHv"),
+
   INDEP_RESERVE("independent reserve", true, NZD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
 
   MERCADO("mercado", true, BRL, false, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
