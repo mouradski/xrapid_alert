@@ -7,6 +7,7 @@ import {HttpClient} from '@angular/common/http';
 import {Payment} from "../tables/tables.component";
 import {CookieService} from 'ngx-cookie-service';
 import { CurrencyPipe } from '@angular/common';
+import {TablesService} from "../tables/tables.service";
 
 
 @Component({
@@ -35,7 +36,7 @@ export class DashboardComponent implements OnInit {
   private socket = null;
 
 
-  constructor(private httpClient: HttpClient, private cookieService: CookieService) {
+  constructor(private httpClient: HttpClient, private cookieService: CookieService, private tablesService: TablesService) {
     const _this = this;
 
     this.trxSecondsAgo = 0;
@@ -49,7 +50,7 @@ export class DashboardComponent implements OnInit {
       this.drawVolumesByCorridor(data.topVolumes);
     })
 
-    httpClient.get<Payment[]>('/api/payments').subscribe(data => {
+    this.tablesService.getData().subscribe(data => {
       _this.lastTransaction = data[data.length - 1];
       _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
       _this.newConnect();

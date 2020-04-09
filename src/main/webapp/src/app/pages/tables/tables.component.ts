@@ -5,6 +5,8 @@ import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
 import { ViewportScroller } from '@angular/common';
 import {DeviceDetectorService} from "ngx-device-detector";
+import {BehaviorSubject, Observable} from "rxjs";
+import {TablesService} from "./tables.service";
 
 
 @Component({
@@ -33,10 +35,9 @@ export class TablesComponent implements OnInit {
 
   private deviceInfo = null;
 
-
   public mobile:boolean;
 
-  constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller, private deviceService: DeviceDetectorService) {
+  constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller, private deviceService: DeviceDetectorService, private tablesService: TablesService) {
     const _this = this;
     this.payment = new Payment();
     this.pageIndex = 1;
@@ -53,6 +54,8 @@ export class TablesComponent implements OnInit {
     }
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
+      console.log(">>>>>>>>>>>>>>>>>>> PAYMENT : constructor()");
+      this.tablesService.updateData(data);
 
       for (let i = 0; i < data.length; i++) {
         _this.datasets.push(data[i]);
