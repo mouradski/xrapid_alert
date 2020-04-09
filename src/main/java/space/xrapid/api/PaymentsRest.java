@@ -31,7 +31,7 @@ public class PaymentsRest {
             apiKeyService.validateKey(apiKey);
             return exchangeToExchangePaymentService.getPayments(from, to);
         }
-        return exchangeToExchangePaymentService.getLasts().stream().sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime)).collect(Collectors.toList());
+        return exchangeToExchangePaymentService.getLasts();
     }
 
     @GET

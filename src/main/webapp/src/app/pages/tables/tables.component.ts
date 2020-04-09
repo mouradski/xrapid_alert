@@ -54,7 +54,6 @@ export class TablesComponent implements OnInit {
     }
 
     httpClient.get<Payment[]>('/api/payments').subscribe(data => {
-      console.log(">>>>>>>>>>>>>>>>>>> PAYMENT : constructor()");
       this.tablesService.updateData(data);
 
       for (let i = 0; i < data.length; i++) {
