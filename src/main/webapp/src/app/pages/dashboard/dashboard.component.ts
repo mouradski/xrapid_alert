@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit {
     })
 
     this.tablesService.getData().subscribe(data => {
-      _this.lastTransaction = data[data.length - 1];
+      _this.lastTransaction = data[0];
       _this.trxSecondsAgo = Math.floor((new Date().getTime() - _this.lastTransaction.timestamp) / 1000);
       _this.newConnect();
     })
