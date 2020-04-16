@@ -63,7 +63,7 @@ public class TradesCombinaisonsHelper {
                     }
 
                     if (diff < min) {
-                        toReturn =  candidates;
+                        toReturn = candidates;
                         min = diff;
 
                         if (new Date().getTime() - start > 15000) {
@@ -90,7 +90,7 @@ public class TradesCombinaisonsHelper {
                 result.add(trades.subList(index, trades.size()));
                 break;
             }
-            index+= 10;
+            index += 10;
         }
 
         return result;

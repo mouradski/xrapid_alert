@@ -4,8 +4,13 @@ import {BrowserModule} from "@angular/platform-browser";
 import {RouterModule, Routes} from "@angular/router";
 
 import {AdminLayoutComponent} from "./layouts/admin-layout/admin-layout.component";
+import {ApiLayoutComponent} from "./layouts/api-layout/api-layout.component";
 
 const routes: Routes = [
+  {
+    path: "api",
+    component: ApiLayoutComponent
+  },
   {
     path: "",
     redirectTo: "dashboard",

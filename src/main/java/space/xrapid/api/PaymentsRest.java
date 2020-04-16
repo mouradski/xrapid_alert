@@ -1,9 +1,7 @@
 package space.xrapid.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import space.xrapid.domain.Currency;
-import space.xrapid.domain.ExchangeToExchangePayment;
-import space.xrapid.domain.Stats;
+import space.xrapid.domain.*;
 import space.xrapid.service.ApiKeyService;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 
@@ -11,9 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/payments")
 public class PaymentsRest {
@@ -37,16 +33,31 @@ public class PaymentsRest {
     @GET
     @Produces("application/json")
     @Path("/search")
-    public List<ExchangeToExchangePayment> search(@QueryParam("key") String apiKey, @QueryParam("from") Long from, @QueryParam("to") Long to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination) {
+    public OdlPaymentsResponse search(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
         apiKeyService.validateKey(apiKey);
-
-        return exchangeToExchangePaymentService.search(from, to, source, destination);
+        return exchangeToExchangePaymentService.search(from, to, source, destination, size == null ? 300 : size, page == null ? 0 : page);
     }
 
     @GET
     @Produces("application/json")
     @Path("/stats")
-    public Stats getStats() {
-        return exchangeToExchangePaymentService.calculateStats();
+    public Stats getStats(@QueryParam("key") String apiKey, @QueryParam("size") Integer size) {
+
+        if (size != null) {
+            apiKeyService.validateKey(apiKey);
+        }
+
+        if (size == null) {
+            size = 21;
+        }
+        return exchangeToExchangePaymentService.calculateStats(size);
+    }
+
+    @GET
+    @Produces("application/json")
+    @Path("/stats/all")
+    public GlobalStats getAllStats(@QueryParam("key") String apiKey) {
+        apiKeyService.validateKey(apiKey);
+        return exchangeToExchangePaymentService.calculateGlobalStats(false);
     }
 }

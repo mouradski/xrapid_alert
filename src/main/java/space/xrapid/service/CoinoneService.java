@@ -3,12 +3,11 @@ package space.xrapid.service;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.coinone.CompleteOrder;
 import space.xrapid.domain.coinone.Trades;
-
-import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -26,12 +25,12 @@ public class CoinoneService implements TradeService {
         HttpEntity<String> entity = getEntity();
 
         ResponseEntity<Trades> response = restTemplate.exchange(apiUrl,
-            HttpMethod.GET, entity, Trades.class);
+                HttpMethod.GET, entity, Trades.class);
 
         return response.getBody().getCompleteOrders().stream()
-            .map(this::mapTrade)
-            .filter(filterTradePerDate(begin))
-            .collect(Collectors.toList());
+                .map(this::mapTrade)
+                .filter(filterTradePerDate(begin))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -44,13 +43,13 @@ public class CoinoneService implements TradeService {
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Long.valueOf(trade.getTimestamp())), ZoneId.of("UTC"));
 
         return Trade.builder()
-            .side("0".equals(trade.getIsAsk()) ? "sell" : "buy")
-            .timestamp(trade.getTimestamp() * 1000)
-            .rate(trade.getPrice())
-            .amount(trade.getQty())
-            .exchange(getExchange())
-            .dateTime(date)
-            .orderId(trade.getId())
-            .build();
+                .side("0".equals(trade.getIsAsk()) ? "sell" : "buy")
+                .timestamp(trade.getTimestamp() * 1000)
+                .rate(trade.getPrice())
+                .amount(trade.getQty())
+                .exchange(getExchange())
+                .dateTime(date)
+                .orderId(trade.getId())
+                .build();
     }
 }

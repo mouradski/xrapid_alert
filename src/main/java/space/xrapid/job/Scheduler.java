@@ -6,8 +6,10 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import space.xrapid.domain.*;
 import space.xrapid.domain.Currency;
+import space.xrapid.domain.Exchange;
+import space.xrapid.domain.Stats;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.EndToEndXrapidCorridors;
 import space.xrapid.listener.InboundXrapidCorridors;
@@ -63,7 +65,7 @@ public class Scheduler {
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
-    @Scheduled(fixedRate = 55000)
+    @Scheduled(fixedRate = 56000)
     public void odl() throws Exception {
         OffsetDateTime lastWindowEndRollback = lastWindowEnd;
         OffsetDateTime windowStartRollback = windowStart;
@@ -141,7 +143,6 @@ public class Scheduler {
                     });
 
 
-
             log.info("Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
             destinationFiats.forEach(fiat -> {
                 availableExchangesWithApi.stream()
@@ -155,10 +156,10 @@ public class Scheduler {
                         });
             });
 
-            Stats stats = exchangeToExchangePaymentService.calculateStats();
+            Stats stats = exchangeToExchangePaymentService.calculateStats(21);
 
             if (stats != null) {
-                messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+                messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats(21));
             }
 
             log.info("----------------------------------");
@@ -202,14 +203,14 @@ public class Scheduler {
             String sourceAddress = key[0];
             String destinationAddress = key[1];
             Long destinationTag = Long.valueOf(key[2]);
-            
+
             String source = null;
             String destiantion = null;
-            
+
             if (Exchange.byAddress(sourceAddress) != null) {
                 source = Exchange.byAddress(sourceAddress).getName();
             }
-            
+
             if (Exchange.byAddress(destinationAddress) != null) {
                 destiantion = Exchange.byAddress(destinationAddress).getName();
             }

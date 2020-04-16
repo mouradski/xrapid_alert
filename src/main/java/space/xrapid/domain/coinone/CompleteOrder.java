@@ -7,11 +7,11 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "is_ask",
-    "timestamp",
-    "price",
-    "id",
-    "qty"
+        "is_ask",
+        "timestamp",
+        "price",
+        "id",
+        "qty"
 })
 public class CompleteOrder {
 

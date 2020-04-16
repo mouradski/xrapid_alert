@@ -6,7 +6,7 @@ import * as SockJS from 'sockjs-client';
 import {HttpClient} from '@angular/common/http';
 import {Payment} from "../tables/tables.component";
 import {CookieService} from 'ngx-cookie-service';
-import { CurrencyPipe } from '@angular/common';
+import {CurrencyPipe} from '@angular/common';
 import {TablesService} from "../tables/tables.service";
 
 
@@ -38,7 +38,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(private httpClient: HttpClient, private cookieService: CookieService, private tablesService: TablesService) {
     const _this = this;
-
     this.trxSecondsAgo = 0;
 
     this.stats = new Stats();

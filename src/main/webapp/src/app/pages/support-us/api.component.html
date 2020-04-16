@@ -1,0 +1,35 @@
+<div align="center">
+    <br>
+    <br>
+    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "large" color = "#fff" type = "ball-8bits" [fullScreen] = "true"><p style="color: white" > Generating QR Code... </p></ngx-spinner>
+
+<img *ngIf="qrCodeUrl && !apiKey" [src]="qrCodeUrl" />
+
+<h3 *ngIf="apiKey && apiKey.key != 'REJECTED'">Congratulation ! You have now plein access to our database</h3>
+<h4 *ngIf="!apiKey && !qrCodeUrl">Request your Key then confirm payment with XUMM application to have plein access to our database</h4>
+<button type="button" class="btn btn-primary" *ngIf="!qrCodeUrl" (click)="requestKey()">Request API Key</button>
+
+<br>
+    <div *ngIf="qrCodeUrl && !apiKey">
+        <br>
+        <br>
+        <h4 class=" card-title">This page will be refreshed with api key immediately after transaction signature with the XUMM app</h4>
+    </div>
+<br>
+
+    <div>
+        <h4>Get Transactions :</h4>
+        <code><pre style="font-size: 14px;">curl https://utility-scan.com/api/payments/search?key={{apiKey ? apiKey.key : 'API_KEY'}}&source=USD&destination=MXN&from=20-01-2020&to=20-02-2020&page=1&size=50</pre></code>
+        <h4>Get Stats :</h4>
+        <code><pre style="font-size: 14px;">curl https://utility-scan.com/api/payments/stats/all?key={{apiKey ? apiKey.key : 'API_KEY'}}</pre></code>
+
+        <h4>Get ODLs via WebSockets</h4>
+
+    </div>
+</div>
+<pre>
+  {{socketCode.replace('test',apiKey ? apiKey.key : 'API_KEY')}}
+</pre>
+
+
+

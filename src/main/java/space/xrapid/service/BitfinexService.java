@@ -35,7 +35,7 @@ public class BitfinexService implements TradeService {
     public Exchange getExchange() {
         return Exchange.BITFINEX;
     }
-    
+
     private Trade mapTrade(List trade) {
 
         long timestamp = Long.valueOf(Long.valueOf(trade.get(1).toString()));
@@ -46,7 +46,7 @@ public class BitfinexService implements TradeService {
         double price = Double.valueOf(trade.get(3).toString());
 
         return Trade.builder()
-                .side(amount > 0 ? "buy" : "sell" )
+                .side(amount > 0 ? "buy" : "sell")
                 .timestamp(timestamp)
                 .rate(price)
                 .amount(Math.abs(amount))

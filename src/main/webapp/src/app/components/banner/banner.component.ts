@@ -1,4 +1,5 @@
-import { Component, AfterViewInit, Input } from "@angular/core"
+import {AfterViewInit, Component, Input} from "@angular/core"
+
 @Component({
     moduleId: module.id,
     selector: "google-adsense",

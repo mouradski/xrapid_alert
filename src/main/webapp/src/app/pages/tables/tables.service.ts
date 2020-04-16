@@ -7,7 +7,10 @@ export class TablesService {
         return this.data.asObservable();
     }
 
+
     updateData(data: any) {
         this.data.next(data);
     }
+
+
 }

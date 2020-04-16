@@ -1,6 +1,4 @@
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {NgModule} from "@angular/core";
-import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {RouterModule} from "@angular/router";
 import {ToastrModule} from 'ngx-toastr';
@@ -17,6 +15,10 @@ import {AdminLayoutModule} from "./layouts/admin-layout/admin-layout.module";
 import {CookieService} from 'ngx-cookie-service';
 import {DeviceDetectorModule, DeviceDetectorService} from 'ngx-device-detector';
 import {TablesService} from "./pages/tables/tables.service";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {FormsModule} from "@angular/forms";
+import {ApiLayoutModule} from "./layouts/api-layout/api-layout.module";
+import {ApiLayoutComponent} from "./layouts/api-layout/api-layout.component";
 
 @NgModule({
   imports: [
@@ -29,9 +31,10 @@ import {TablesService} from "./pages/tables/tables.service";
     AppRoutingModule,
     DeviceDetectorModule,
     ToastrModule.forRoot(),
-    AdminLayoutModule
+    AdminLayoutModule,
+    ApiLayoutModule
   ],
-  declarations: [AppComponent, AdminLayoutComponent],
+  declarations: [AppComponent, AdminLayoutComponent, ApiLayoutComponent],
   providers: [CookieService, DeviceDetectorService, TablesService],
   bootstrap: [AppComponent]
 })

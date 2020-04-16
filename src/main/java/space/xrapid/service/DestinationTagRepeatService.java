@@ -5,7 +5,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.xrapid.domain.DestinationTagRepeat;
-import space.xrapid.domain.Exchange;
 import space.xrapid.repository.DestinationTagRepeatRepository;
 
 import java.util.Comparator;

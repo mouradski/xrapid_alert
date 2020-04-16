@@ -39,7 +39,7 @@ public class BxService implements TradeService {
 
     private Trade mapTrade(space.xrapid.domain.bx.Trade trade) {
         //TODO check if exchange using UTC
-        OffsetDateTime date = OffsetDateTime.parse(trade.getTradeDate().replace(" ", "T" ) + "+00:00",
+        OffsetDateTime date = OffsetDateTime.parse(trade.getTradeDate().replace(" ", "T") + "+00:00",
                 DateTimeFormatter.ISO_DATE_TIME);
 
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))

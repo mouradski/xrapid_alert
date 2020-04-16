@@ -140,8 +140,8 @@ public abstract class XrapidCorridors {
     protected void notify(ExchangeToExchangePayment payment) {
         log.info("Xrapid payment {} ", payment);
         messagingTemplate.convertAndSend("/topic/payments", payment);
+        messagingTemplate.convertAndSend("/top/odl", payment);
     }
-
 
 
     private Predicate<Trade> filterFiatToXrpTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
@@ -149,7 +149,6 @@ public abstract class XrapidCorridors {
             long diff = Math.abs(ChronoUnit.SECONDS.between(exchangeToExchangePayment.getDateTime(), trade.getDateTime()));
             return exchangeToExchangePayment.getDateTime().isAfter(trade.getDateTime()) && diff < buyDelta && diff >= 2;
         };
-
     }
 
     private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
@@ -216,32 +215,32 @@ public abstract class XrapidCorridors {
 
         Arrays.asList(getAggregatedBuyTrades(exchangeToExchangePayment, "buy"), getAggregatedBuyTrades(exchangeToExchangePayment, "sell"))
                 .forEach(aggregatedTrades -> {
-            if (!aggregatedTrades.isEmpty() && (exchangeToExchangePayment.getFiatToXrpTrades() == null || exchangeToExchangePayment.getFiatToXrpTrades().isEmpty())) {
+                    if (!aggregatedTrades.isEmpty() && (exchangeToExchangePayment.getFiatToXrpTrades() == null || exchangeToExchangePayment.getFiatToXrpTrades().isEmpty())) {
 
-                List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
+                        List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
 
-                if (closestTrades == null) {
-                    closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), "buy");
+                        if (closestTrades == null) {
+                            closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), "buy");
 
-                    if (!closestTrades.isEmpty()) {
-                        tradesFoundCacheService.addFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange(), closestTrades);
+                            if (!closestTrades.isEmpty()) {
+                                tradesFoundCacheService.addFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange(), closestTrades);
+                            }
+                        }
+
+                        double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
+
+                        if (sum > 0) {
+
+                            exchangeToExchangePayment.setFiatToXrpTrades(closestTrades);
+                            exchangeToExchangePayment.setFiatToXrpTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+                            String tradeIds = closestTrades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
+                            exchangeToExchangePayment.setOutTradeFound(true);
+                            exchangeToExchangePayment.setTradeOutIds(tradeIds);
+
+                            tradesIdAlreadyProcessed.addAll(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+                        }
                     }
-                }
-
-                double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
-
-                if (sum > 0 ) {
-
-                    exchangeToExchangePayment.setFiatToXrpTrades(closestTrades);
-                    exchangeToExchangePayment.setFiatToXrpTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
-                    String tradeIds = closestTrades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
-                    exchangeToExchangePayment.setOutTradeFound(true);
-                    exchangeToExchangePayment.setTradeOutIds(tradeIds);
-
-                    tradesIdAlreadyProcessed.addAll(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
-                }
-            }
-        });
+                });
 
         return exchangeToExchangePayment.isOutTradeFound();
     }

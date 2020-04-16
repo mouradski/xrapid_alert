@@ -8,11 +8,11 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "errorCode",
-    "timestamp",
-    "completeOrders",
-    "result",
-    "currency"
+        "errorCode",
+        "timestamp",
+        "completeOrders",
+        "result",
+        "currency"
 })
 public class Trades {
 
