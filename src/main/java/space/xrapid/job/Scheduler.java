@@ -2,6 +2,7 @@ package space.xrapid.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -54,6 +55,12 @@ public class Scheduler {
     @Autowired
     private DestinationTagRepeatService destinationTagRepeatService;
 
+    @Value("${api.proxy:false}")
+    private boolean proxy;
+
+    @Value("${api.proxy.url:}")
+    private String proxyUrl;
+
     public static Set<String> transactionHashes = new HashSet<>();
 
     private static int MAX_TRADE_DELAY_IN_MINUTES = 4;
@@ -67,6 +74,11 @@ public class Scheduler {
 
     @Scheduled(fixedRate = 56000)
     public void odl() throws Exception {
+
+        if (proxy) {
+            return;
+        }
+
         OffsetDateTime lastWindowEndRollback = lastWindowEnd;
         OffsetDateTime windowStartRollback = windowStart;
         OffsetDateTime windowEndRollback = windowEnd;
@@ -115,7 +127,7 @@ public class Scheduler {
                             final Set<String> tradeIds = new HashSet<>();
                             Arrays.asList(60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
                                 executorService.execute(() -> {
-                                    new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
+                                    new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds, proxyUrl)
                                             .searchXrapidPayments(payments, allTrades, rate);
                                 });
                             });
@@ -128,7 +140,7 @@ public class Scheduler {
             availableExchangesWithApi.forEach(exchange -> {
                 executorService.execute(() -> {
 
-                    new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                    new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
                 });
             });
 
@@ -138,7 +150,7 @@ public class Scheduler {
                     .forEach(exchange -> {
                         executorService.execute(() -> {
 
-                            new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
+                            new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades, rate);
                         });
                     });
 
@@ -150,7 +162,7 @@ public class Scheduler {
                         .forEach(exchange -> {
                             executorService.execute(() -> {
 
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, null)
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, null, proxyUrl)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
                         });

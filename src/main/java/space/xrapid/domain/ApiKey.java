@@ -20,4 +20,6 @@ public class ApiKey {
     private String key;
 
     private long lastUse;
+
+    private boolean master;
 }

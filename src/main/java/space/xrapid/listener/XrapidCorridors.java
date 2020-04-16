@@ -1,7 +1,12 @@
 package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.SpottedAt;
@@ -41,13 +46,19 @@ public abstract class XrapidCorridors {
 
     protected TradesFoundCacheService tradesFoundCacheService;
 
+    protected RestTemplate restTemplate = new RestTemplate();
+
     protected long buyDelta;
     protected long sellDelta;
 
-    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds) {
+    private String proxyUrl;
+
+    public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds, String proxyUrl) {
 
         this.buyDelta = 200;
         this.sellDelta = 200;
+
+        this.proxyUrl = proxyUrl;
 
         this.tradesFoundCacheService = tradesFoundCacheService;
         if (exchangesToExclude == null) {
@@ -140,7 +151,17 @@ public abstract class XrapidCorridors {
     protected void notify(ExchangeToExchangePayment payment) {
         log.info("Xrapid payment {} ", payment);
         messagingTemplate.convertAndSend("/topic/payments", payment);
+
         messagingTemplate.convertAndSend("/top/odl", payment);
+
+        if (proxyUrl != null && !proxyUrl.isEmpty()) {
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            restTemplate.exchange(proxyUrl,
+                    HttpMethod.POST, new HttpEntity(payment, headers), String.class);
+        }
     }
 
 

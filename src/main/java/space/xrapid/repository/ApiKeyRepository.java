@@ -11,4 +11,6 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, String> {
     boolean existsByKey(String key);
 
     boolean existsByKeyAndExpirationIsAfter(String key, Date now);
+
+    boolean existsByKeyAndMaster(String key, boolean master);
 }

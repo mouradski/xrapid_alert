@@ -1,14 +1,13 @@
 package space.xrapid.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.*;
 import space.xrapid.service.ApiKeyService;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import java.util.List;
 
 @Path("/payments")
@@ -18,7 +17,13 @@ public class PaymentsRest {
     private ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
     @Autowired
+    private SimpMessageSendingOperations messagingTemplate;
+
+    @Autowired
     private ApiKeyService apiKeyService;
+
+    @Value("${api.proxy:false}")
+    private boolean proxy;
 
     @GET
     @Produces("application/json")
@@ -60,4 +65,14 @@ public class PaymentsRest {
         apiKeyService.validateKey(apiKey);
         return exchangeToExchangePaymentService.calculateGlobalStats(false);
     }
+
+    @POST
+    @Consumes("application/json")
+    public void push(@QueryParam("key") String key, Payment payment) {
+        if (proxy) {
+            apiKeyService.validateMasterKey(key);
+            messagingTemplate.convertAndSend("/top/odl", payment);
+        }
+    }
+
 }

@@ -25,6 +25,14 @@ public class ApiKeyService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(value = "apiKey", key = "#key")
+    public void validateMasterKey(final String key) {
+        if (key == null || !apiKeyRepository.existsByKeyAndMaster(key, true)) {
+            throw new UnauthorizedException();
+        }
+    }
+
     @Transactional
     public ApiKey generateApiKey(long ttlInDayes) {
         String apiKey = UUID.randomUUID().toString();
