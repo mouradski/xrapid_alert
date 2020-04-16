@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Component;
 import space.xrapid.domain.*;
 import space.xrapid.service.ApiKeyService;
 import space.xrapid.service.ExchangeToExchangePaymentService;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Path("/payments")
 @Slf4j
+@Component
 public class PaymentsRest {
 
     @Autowired
