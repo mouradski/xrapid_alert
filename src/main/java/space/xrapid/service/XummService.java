@@ -1,7 +1,6 @@
 package space.xrapid.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -71,8 +70,6 @@ public class XummService {
             status.put(id, "REJECTED");
         } else if (webHook.getPayloadResponse().getSigned() != null && webHook.getPayloadResponse().getSigned()) {
             HttpHeaders headers = new HttpHeaders();
-            buildHeaders(headers);
-
 
             ResponseEntity<XummPaymentStatus> response = restTemplate.exchange(apiBase + "/" + id,
                     HttpMethod.GET, new HttpEntity("", headers), XummPaymentStatus.class);
@@ -112,16 +109,5 @@ public class XummService {
                         .customMeta(CustomMeta.builder()
                                 .instruction(instruction).build())
                         .build();
-    }
-
-
-    private void buildHeaders(HttpHeaders headers) {
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-
-        headers.add("x-api-key", apiKey);
-        headers.add("x-api-secret", secret);
-        headers.add("authorization", "Bearer ");
     }
 }
