@@ -1,5 +1,6 @@
 package space.xrapid.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,24 +19,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class XrpLedgerService {
 
     private String xrplApiUrl = "https://data.ripple.com/v2/payments/xrp?type=Payment&start={START}&end={END}&limit=1000&descending=false";
 
     private RestTemplate restTemplate = new RestTemplate();
-
-
-    public boolean verifyPaymentByDestinationAndDestinationTag(String destination, double amount) {
-        String date = OffsetDateTime.now(ZoneOffset.UTC).minusSeconds(10).format(DateTimeFormatter.ISO_INSTANT);
-
-        String paymentUrl = "https://data.ripple.com/v2/accounts/" + destination + "/payments?start=" + date;
-
-        ResponseEntity<Payments> response = restTemplate.exchange(paymentUrl,
-                HttpMethod.GET, null, Payments.class);
-
-
-        return response.getBody().getPayments().stream().filter(payment -> payment.getAmount() == amount).findAny().isPresent();
-    }
 
     public List<Payment> fetchOdlCandidatePayments(OffsetDateTime startOffset, OffsetDateTime endOffset, boolean odlCandidateOnly) {
         List<Payment> payments = new ArrayList<>();

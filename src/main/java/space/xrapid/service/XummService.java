@@ -27,12 +27,11 @@ public class XummService {
     @Value("${xumm.api.destination}")
     private String destination;
 
-    @Autowired
-    private XrpLedgerService xrpLedgerService;
-
     private Map<String, String> status = new HashMap<>();
 
     private Map<String, Double> amounts = new HashMap<>();
+
+    private Map<String, Integer> confirmationTries = new HashMap<>();
 
 
     private RestTemplate restTemplate = new RestTemplate();
@@ -71,12 +70,16 @@ public class XummService {
         if (webHook.getPayloadResponse().getSigned() == null || !webHook.getPayloadResponse().getSigned()) {
             status.put(id, "REJECTED");
         } else if (webHook.getPayloadResponse().getSigned() != null && webHook.getPayloadResponse().getSigned()) {
+            HttpHeaders headers = new HttpHeaders();
+            buildHeaders(headers);
 
-            boolean paymentConfirmed = xrpLedgerService.verifyPaymentByDestinationAndDestinationTag(destination, amounts.get(id));
 
-            if (!paymentConfirmed) {
+            ResponseEntity<XummPaymentStatus> response = restTemplate.exchange(apiBase + "/" + id,
+                    HttpMethod.GET, new HttpEntity("", headers), XummPaymentStatus.class);
+
+            if (response.getBody().getResponse().getAdditionalProperties().containsKey("dispatched_result")
+                    && response.getBody().getResponse().getAdditionalProperties().get("dispatched_result").toString().startsWith("tec")) {
                 status.put(id, "REJECTED");
-
             } else {
                 status.put(id, "SIGNED");
             }
@@ -109,5 +112,16 @@ public class XummService {
                         .customMeta(CustomMeta.builder()
                                 .instruction(instruction).build())
                         .build();
+    }
+
+
+    private void buildHeaders(HttpHeaders headers) {
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+
+        headers.add("x-api-key", apiKey);
+        headers.add("x-api-secret", secret);
+        headers.add("authorization", "Bearer ");
     }
 }
