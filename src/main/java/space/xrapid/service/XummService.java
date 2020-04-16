@@ -1,5 +1,6 @@
 package space.xrapid.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class XummService {
     private final String apiBase = "https://xumm.app/api/v1/platform/payload";
 
@@ -69,21 +71,19 @@ public class XummService {
         if (webHook.getPayloadResponse().getSigned() == null || !webHook.getPayloadResponse().getSigned()) {
             status.put(id, "REJECTED");
         } else if (webHook.getPayloadResponse().getSigned() != null && webHook.getPayloadResponse().getSigned()) {
+
             boolean paymentConfirmed = xrpLedgerService.verifyPaymentByDestinationAndDestinationTag(destination, amounts.get(id));
 
-            if (paymentConfirmed) {
+            if (!paymentConfirmed) {
                 status.put(id, "REJECTED");
 
             } else {
                 status.put(id, "SIGNED");
             }
-
         }
 
         amounts.remove(id);
     }
-
-
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
@@ -110,17 +110,4 @@ public class XummService {
                                 .instruction(instruction).build())
                         .build();
     }
-
-
-    private void buildHeaders(HttpHeaders headers) {
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-
-        headers.add("x-api-key", apiKey);
-        headers.add("x-api-secret", secret);
-        headers.add("authorization", "Bearer ");
-    }
-
-
 }
