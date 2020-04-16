@@ -68,7 +68,7 @@ public class PaymentsRest {
 
     @POST
     @Consumes("application/json")
-    public void push(@QueryParam("key") String key, Payment payment) {
+    public void push(@QueryParam("key") String key, ExchangeToExchangePayment payment) {
         if (proxy) {
             apiKeyService.validateMasterKey(key);
             messagingTemplate.convertAndSend("/top/odl", payment);
