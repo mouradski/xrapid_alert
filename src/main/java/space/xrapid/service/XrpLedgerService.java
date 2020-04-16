@@ -25,16 +25,16 @@ public class XrpLedgerService {
     private RestTemplate restTemplate = new RestTemplate();
 
 
-    public boolean verifyPaymentByDestinationAndDestinationTag(String destination, Long destinationTag, double amount) {
+    public boolean verifyPaymentByDestinationAndDestinationTag(String destination, double amount) {
         String date = OffsetDateTime.now(ZoneOffset.UTC).minusSeconds(10).format(DateTimeFormatter.ISO_INSTANT);
 
-        String paymentUrl = "https://data.ripple.com/v2/accounts/" + destination + "/payments?destination_tag=" + destinationTag + "&start=" + date;
+        String paymentUrl = "https://data.ripple.com/v2/accounts/" + destination + "/payments?start=" + date;
 
         ResponseEntity<Payments> response = restTemplate.exchange(paymentUrl,
                 HttpMethod.GET, null, Payments.class);
 
 
-        return !response.getBody().getPayments().isEmpty();
+        return response.getBody().getPayments().stream().filter(payment -> payment.getAmount() == amount).findAny().isPresent();
     }
 
     public List<Payment> fetchOdlCandidatePayments(OffsetDateTime startOffset, OffsetDateTime endOffset, boolean odlCandidateOnly) {

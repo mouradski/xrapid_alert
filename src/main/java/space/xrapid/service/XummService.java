@@ -28,13 +28,9 @@ public class XummService {
     @Autowired
     private XrpLedgerService xrpLedgerService;
 
-    private Map<String, Long> availableTags = new HashMap<>();
-
     private Map<String, String> status = new HashMap<>();
 
     private Map<String, Double> amounts = new HashMap<>();
-
-    private Map<String, Long> tags = new HashMap<>();
 
 
     private RestTemplate restTemplate = new RestTemplate();
@@ -43,15 +39,18 @@ public class XummService {
 
         HttpHeaders headers = getHeaders();
 
-        long destinationTag = getNextDestinationTag();
+
+        double scale = Math.pow(10, 8);
+        double randomAmount =  Math.round((Math.random() / 50) * scale) / scale;
+
+        double finalAmount = amount + randomAmount;
 
         ResponseEntity<Response> response = restTemplate.exchange(apiBase,
-                HttpMethod.POST, new HttpEntity(buildPayment(amount, currency, instruction, destinationTag), headers), Response.class);
+                HttpMethod.POST, new HttpEntity(buildPayment(finalAmount, currency, instruction), headers), Response.class);
 
         String id = response.getBody().getUuid();
 
-        amounts.put(id, amount);
-        tags.put(id, destinationTag);
+        amounts.put(id, finalAmount);
 
         return PaymentRequestInformation.builder().paymentId(response.getBody().getUuid()).qrCodeUrl(response.getBody().getRefs().getQrPng()).build();
     }
@@ -65,21 +64,13 @@ public class XummService {
         return status.get(id);
     }
 
-    public synchronized Long getNextDestinationTag() {
-
-        if (availableTags.isEmpty()) {
-            return 0l;
-        }
-
-        return availableTags.values().stream().mapToLong(Long::longValue).max().getAsLong() + 1;
-    }
-
     public void updatePaymentStatus(WebHook webHook) {
         String id = webHook.getPayloadResponse().getPayloadUuidv4();
         if (webHook.getPayloadResponse().getSigned() == null || !webHook.getPayloadResponse().getSigned()) {
             status.put(id, "REJECTED");
         } else if (webHook.getPayloadResponse().getSigned() != null && webHook.getPayloadResponse().getSigned()) {
-            boolean paymentConfirmed = xrpLedgerService.verifyPaymentByDestinationAndDestinationTag(destination, tags.get(id), amounts.get(id));
+            boolean paymentConfirmed = xrpLedgerService.verifyPaymentByDestinationAndDestinationTag(destination, amounts.get(id));
+
             if (paymentConfirmed) {
                 status.put(id, "REJECTED");
 
@@ -89,10 +80,10 @@ public class XummService {
 
         }
 
-        availableTags.remove(id);
-        tags.remove(id);
         amounts.remove(id);
     }
+
+
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
@@ -106,12 +97,11 @@ public class XummService {
         return headers;
     }
 
-    private Payload buildPayment(double amount, String currency, String instruction, long destinationTag) {
+    private Payload buildPayment(double amount, String currency, String instruction) {
         return
                 Payload.builder().txjson(XummPayment.builder()
                         .transactionType("Payment")
                         .destination(destination)
-                        .destinationTag(destinationTag)
                         .amount(Amount.builder()
                                 .issuer(destination)
                                 .value(amount)
@@ -131,4 +121,6 @@ public class XummService {
         headers.add("x-api-secret", secret);
         headers.add("authorization", "Bearer ");
     }
+
+
 }
