@@ -23,7 +23,7 @@ export class ApiComponent implements OnInit {
     init: string = null;
 
     socketCode = '' +
-        '       let socket = new SockJS(\'https://utility-scan.com/apiws\');\n' +
+        '       let socket = new SockJS(\'https://api.utility-scan.com/websocket\');\n' +
         '         let client = Stomp.over(socket);\n' +
         '         client.connect({}, function () {\n' +
         '                client.subscribe(\'/top/odl\', function (odlPayment) {\n' +
