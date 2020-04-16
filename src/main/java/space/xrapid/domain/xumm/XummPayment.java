@@ -10,7 +10,8 @@ import lombok.Builder;
         "TransactionType",
         "Account",
         "Destination",
-        "Amount"
+        "Amount",
+        "DestinationTag"
 })
 @Builder
 public class XummPayment {
@@ -21,7 +22,17 @@ public class XummPayment {
     private String destination;
     @JsonProperty("Amount")
     private Amount amount;
+    @JsonProperty("DestinationTag")
+    private Long destinationTag;
 
+    @JsonProperty("DestinationTag")
+    public Long getDestinationTag() {
+        return destinationTag;
+    }
+    @JsonProperty("DestinationTag")
+    public void setDestinationTag(Long destinationTag) {
+        this.destinationTag = destinationTag;
+    }
     @JsonProperty("TransactionType")
     public String getTransactionType() {
         return transactionType;

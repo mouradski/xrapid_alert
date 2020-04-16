@@ -1,12 +1,12 @@
 {
   "/ws/**": {
-    "target": "http://localhost:8080/",
+    "target": "http://localhost/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/api/**": {
-    "target": "http://localhost:8080/",
+    "target": "http://localhost/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

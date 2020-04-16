@@ -1,5 +1,6 @@
 package space.xrapid.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,17 @@ public class XummService {
     @Value("${xumm.api.destination}")
     private String destination;
 
+    @Autowired
+    private XrpLedgerService xrpLedgerService;
+
+    private Map<String, Long> availableTags = new HashMap<>();
+
     private Map<String, String> status = new HashMap<>();
+
+    private Map<String, Double> amounts = new HashMap<>();
+
+    private Map<String, Long> tags = new HashMap<>();
+
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -32,15 +43,21 @@ public class XummService {
 
         HttpHeaders headers = getHeaders();
 
-        ResponseEntity<Response> response = restTemplate.exchange(apiBase,
-                HttpMethod.POST, new HttpEntity(buildPayment(amount, currency, instruction), headers), Response.class);
+        long destinationTag = getNextDestinationTag();
 
-        System.out.println(response.getBody().getUuid());
+        ResponseEntity<Response> response = restTemplate.exchange(apiBase,
+                HttpMethod.POST, new HttpEntity(buildPayment(amount, currency, instruction, destinationTag), headers), Response.class);
+
+        String id = response.getBody().getUuid();
+
+        amounts.put(id, amount);
+        tags.put(id, destinationTag);
 
         return PaymentRequestInformation.builder().paymentId(response.getBody().getUuid()).qrCodeUrl(response.getBody().getRefs().getQrPng()).build();
     }
 
     public String verifyPayment(String id) {
+
         if (!status.containsKey(id)) {
             return "WAITING";
         }
@@ -48,13 +65,33 @@ public class XummService {
         return status.get(id);
     }
 
+    public synchronized Long getNextDestinationTag() {
+
+        if (availableTags.isEmpty()) {
+            return 0l;
+        }
+
+        return availableTags.values().stream().mapToLong(Long::longValue).max().getAsLong() + 1;
+    }
+
     public void updatePaymentStatus(WebHook webHook) {
         String id = webHook.getPayloadResponse().getPayloadUuidv4();
         if (webHook.getPayloadResponse().getSigned() == null || !webHook.getPayloadResponse().getSigned()) {
             status.put(id, "REJECTED");
         } else if (webHook.getPayloadResponse().getSigned() != null && webHook.getPayloadResponse().getSigned()) {
-            status.put(id, "SIGNED");
+            boolean paymentConfirmed = xrpLedgerService.verifyPaymentByDestinationAndDestinationTag(destination, tags.get(id), amounts.get(id));
+            if (paymentConfirmed) {
+                status.put(id, "REJECTED");
+
+            } else {
+                status.put(id, "SIGNED");
+            }
+
         }
+
+        availableTags.remove(id);
+        tags.remove(id);
+        amounts.remove(id);
     }
 
     private HttpHeaders getHeaders() {
@@ -69,11 +106,12 @@ public class XummService {
         return headers;
     }
 
-    private Payload buildPayment(double amount, String currency, String instruction) {
+    private Payload buildPayment(double amount, String currency, String instruction, long destinationTag) {
         return
                 Payload.builder().txjson(XummPayment.builder()
                         .transactionType("Payment")
                         .destination(destination)
+                        .destinationTag(destinationTag)
                         .amount(Amount.builder()
                                 .issuer(destination)
                                 .value(amount)

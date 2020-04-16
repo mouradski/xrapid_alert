@@ -1,5 +1,7 @@
 package space.xrapid.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import space.xrapid.domain.ApiKey;
 import space.xrapid.domain.xumm.PaymentRequestInformation;
@@ -11,6 +13,7 @@ import space.xrapid.service.XummService;
 import javax.ws.rs.*;
 
 @Path("/xumm")
+@Slf4j
 public class XummRest {
 
     @Autowired
@@ -40,10 +43,18 @@ public class XummRest {
         }
     }
 
+
+
+
     @POST
     @Consumes({"application/json"})
     @Path("/webhooks")
     public void notif(WebHook webHook) {
+        try {
+            log.info(new ObjectMapper().writeValueAsString(webHook));
+        } catch (Exception e) {
+        }
+
         xummService.updatePaymentStatus(webHook);
     }
 }

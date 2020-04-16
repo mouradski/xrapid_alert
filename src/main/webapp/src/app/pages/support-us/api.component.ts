@@ -32,22 +32,6 @@ export class ApiComponent implements OnInit {
         '            }\n' +
         '         );'
 
-    onReady() {
-
-
-    }
-
-    connect() {
-
-        let socket = new SockJS('/apiws');
-        let client = Stomp.over(socket);
-        client.connect({}, function () {
-                client.subscribe('/top/odl', function (message) {
-                    console.log(message);
-                }, {apiKey: "test"})
-            }
-        );
-    }
 
     constructor(private httpClient: HttpClient, private cookieService: CookieService, private tablesService: TablesService, private spinner: NgxSpinnerService) {
 
@@ -83,7 +67,6 @@ export class ApiComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.connect();
     }
 
 

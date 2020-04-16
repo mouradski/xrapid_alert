@@ -7,8 +7,10 @@ import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.domain.ripple.Payments;
+import space.xrapid.domain.xumm.Payload;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,19 @@ public class XrpLedgerService {
     private String xrplApiUrl = "https://data.ripple.com/v2/payments/xrp?type=Payment&start={START}&end={END}&limit=1000&descending=false";
 
     private RestTemplate restTemplate = new RestTemplate();
+
+
+    public boolean verifyPaymentByDestinationAndDestinationTag(String destination, Long destinationTag, double amount) {
+        String date = OffsetDateTime.now(ZoneOffset.UTC).minusSeconds(10).format(DateTimeFormatter.ISO_INSTANT);
+
+        String paymentUrl = "https://data.ripple.com/v2/accounts/" + destination + "/payments?destination_tag=" + destinationTag + "&start=" + date;
+
+        ResponseEntity<Payments> response = restTemplate.exchange(paymentUrl,
+                HttpMethod.GET, null, Payments.class);
+
+
+        return !response.getBody().getPayments().isEmpty();
+    }
 
     public List<Payment> fetchOdlCandidatePayments(OffsetDateTime startOffset, OffsetDateTime endOffset, boolean odlCandidateOnly) {
         List<Payment> payments = new ArrayList<>();
