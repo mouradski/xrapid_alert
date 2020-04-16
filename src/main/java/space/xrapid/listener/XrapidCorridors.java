@@ -159,8 +159,13 @@ public abstract class XrapidCorridors {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            restTemplate.exchange(proxyUrl,
-                    HttpMethod.POST, new HttpEntity(payment, headers), String.class);
+            try {
+                restTemplate.exchange(proxyUrl,
+                        HttpMethod.POST, new HttpEntity(payment, headers), String.class);
+            } catch (Exception e) {
+                log.error("Unable to notify api with payment", e);
+            }
+
         }
     }
 

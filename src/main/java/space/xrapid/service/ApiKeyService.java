@@ -26,7 +26,7 @@ public class ApiKeyService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "apiKey", key = "#key")
+    @Cacheable(value = "apiKeyMaster", key = "#key")
     public void validateMasterKey(final String key) {
         if (key == null || !apiKeyRepository.existsByKeyAndMaster(key, true)) {
             throw new UnauthorizedException();
@@ -39,6 +39,6 @@ public class ApiKeyService {
 
         Date expiration = new Date(new Date().getTime() + ttlInDayes * 24 * 60 * 60 * 1000);
 
-        return apiKeyRepository.save(ApiKey.builder().key(apiKey).expiration(expiration).build());
+        return apiKeyRepository.save(ApiKey.builder().key(apiKey).expiration(expiration).master(false).build());
     }
 }
