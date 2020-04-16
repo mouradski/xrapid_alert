@@ -1,5 +1,6 @@
 package space.xrapid.api;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -11,6 +12,7 @@ import javax.ws.rs.*;
 import java.util.List;
 
 @Path("/payments")
+@Slf4j
 public class PaymentsRest {
 
     @Autowired
@@ -70,6 +72,7 @@ public class PaymentsRest {
     @Consumes("application/json")
     public void push(@QueryParam("key") String key, ExchangeToExchangePayment payment) {
         if (proxy) {
+            log.info("Notif : ", payment);
             apiKeyService.validateMasterKey(key);
             messagingTemplate.convertAndSend("/top/odl", payment);
         }
