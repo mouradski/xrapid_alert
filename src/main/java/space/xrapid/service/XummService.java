@@ -40,8 +40,8 @@ public class XummService {
         HttpHeaders headers = getHeaders();
 
 
-        double scale = Math.pow(10, 8);
-        double randomAmount =  Math.round((Math.random() / 50) * scale) / scale;
+        double scale = Math.pow(10, 6);
+        double randomAmount =  Math.round((Math.random() / 30) * scale) / scale;
 
         double finalAmount = amount + randomAmount;
 
