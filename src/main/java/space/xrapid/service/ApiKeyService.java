@@ -49,15 +49,6 @@ public class ApiKeyService {
     }
 
     @Transactional
-    public ApiKey generateApiKey(long ttlInDayes) {
-        String apiKey = UUID.randomUUID().toString();
-
-        Date expiration = new Date(new Date().getTime() + ttlInDayes * 24 * 60 * 60 * 1000);
-
-        return apiKeyRepository.save(ApiKey.builder().key(apiKey).expiration(expiration).master(false).build());
-    }
-
-    @Transactional
     public ApiKey generateApiKey(Date expiration) {
         String apiKey = UUID.randomUUID().toString();
 

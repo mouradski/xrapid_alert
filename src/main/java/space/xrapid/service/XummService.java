@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.ApiKey;
@@ -60,8 +61,6 @@ public class XummService {
             expiration = new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
         }
 
-
-
         String instruction = "Your key will be available after payment confirmation. Your key will expire : _EXPIRE_.".replace("_EXPIRE_", expiration.toString());
 
         HttpHeaders headers = getHeaders();
@@ -100,7 +99,7 @@ public class XummService {
         return status.get(id);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updatePaymentStatus(WebHook webHook) {
         String id = webHook.getPayloadResponse().getPayloadUuidv4();
         if (webHook.getPayloadResponse().getSigned() == null || !webHook.getPayloadResponse().getSigned()) {
@@ -117,11 +116,7 @@ public class XummService {
                 if (keys.get(id) != null) {
                     ApiKey apiKey = apiKeyService.getApiKey(keys.get(id));
 
-                    apiKeyService.renewKey(keys.get(id), expirations.get(id));
-
-                    apiKey.setExpiration(expirations.get(id));
-
-                    renewedKeys.put(id, apiKey);
+                    renewedKeys.put(id, apiKeyService.renewKey(keys.get(id), expirations.get(id)));
                 }
                 status.put(id, "SIGNED");
             }
