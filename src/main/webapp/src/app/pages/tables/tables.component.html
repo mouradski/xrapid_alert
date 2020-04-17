@@ -4,10 +4,10 @@
             <div class=" card card-plain">
                 <div align="center">
                     <div *ngIf="!mobile" align="center">
-                        <google-adsense [slotId]="5026269580" [delay]="1000" ></google-adsense>
+                        <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>
                     </div>
                     <div *ngIf="mobile" align="center">
-                        <google-mobile-adsense [slotId]="9421450790"  [delay]="1000" ></google-mobile-adsense>
+                        <google-mobile-adsense [slotId]="9421450790" [delay]="1000"></google-mobile-adsense>
                     </div>
                 </div>
                 <div class="card-header">
@@ -23,9 +23,10 @@
                             - XRP initially bought at one exchange in local fiat<br>
                             - XRP being sent across the XRPL<br>
                             - the exact amount of XRP finally sold back at the destination exchange in local fiat<br>
-                            - the total timeframe should roughly last  4 minutes<br><br>
+                            - the total timeframe should roughly last 4 minutes<br><br>
 
-                            The exchange API allows us to track end-to-end ODL transactions, except for http://coins.ph and all future exchanges without API.<br>
+                            The exchange API allows us to track end-to-end ODL transactions, except for http://coins.ph
+                            and all future exchanges without API.<br>
                         </p>
                         <!-- google_ad_section_end -->
                     </div>
@@ -49,14 +50,15 @@
                             <tbody>
                             <tr *ngFor="let payment of currentPage">
                                 <td class="date">{{ payment.dateTime | date:'medium' }}</td>
-                                <td class="amount" *ngIf="!mobile" >{{ payment.amount | number}} XRP</td>
-                                <td  class="value">{{ payment.usdValue | currency }}</td>
+                                <td class="amount" *ngIf="!mobile">{{ payment.amount | number}} XRP</td>
+                                <td class="value">{{ payment.usdValue | currency }}</td>
                                 <td *ngIf="!mobile">{{ payment.source }}</td>
                                 <td *ngIf="!mobile">{{ payment.destination }}</td>
                                 <td>{{ payment.sourceFiat }}</td>
                                 <td>{{ payment.destinationFiat }}</td>
                                 <td class="tab-btn" *ngIf="!mobile">
-                                    <button (click)="info([[payment.transactionHash]])" type="button" class="btn btn-primary"
+                                    <button (click)="info([[payment.transactionHash]])" type="button"
+                                            class="btn btn-primary"
                                             data-toggle="modal" data-target="#myModal">
                                         Info
                                     </button>
@@ -135,11 +137,12 @@
                     </li>
                     <li>
                         <span class="modal-desc">Transaction Hash :</span>
-                        <a href="https://bithomp.com/explorer/{{payment.transactionHash}}" target="_blank">{{payment.transactionHash}}</a>
+                        <a href="https://bithomp.com/explorer/{{payment.transactionHash}}"
+                           target="_blank">{{payment.transactionHash}}</a>
                     </li>
                     <li>
                         <div *ngIf="!mobile" align="center">
-                            <google-adsense [slotId]="5026269580" [delay]="1000" ></google-adsense>
+                            <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>
                         </div>
 
                     </li>
@@ -149,7 +152,7 @@
         </div>
     </div>
 </div>
-<div id="david" [className]="notifClass" >
+<div id="david" [className]="notifClass">
     <div class="talk-bubble tri-right round right-in">
         <div class="talktext">
             <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>
