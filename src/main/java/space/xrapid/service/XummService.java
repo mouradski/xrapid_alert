@@ -104,8 +104,9 @@ public class XummService {
                     && response.getBody().getResponse().getAdditionalProperties().get("dispatched_result").toString().startsWith("tec")) {
                 status.put(id, "REJECTED");
             } else {
-                ApiKey apiKey = apiKeyService.getApiKey(keys.get(id));
-                if (apiKey != null) {
+                if (keys.get(id) != null) {
+                    ApiKey apiKey = apiKeyService.getApiKey(keys.get(id));
+
                     apiKeyService.renewKey(keys.get(id), expirations.get(id));
 
                     apiKey.setExpiration(expirations.get(id));
@@ -113,6 +114,8 @@ public class XummService {
                     renewedKeys.put(id, apiKey);
 
                     expirations.remove(id);
+
+                    keys.remove(id);
                 }
                 status.put(id, "SIGNED");
             }
