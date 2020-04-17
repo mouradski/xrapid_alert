@@ -56,4 +56,11 @@ public class ApiKeyService {
 
         return apiKeyRepository.save(ApiKey.builder().key(apiKey).expiration(expiration).master(false).build());
     }
+
+    @Transactional
+    public ApiKey generateApiKey(Date expiration) {
+        String apiKey = UUID.randomUUID().toString();
+
+        return apiKeyRepository.save(ApiKey.builder().key(apiKey).expiration(expiration).master(false).build());
+    }
 }

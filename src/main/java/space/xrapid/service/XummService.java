@@ -114,8 +114,6 @@ public class XummService {
                     renewedKeys.put(id, apiKey);
 
                     expirations.remove(id);
-
-                    keys.remove(id);
                 }
                 status.put(id, "SIGNED");
             }
@@ -126,6 +124,10 @@ public class XummService {
 
     public ApiKey getRenewedApiKey(String id) {
         return renewedKeys.get(id);
+    }
+
+    public ApiKey getKey(String id) {
+        return apiKeyService.generateApiKey(expirations.get(id));
     }
 
 

@@ -56,7 +56,7 @@ public class XummRest {
                 return apiKey;
             }
 
-            return apiKeyService.generateApiKey(365);
+            return xummService.getKey(id);
         } else {
             return ApiKey.builder().key(status).build();
         }
