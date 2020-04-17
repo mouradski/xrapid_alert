@@ -69,8 +69,7 @@ public class XummService {
         if (webHook.getPayloadResponse().getSigned() == null || !webHook.getPayloadResponse().getSigned()) {
             status.put(id, "REJECTED");
         } else if (webHook.getPayloadResponse().getSigned() != null && webHook.getPayloadResponse().getSigned()) {
-            HttpHeaders headers = new HttpHeaders();
-
+            HttpHeaders headers = getHeaders();
             ResponseEntity<XummPaymentStatus> response = restTemplate.exchange(apiBase + "/" + id,
                     HttpMethod.GET, new HttpEntity("", headers), XummPaymentStatus.class);
 
