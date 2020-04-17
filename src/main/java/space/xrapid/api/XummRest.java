@@ -41,7 +41,7 @@ public class XummRest {
         double rate = rateService.getXrpUsdRate();
 
 
-        return xummService.requestPayment(Math.ceil((0.22 * days) / rate), "XRP",days, key);
+        return xummService.requestPayment(Math.ceil((0.22 * days) / rate), "XRP", days, key);
     }
 
     @GET

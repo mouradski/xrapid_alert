@@ -84,10 +84,14 @@ public class XummService {
         amounts.put(id, finalAmount);
         expirations.put(id, expiration);
 
-        return PaymentRequestInformation.builder().paymentId(response.getBody().getUuid()).qrCodeUrl(response.getBody().getRefs().getQrPng()).build();
+        return PaymentRequestInformation.builder().paymentId(id).qrCodeUrl(response.getBody().getRefs().getQrPng()).build();
     }
 
     public String verifyPayment(String id) {
+
+        if (renewedKeys.containsKey(id)) {
+            return "SIGNED";
+        }
 
         if (!status.containsKey(id)) {
             return "WAITING";
