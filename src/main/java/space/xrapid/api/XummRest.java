@@ -25,6 +25,7 @@ public class XummRest {
     @Autowired
     private RateService rateService;
 
+
     @GET
     @Produces("application/json")
     public PaymentRequestInformation requestPayment(@QueryParam("days") Integer days, @QueryParam("key") String key) {
@@ -48,6 +49,13 @@ public class XummRest {
     public ApiKey getApiKey(@PathParam("id") String id) {
         String status = xummService.verifyPayment(id);
         if ("SIGNED".equals(status)) {
+
+            ApiKey apiKey = xummService.getRenewedApiKey(id);
+
+            if (apiKey != null) {
+                return apiKey;
+            }
+
             return apiKeyService.generateApiKey(365);
         } else {
             return ApiKey.builder().key(status).build();

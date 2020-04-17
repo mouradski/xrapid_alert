@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.ApiKey;
 import space.xrapid.domain.xumm.*;
 import space.xrapid.domain.xumm.webhook.WebHook;
-import space.xrapid.repository.ApiKeyRepository;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -41,6 +40,9 @@ public class XummService {
 
     private Map<String, String> keys = new HashMap<>();
     private Map<String, Date> expirations = new HashMap<>();
+    private Map<String, ApiKey> renewedKeys = new HashMap<>();
+
+
 
 
     private RestTemplate restTemplate = new RestTemplate();
@@ -105,6 +107,12 @@ public class XummService {
                 ApiKey apiKey = apiKeyService.getApiKey(keys.get(id));
                 if (apiKey != null) {
                     apiKeyService.renewKey(keys.get(id), expirations.get(id));
+
+                    apiKey.setExpiration(expirations.get(id));
+
+                    renewedKeys.put(id, apiKey);
+
+                    expirations.remove(id);
                 }
                 status.put(id, "SIGNED");
             }
@@ -112,6 +120,11 @@ public class XummService {
 
         amounts.remove(id);
     }
+
+    public ApiKey getRenewedApiKey(String id) {
+        return renewedKeys.get(id);
+    }
+
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
