@@ -51,13 +51,16 @@ public class XummService {
     public PaymentRequestInformation requestPayment(double amount, String currency, Integer days, String key) {
 
         Date expiration;
-
+        ApiKey apiKey = null;
         if (key != null) {
-            ApiKey apiKey = apiKeyService.getApiKey(key);
+            apiKey = apiKeyService.getApiKey(key);
+
             expiration = new Date(apiKey.getExpiration().getTime() + days * 24 * 60 * 60 * 1000);
         } else {
             expiration = new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
         }
+
+
 
         String instruction = "Your key will be available after payment confirmation. Your key will expire : _EXPIRE_.".replace("_EXPIRE_", expiration.toString());
 
@@ -74,8 +77,11 @@ public class XummService {
 
         String id = response.getBody().getUuid();
 
+        if (apiKey != null) {
+           keys.put(id, key);
+        }
+
         amounts.put(id, finalAmount);
-        keys.put(id, key);
         expirations.put(id, expiration);
 
         return PaymentRequestInformation.builder().paymentId(response.getBody().getUuid()).qrCodeUrl(response.getBody().getRefs().getQrPng()).build();
