@@ -22,13 +22,14 @@
             <div class="card-volume  card card-chart">
                 <div class=" card-header">
                     <h5 class=" card-category">USD Day Volume</h5>
+
                     <h3 class=" card-title">
                         <!--            <i class=" tim-icons icon-bell-55 text-danger-states"> </i> 9000,215-->
                     </h3>
                 </div>
                 <div class=" card-body">
                     <div class=" chart-area">
-                        <canvas id="chart1"></canvas>
+                        <canvas id="chart1" height="270px"></canvas>
                     </div>
                 </div>
             </div>
@@ -47,8 +48,6 @@
                         <p><b>Since : </b> {{stats.allTimeFrom | date:'medium'}}</p>
                         <p><b>Daily Volume ATH : </b> {{stats.athDaylyVolume | currency}}</p>
                         <p><b>Last ODL spotted {{trxSecondsAgo | dateAgo}}</b></p>
-                        <p><b>USD Value : </b> {{lastTransaction.usdValue | currency}}</p>
-                        <p>FROM <b>{{lastTransaction.sourceFiat}} TO {{lastTransaction.destinationFiat}}</b></p>
                     </div>
                 </div>
             </div>
