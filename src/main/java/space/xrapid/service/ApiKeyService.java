@@ -26,11 +26,26 @@ public class ApiKeyService {
     }
 
     @Transactional(readOnly = true)
+    public ApiKey getApiKey(final String key) {
+      return apiKeyRepository.getOne(key);
+    }
+
+    @Transactional(readOnly = true)
     @Cacheable(value = "apiKeyMaster", key = "#key")
     public void validateMasterKey(final String key) {
         if (key == null || !apiKeyRepository.existsByKeyAndMaster(key, true)) {
             throw new UnauthorizedException();
         }
+    }
+
+    @Transactional
+    public ApiKey renewKey(String key, Date expiration) {
+
+        ApiKey apiKey = apiKeyRepository.getOne(key);
+
+        apiKey.setExpiration(expiration);
+
+        return apiKeyRepository.save(apiKey);
     }
 
     @Transactional

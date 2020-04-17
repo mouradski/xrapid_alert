@@ -1,34 +1,73 @@
 <div align="center">
     <br>
     <br>
-    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "large" color = "#fff" type = "ball-8bits" [fullScreen] = "true"><p style="color: white" > Generating QR Code... </p></ngx-spinner>
+    <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="#fff" type="ball-8bits" [fullScreen]="true"><p
+            style="color: white"> Generating QR Code... </p></ngx-spinner>
 
-<img *ngIf="qrCodeUrl && !apiKey" [src]="qrCodeUrl" />
+    <img *ngIf="qrCodeUrl && !apiKey" [src]="qrCodeUrl"/>
 
-<h3 *ngIf="apiKey && apiKey.key != 'REJECTED'">Congratulation ! You have now plein access to our database</h3>
-<h4 *ngIf="!apiKey && !qrCodeUrl">Request your Key then confirm payment with XUMM application to have plein access to our database</h4>
-<button type="button" class="btn btn-primary" *ngIf="!qrCodeUrl" (click)="requestKey()">Request API Key</button>
+    <h3 *ngIf="apiKey && apiKey.key != 'REJECTED'">Congratulation ! You have now plein access to our database</h3>
+    <h4 *ngIf="!apiKey && !qrCodeUrl">Request your Key then confirm payment with XUMM application to have plein access
+        to our database</h4>
 
-<br>
+    <div class="row" *ngIf="!qrCodeUrl">
+        <div class=" col-md-11 pr-md-1">
+            <div class=" form-group"><label> Period of validity </label><input class=" form-control" placeholder="Days"
+                                                                               type="number" [(ngModel)]="days">
+            </div>
+        </div>
+
+        <div class=" col-md-1 pr-md-1">
+            <div class=" form-group">
+                <label> Renew </label><input type="checkbox" [(ngModel)]="renew" class="form-check">
+            </div>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="!qrCodeUrl">
+        <div class=" col-md-11 pr-md-1">
+    <div *ngIf="renew" class=" form-group"><label> Api Key </label><input class=" form-control" placeholder="Key"
+                                                                          type="text" [(ngModel)]="key">
+    </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class=" col-md-11 pr-md-1">
+    <button [disabled]="renew && (key == '' || !key.match('[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}'))"
+            type="button" class="btn btn-primary" *ngIf="!qrCodeUrl"
+            (click)="requestKey()">{{renew ? 'Renew API Key' : 'Request API Key'}}</button>
+        </div>
+    </div>
+    <br>
     <div *ngIf="qrCodeUrl && !apiKey">
         <br>
         <br>
-        <h4 class=" card-title">This page will be refreshed with api key immediately after transaction signature with the XUMM app</h4>
+        <h4 class=" card-title">This page will be refreshed with api key immediately after transaction signature with
+            the XUMM app</h4>
     </div>
-<br>
+    <br>
 
+    <div class="row">
+        <div class=" col-md-11 pr-md-1">
     <div>
         <h4>Get Transactions :</h4>
-        <code><pre style="font-size: 14px;">curl https://api.utility-scan.com/odl/search?key={{apiKey ? apiKey.key : 'API_KEY'}}&source=USD&destination=MXN&from=20-01-2020&to=20-02-2020&page=1&size=50</pre></code>
+        <code>
+            <pre style="font-size: 14px;alignment: left">curl https://api.utility-scan.com/odl/search?key={{apiKey ? apiKey.key : 'API_KEY'}}&source=USD&destination=MXN&from=20-01-2020&to=20-02-2020&page=1&size=50</pre>
+        </code>
         <h4>Get Stats :</h4>
-        <code><pre style="font-size: 14px;">curl https://api.utility-scan.com/odl/stats?key={{apiKey ? apiKey.key : 'API_KEY'}}</pre></code>
+        <code>
+            <pre style="font-size: 14px;">curl https://api.utility-scan.com/odl/stats?key={{apiKey ? apiKey.key : 'API_KEY'}}</pre>
+        </code>
 
         <h4>Get ODLs via WebSockets</h4>
 
     </div>
+        </div>
+    </div>
 </div>
 <pre>
-  {{socketCode.replace('test',apiKey ? apiKey.key : 'API_KEY')}}
+  {{socketCode.replace('test', apiKey ? apiKey.key : 'API_KEY')}}
 </pre>
 
 

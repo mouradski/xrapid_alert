@@ -1,14 +1,19 @@
 package space.xrapid.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import space.xrapid.domain.ApiKey;
 import space.xrapid.domain.xumm.*;
 import space.xrapid.domain.xumm.webhook.WebHook;
+import space.xrapid.repository.ApiKeyRepository;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,16 +31,33 @@ public class XummService {
     @Value("${xumm.api.destination}")
     private String destination;
 
+    @Autowired
+    private ApiKeyService apiKeyService;
+
+
     private Map<String, String> status = new HashMap<>();
 
     private Map<String, Double> amounts = new HashMap<>();
 
-    private Map<String, Integer> confirmationTries = new HashMap<>();
+    private Map<String, String> keys = new HashMap<>();
+    private Map<String, Date> expirations = new HashMap<>();
 
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public PaymentRequestInformation requestPayment(double amount, String currency, String instruction) {
+    @Transactional(readOnly = true)
+    public PaymentRequestInformation requestPayment(double amount, String currency, Integer days, String key) {
+
+        Date expiration;
+
+        if (key != null) {
+            ApiKey apiKey = apiKeyService.getApiKey(key);
+            expiration = new Date(apiKey.getExpiration().getTime() + days * 24 * 60 * 60 * 1000);
+        } else {
+            expiration = new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
+        }
+
+        String instruction = "Your key will be available after payment confirmation. Your key will expire : _EXPIRE_.".replace("_EXPIRE_", expiration.toString());
 
         HttpHeaders headers = getHeaders();
 
@@ -51,6 +73,8 @@ public class XummService {
         String id = response.getBody().getUuid();
 
         amounts.put(id, finalAmount);
+        keys.put(id, key);
+        expirations.put(id, expiration);
 
         return PaymentRequestInformation.builder().paymentId(response.getBody().getUuid()).qrCodeUrl(response.getBody().getRefs().getQrPng()).build();
     }
@@ -64,6 +88,7 @@ public class XummService {
         return status.get(id);
     }
 
+    @Transactional
     public void updatePaymentStatus(WebHook webHook) {
         String id = webHook.getPayloadResponse().getPayloadUuidv4();
         if (webHook.getPayloadResponse().getSigned() == null || !webHook.getPayloadResponse().getSigned()) {
@@ -77,6 +102,10 @@ public class XummService {
                     && response.getBody().getResponse().getAdditionalProperties().get("dispatched_result").toString().startsWith("tec")) {
                 status.put(id, "REJECTED");
             } else {
+                ApiKey apiKey = apiKeyService.getApiKey(keys.get(id));
+                if (apiKey != null) {
+                    apiKeyService.renewKey(keys.get(id), expirations.get(id));
+                }
                 status.put(id, "SIGNED");
             }
         }

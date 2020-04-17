@@ -27,9 +27,20 @@ public class XummRest {
 
     @GET
     @Produces("application/json")
-    public PaymentRequestInformation requestPayment() {
+    public PaymentRequestInformation requestPayment(@QueryParam("days") Integer days, @QueryParam("key") String key) {
+
+        if (days == null) {
+            days = 365;
+        }
+
+        if (days < 1) {
+            days = 1;
+        }
+
         double rate = rateService.getXrpUsdRate();
-        return xummService.requestPayment(Math.ceil(100 / rate), "XRP", "Your key will be available after payment confirmation. The key will be valid 365 days.");
+
+
+        return xummService.requestPayment(Math.ceil((0.22 * days) / rate), "XRP",days, key);
     }
 
     @GET
@@ -42,9 +53,6 @@ public class XummRest {
             return ApiKey.builder().key(status).build();
         }
     }
-
-
-
 
     @POST
     @Consumes({"application/json"})

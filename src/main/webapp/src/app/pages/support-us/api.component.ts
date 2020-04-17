@@ -16,9 +16,10 @@ export class ApiComponent implements OnInit {
     qrCodeUrl: string;
     paymentId: string;
     apiKey: ApiKey = null;
+    days: Number = 365;
+    renew: boolean;
+    key:string = '';
     private recInterval = null;
-
-    markdown: string = "'''TEST";
 
     init: string = null;
 
@@ -39,8 +40,12 @@ export class ApiComponent implements OnInit {
     }
 
     requestKey() {
+        console.log(this.days);
         this.spinner.show();
-        this.httpClient.get<PaymentRequestInformation>('/api/xumm').subscribe(data => {
+
+        let url  = this.renew ? '/api/xumm?days=' + this.days + '&key=' + this.key : '/api/xumm?days=' + this.days;
+
+        this.httpClient.get<PaymentRequestInformation>(url).subscribe(data => {
             this.qrCodeUrl = data.qrCodeUrl;
             this.paymentId = data.paymentId;
 

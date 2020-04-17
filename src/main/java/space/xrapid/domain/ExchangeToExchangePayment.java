@@ -108,7 +108,7 @@ public class ExchangeToExchangePayment extends Payment {
     private boolean outTradeFound = false;
 
     public String getDateAsString() {
-        return dateFormat.format(timestamp);
+        return timestamp == null ? null : dateFormat.format(timestamp);
     }
 
     @Override

@@ -7,6 +7,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {SupportLayoutRoutes} from "./api-layout.routing";
 import {ApiComponent} from "../../pages/support-us/api.component";
 import {NgxSpinnerModule} from "ngx-spinner";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
     imports: [
@@ -14,7 +15,8 @@ import {NgxSpinnerModule} from "ngx-spinner";
         RouterModule.forChild(SupportLayoutRoutes),
         HttpClientModule,
         NgbModule,
-        NgxSpinnerModule
+        NgxSpinnerModule,
+        FormsModule
     ],
     exports: [
         ApiComponent
