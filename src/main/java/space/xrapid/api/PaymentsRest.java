@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Component;
 import space.xrapid.domain.*;
+import space.xrapid.exception.UnauthorizedException;
 import space.xrapid.service.ApiKeyService;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 
@@ -43,6 +44,9 @@ public class PaymentsRest {
     @Produces("application/json")
     @Path("/search")
     public OdlPaymentsResponse search(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
+        if (apiKey == null) {
+            throw new UnauthorizedException();
+        }
         apiKeyService.validateKey(apiKey);
         return exchangeToExchangePaymentService.search(from, to, source, destination, size == null ? 300 : size, page == null ? 0 : page);
     }
@@ -66,6 +70,9 @@ public class PaymentsRest {
     @Produces("application/json")
     @Path("/stats/all")
     public GlobalStats getAllStats(@QueryParam("key") String apiKey) {
+        if (apiKey == null) {
+            throw new UnauthorizedException();
+        }
         apiKeyService.validateKey(apiKey);
         return exchangeToExchangePaymentService.calculateGlobalStats(false);
     }

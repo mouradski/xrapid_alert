@@ -12,7 +12,7 @@
 
     <div class="row" *ngIf="!qrCodeUrl">
         <div class=" col-md-11 pr-md-1">
-            <div class=" form-group"><label> Period of validity </label><input class=" form-control" placeholder="Days"
+            <div class=" form-group"><label> Validity in </label><input class=" form-control" placeholder="Days"
                                                                                type="number" [(ngModel)]="days">
             </div>
         </div>
@@ -53,11 +53,11 @@
     <div>
         <h4>Get Transactions :</h4>
         <code>
-            <pre style="font-size: 14px;alignment: left">curl https://api.utility-scan.com/odl/search?key={{apiKey ? apiKey.key : 'API_KEY'}}&source=USD&destination=MXN&from=20-01-2020&to=20-02-2020&page=1&size=50</pre>
+            <pre style="font-size: 14px;alignment: left">https://api.utility-scan.com/odl/search?key={{apiKey ? apiKey.key : 'API_KEY'}}&source=USD&destination=MXN&from=20-01-2020&to=20-02-2020&page=1&size=50</pre>
         </code>
         <h4>Get Stats :</h4>
         <code>
-            <pre style="font-size: 14px;">curl https://api.utility-scan.com/odl/stats?key={{apiKey ? apiKey.key : 'API_KEY'}}</pre>
+            <pre style="font-size: 14px;">https://api.utility-scan.com/odl/stats?key={{apiKey ? apiKey.key : 'API_KEY'}}</pre>
         </code>
 
         <h4>Get ODLs via WebSockets</h4>

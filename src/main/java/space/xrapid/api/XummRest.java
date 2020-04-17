@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import space.xrapid.domain.ApiKey;
 import space.xrapid.domain.xumm.PaymentRequestInformation;
 import space.xrapid.domain.xumm.webhook.WebHook;
-import space.xrapid.service.ApiKeyService;
 import space.xrapid.service.RateService;
 import space.xrapid.service.XummService;
 
@@ -18,9 +17,6 @@ public class XummRest {
 
     @Autowired
     private XummService xummService;
-
-    @Autowired
-    private ApiKeyService apiKeyService;
 
     @Autowired
     private RateService rateService;
@@ -41,7 +37,7 @@ public class XummRest {
         double rate = rateService.getXrpUsdRate();
 
 
-        return xummService.requestPayment(Math.ceil((0.22 * days) / rate), "XRP", days, key);
+        return xummService.requestPayment(Math.ceil((2.9 * days) / rate), "XRP", days, key);
     }
 
     @GET
