@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -124,5 +123,10 @@ public class ExchangeToExchangePayment extends Payment {
         sb.append("Trx Hash : ").append(this.transactionHash);
 
         return sb.toString();
+    }
+
+    public String toCsvLine() {
+
+        return dateTime + ";" + timestamp + ";" + sourceAddress + ";" + source + ";" + destinationAddress + ";"  + tag + ";" + destination + ";" + sourceFiat + ";" + destinationFiat + ";" + amount + ";" + usdValue + ";" + transactionHash + ";" + spottedAt;
     }
 }
