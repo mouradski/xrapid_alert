@@ -1,5 +1,9 @@
 <div align="center">
     <br>
+    <h1>Discover</h1>
+    <h4>
+        Experience the Utility-Scan API. Whether for fun, research, or to build your own ODL models on your website / favorite social network, the Utility-scan API gives you full access to our database and real-time data over websocket.    </h4>
+    <br>
     <br>
     <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="#fff" type="ball-8bits" [fullScreen]="true"><p
             style="color: white"> Generating QR Code... </p></ngx-spinner>
@@ -7,7 +11,7 @@
     <img *ngIf="qrCodeUrl && !apiKey" [src]="qrCodeUrl"/>
 
     <h3 *ngIf="apiKey && apiKey.key != 'REJECTED'">Congratulation ! You have now plein access to our database</h3>
-    <h4 *ngIf="!apiKey && !qrCodeUrl">Request your API Key then confirm payment with the XUMM application, to have direct access to our database.</h4>
+    <h4 *ngIf="!apiKey && !qrCodeUrl">Request your API Key then confirm payment with the XUMM application</h4>
 
     <div class="row" *ngIf="!qrCodeUrl">
         <div class=" col-md-11 pr-md-1">
