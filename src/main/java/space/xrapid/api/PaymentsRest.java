@@ -9,9 +9,13 @@ import space.xrapid.domain.*;
 import space.xrapid.exception.UnauthorizedException;
 import space.xrapid.service.ApiKeyService;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.util.CsvHelper;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/payments")
 @Slf4j
@@ -75,6 +79,19 @@ public class PaymentsRest {
         }
         apiKeyService.validateKey(apiKey);
         return exchangeToExchangePaymentService.calculateGlobalStats(false);
+    }
+
+    @GET
+    @Path("/search/csv")
+    @Produces("text/csv")
+    public Response csv(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
+        apiKeyService.validateKey(apiKey);
+
+        String csv = CsvHelper.toCsv(exchangeToExchangePaymentService.search(from, to, source, destination, size == null ? 300 : size, page == null ? 0 : page).getPayments());
+        Response.ResponseBuilder response = Response.ok(csv);
+        response.header("Content-Disposition",
+                "attachment; filename=odl_" + new Date().getTime() + ".xls");
+        return response.build();
     }
 
     @POST
