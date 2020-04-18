@@ -7,8 +7,7 @@
     <img *ngIf="qrCodeUrl && !apiKey" [src]="qrCodeUrl"/>
 
     <h3 *ngIf="apiKey && apiKey.key != 'REJECTED'">Congratulation ! You have now plein access to our database</h3>
-    <h4 *ngIf="!apiKey && !qrCodeUrl">Request your Key then confirm payment with XUMM application to have plein access
-        to our database</h4>
+    <h4 *ngIf="!apiKey && !qrCodeUrl">Request your API Key then confirm payment with the XUMM application, to have direct access to our database.</h4>
 
     <div class="row" *ngIf="!qrCodeUrl">
         <div class=" col-md-11 pr-md-1">
