@@ -27,17 +27,28 @@ public class XummRest {
     public PaymentRequestInformation requestPayment(@QueryParam("days") Integer days, @QueryParam("key") String key) {
 
         if (days == null) {
-            days = 365;
+            days = 1;
         }
 
         if (days < 1) {
             days = 1;
         }
 
+        double price = 2.9;
+
+        if (days >= 180) {
+            price = 0.6 * price;
+        } else if (days >= 90) {
+            price = 0.7 * price;
+        } else if (days >= 30) {
+            price = 0.8 * price;
+        }
+
+
         double rate = rateService.getXrpUsdRate();
 
 
-        return xummService.requestPayment(Math.ceil((2.9 * days) / rate), "XRP", days, key);
+        return xummService.requestPayment(Math.ceil((price * days) / rate), "XRP", days, key);
     }
 
     @GET

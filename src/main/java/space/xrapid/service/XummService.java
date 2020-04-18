@@ -20,6 +20,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class XummService {
+
     private final String apiBase = "https://xumm.app/api/v1/platform/payload";
 
     @Value("${xumm.api.key}")
@@ -56,7 +57,14 @@ public class XummService {
         if (key != null) {
             apiKey = apiKeyService.getApiKey(key);
 
-            expiration = new Date(apiKey.getExpiration().getTime() + days * 24 * 60 * 60 * 1000);
+            Date now = new Date();
+
+            if (apiKey.getExpiration().before(now)) {
+                expiration = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+
+            } else {
+                expiration = new Date(apiKey.getExpiration().getTime() + days * 24 * 60 * 60 * 1000);
+            }
         } else {
             expiration = new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
         }
@@ -114,8 +122,6 @@ public class XummService {
                 status.put(id, "REJECTED");
             } else {
                 if (keys.get(id) != null) {
-                    ApiKey apiKey = apiKeyService.getApiKey(keys.get(id));
-
                     renewedKeys.put(id, apiKeyService.renewKey(keys.get(id), expirations.get(id)));
                 }
                 status.put(id, "SIGNED");
