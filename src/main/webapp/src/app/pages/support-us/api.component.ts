@@ -57,7 +57,8 @@ export class ApiComponent implements OnInit {
                         this.apiKey = apiKey;
                         clearInterval(this.recInterval);
                     } else if (apiKey.key == "REJECTED") {
-                        this.apiKey = apiKey;
+                        this.apiKey = null;
+                        this.qrCodeUrl = null;
                         clearInterval(this.recInterval);
                     } else {
                         //TODO
