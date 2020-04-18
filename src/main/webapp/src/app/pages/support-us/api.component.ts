@@ -16,7 +16,7 @@ export class ApiComponent implements OnInit {
     qrCodeUrl: string;
     paymentId: string;
     apiKey: ApiKey = null;
-    days: Number = 365;
+    days: Number = 30;
     renew: boolean;
     key:string = '';
     private recInterval = null;
