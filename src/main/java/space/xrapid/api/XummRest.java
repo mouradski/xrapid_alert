@@ -24,14 +24,14 @@ public class XummRest {
 
     @GET
     @Produces("application/json")
-    public PaymentRequestInformation requestPayment(@QueryParam("days") Integer days, @QueryParam("key") String key) {
+    public PaymentRequestInformation requestPayment(@QueryParam("days") Long days, @QueryParam("key") String key) {
 
         if (days == null) {
-            days = 1;
+            days = 1l;
         }
 
         if (days < 1) {
-            days = 1;
+            days = 1l;
         }
 
         double price = 2.9;

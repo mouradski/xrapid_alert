@@ -50,7 +50,7 @@ public class XummService {
     private RestTemplate restTemplate = new RestTemplate();
 
     @Transactional(readOnly = true)
-    public PaymentRequestInformation requestPayment(double amount, String currency, Integer days, String key) {
+    public PaymentRequestInformation requestPayment(double amount, String currency, Long days, String key) {
 
         Date expiration;
         ApiKey apiKey = null;
