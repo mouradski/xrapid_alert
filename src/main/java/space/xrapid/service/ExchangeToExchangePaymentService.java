@@ -12,10 +12,7 @@ import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -319,7 +316,6 @@ public class ExchangeToExchangePaymentService {
 
         List<Predicate> predicates = new ArrayList<>();
 
-
         if (destination != null) {
             predicates.add(criteriaBuilder.equal(root.get("destinationFiat"), destination));
         }
@@ -327,7 +323,6 @@ public class ExchangeToExchangePaymentService {
         if (source != null) {
             predicates.add(criteriaBuilder.equal(root.get("sourceFiat"), source));
         }
-
 
         if (begin != null) {
             predicates.add(criteriaBuilder.ge(root.get("timestamp"), OffsetDateTime.parse(begin,
@@ -341,8 +336,10 @@ public class ExchangeToExchangePaymentService {
 
         criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
 
-
         CriteriaQuery<ExchangeToExchangePayment> select = criteriaQuery.select(root);
+
+        select.orderBy(criteriaBuilder.asc(root.get("dateTime")));
+
         TypedQuery<ExchangeToExchangePayment> typedQuery = entityManager.createQuery(select);
 
 
@@ -350,6 +347,8 @@ public class ExchangeToExchangePaymentService {
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
         cq.select(qb.count(cq.from(ExchangeToExchangePayment.class)));
         cq.where(predicates.toArray(new Predicate[predicates.size()]));
+
+
         Long count = entityManager.createQuery(cq).getSingleResult();
 
         if (pageSize > 1000) {
@@ -357,8 +356,10 @@ public class ExchangeToExchangePaymentService {
         }
 
         int firstResult = page > 0 ? (page - 1) * pageSize : 0;
+
         typedQuery.setFirstResult(firstResult);
         typedQuery.setMaxResults(pageSize);
+
         List<ExchangeToExchangePayment> payments = typedQuery.getResultList();
 
 
