@@ -338,7 +338,7 @@ public class ExchangeToExchangePaymentService {
 
         CriteriaQuery<ExchangeToExchangePayment> select = criteriaQuery.select(root);
 
-        select.orderBy(criteriaBuilder.asc(root.get("dateTime")));
+        select.orderBy(criteriaBuilder.desc(root.get("dateTime")));
 
         TypedQuery<ExchangeToExchangePayment> typedQuery = entityManager.createQuery(select);
 
