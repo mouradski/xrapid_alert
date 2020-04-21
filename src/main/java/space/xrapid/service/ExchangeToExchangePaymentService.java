@@ -335,7 +335,7 @@ public class ExchangeToExchangePaymentService {
         }
 
         if (tag != null) {
-            predicates.add(criteriaBuilder.equal(root.get("tag"), destination));
+            predicates.add(criteriaBuilder.equal(root.get("tag"), tag));
         }
 
         criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
