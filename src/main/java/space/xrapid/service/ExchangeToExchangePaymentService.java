@@ -295,7 +295,7 @@ public class ExchangeToExchangePaymentService {
     }
 
     @Transactional(readOnly = true)
-    public OdlPaymentsResponse search(String begin, String end, Currency source, Currency destination, int pageSize, int page) {
+    public OdlPaymentsResponse search(String begin, String end, Currency source, Currency destination, Long tag, int pageSize, int page) {
 
         DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy")
                 .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
@@ -332,6 +332,10 @@ public class ExchangeToExchangePaymentService {
         if (end != null) {
             predicates.add(criteriaBuilder.le(root.get("timestamp"), OffsetDateTime.parse(end,
                     DATE_FORMAT).toEpochSecond() * 1000));
+        }
+
+        if (tag != null) {
+            predicates.add(criteriaBuilder.equal(root.get("tag"), destination));
         }
 
         criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
