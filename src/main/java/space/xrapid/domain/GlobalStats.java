@@ -19,7 +19,7 @@ import java.util.Map;
         "todayVolumePerCorridor",
         "side",
         "dailyAth",
-        "athsPerCorridor",
+        "athPerCorridor",
         "volumePerCorridor"
 })
 public class GlobalStats {
@@ -33,8 +33,8 @@ public class GlobalStats {
     private double totalVolume;
     @JsonProperty("dailyAth")
     private double dailyAth;
-    @JsonProperty("athsPerCorridor")
-    private Map<String, Double> athsPerCorridor;
+    @JsonProperty("athPerCorridor")
+    private Map<String, Double> athPerCorridor;
     @JsonProperty("volumePerCorridor")
     private Map<String, Map<String, Double>> volumePerCorridor;
     @JsonProperty("allTimeFrom")

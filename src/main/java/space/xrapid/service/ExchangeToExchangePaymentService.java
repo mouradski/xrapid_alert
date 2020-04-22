@@ -177,7 +177,7 @@ public class ExchangeToExchangePaymentService {
             Map<String, Double> athPerCorridor = new TreeMap<>();
 
             if (this.globalStats != null) {
-                athPerCorridor.putAll(this.globalStats.getAthsPerCorridor());
+                athPerCorridor.putAll(this.globalStats.getAthPerCorridor());
             }
 
             Map<String, Map<String, Double>> volumePerCorridor = new TreeMap<>();
@@ -188,7 +188,7 @@ public class ExchangeToExchangePaymentService {
 
                 if (this.globalStats != null && this.globalStats.getVolumePerCorridor().containsKey(dayString)) {
                     volumePerCorridor.put(dayString, this.globalStats.getVolumePerCorridor().get(dayString));
-                    athPerCorridor.putAll(this.globalStats.getAthsPerCorridor());
+                    athPerCorridor.putAll(this.globalStats.getAthPerCorridor());
                     continue;
                 }
 
@@ -253,7 +253,7 @@ public class ExchangeToExchangePaymentService {
             return GlobalStats.builder()
                     .todayVolumePerCorridor(todayVolumePerCorridor)
                     .dailyAth(athDayVolume)
-                    .athsPerCorridor(athPerCorridor)
+                    .athPerCorridor(athPerCorridor)
                     .totalVolume(roundVolume(allTimeVolume))
                     .todayVolume(roundVolume(todayVolume))
                     .volumePerCorridor(volumePerCorridor)
