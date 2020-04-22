@@ -12,7 +12,10 @@ import space.xrapid.repository.ExchangeToExchangePaymentRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -77,7 +80,7 @@ public class ExchangeToExchangePaymentService {
 
                     try {
                         Double volume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source, destination,
-                                now.minusDays(1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+                            now.minusDays(1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
                         if (volume != null) {
                             String key = source + "-" + destination;
                             if (volumes.containsKey(key)) {
@@ -113,18 +116,18 @@ public class ExchangeToExchangePaymentService {
             calculateDailyVolumes(false);
 
             double athDayVolume = dailyVolumes.values().stream()
-                    .mapToDouble(v -> v.doubleValue())
-                    .max().getAsDouble();
+                .mapToDouble(v -> v.doubleValue())
+                .max().getAsDouble();
 
             return Stats.builder()
-                    .allTimeVolume(roundVolume(allTimeVolume))
-                    .todayVolume(roundVolume(todayVolume))
-                    .topVolumes(volumes)
-                    .allTimeFrom(repository.getFirstOdl().getDateTime())
-                    .last5DaysOdlVolume(volumePerDay)
-                    .athDaylyVolume(athDayVolume)
-                    .days(days)
-                    .build();
+                .allTimeVolume(roundVolume(allTimeVolume))
+                .todayVolume(roundVolume(todayVolume))
+                .topVolumes(volumes)
+                .allTimeFrom(repository.getFirstOdl().getDateTime())
+                .last5DaysOdlVolume(volumePerDay)
+                .athDaylyVolume(athDayVolume)
+                .days(days)
+                .build();
         } catch (Exception e) {
             return null;
         }
@@ -165,7 +168,6 @@ public class ExchangeToExchangePaymentService {
             Double allTimeVolume = repository.getAllTimeVolume();
             Double todayVolume = repository.getVolumeBetween(today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
 
-            String[] days = new String[daysNbr];
 
             if (todayVolume == null) {
                 todayVolume = 0d;
@@ -180,39 +182,23 @@ public class ExchangeToExchangePaymentService {
                 athPerCorridor.putAll(this.globalStats.getAthsPerCorridor());
             }
 
-            double[] volumePerDay = new double[daysNbr];
-            volumePerDay[daysNbr - 1] = roundVolume(todayVolume);
-
-            days[daysNbr - 1] = "Today";
-
 
             Map<String, Map<String, Double>> volumePerCorridor = new TreeMap<>();
+            Map<String, Double> currentDay = new HashMap<>();
 
-            for (int i = daysNbr - 2; i >= 0; i--) {
 
-                String dayString = today.minusDays(1 * (i + 1)).toString().substring(2, 10);
+            for (int i = daysNbr; i >= 0; i--) {
 
-                if (this.globalStats != null && this.globalStats.getVolumePerCorridor().containsKey(dayString)) {
+                boolean isToday = i == 0;
+
+                String dayString = isToday ? today.toString().substring(2, 10) : today.minusDays(1 * (i + 1)).toString().substring(2, 10);
+
+                if (!isToday && this.globalStats != null && this.globalStats.getVolumePerCorridor().containsKey(dayString)) {
                     volumePerCorridor.put(dayString, this.globalStats.getVolumePerCorridor().get(dayString));
                     athPerCorridor.putAll(this.globalStats.getAthsPerCorridor());
                     continue;
                 }
 
-                days[daysNbr - 2 - i] = dayString;
-
-
-                Double volume = repository.getVolumeBetween(today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
-
-                if (volume == null) {
-                    volumePerDay[daysNbr - 2 - i] = 0;
-
-                } else {
-                    volumePerDay[daysNbr - 2 - i] = roundVolume(volume);
-                }
-
-                String day = days[daysNbr - 2 - i];
-
-                //TODO per corridor
                 for (String source : currencies) {
                     for (String destination : currencies) {
 
@@ -222,23 +208,29 @@ public class ExchangeToExchangePaymentService {
 
                         String corridor = source + "-" + destination;
 
-                        Double dayVolume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source, destination, today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
+                        Double dayVolume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source, destination, isToday ? today.toEpochSecond() * 1000 : today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, isToday ? OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond() * 1000 : today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
 
                         if (dayVolume == null) {
                             dayVolume = 0d;
                         }
 
 
-                        if (!volumePerCorridor.containsKey(day)) {
-                            volumePerCorridor.put(day, new TreeMap<>());
+                        if (!volumePerCorridor.containsKey(dayString)) {
+                            volumePerCorridor.put(dayString, new TreeMap<>());
                         }
 
                         if ((!athPerCorridor.containsKey(corridor) && dayVolume > 0) || (athPerCorridor.containsKey(corridor) && dayVolume > athPerCorridor.get(corridor))) {
                             athPerCorridor.put(corridor, dayVolume);
                         }
 
+
                         if (dayVolume > 0) {
-                            volumePerCorridor.get(day).put(corridor, dayVolume);
+                            if (isToday) {
+                                currentDay.put(corridor, dayVolume);
+                            } else {
+                                volumePerCorridor.get(dayString).put(corridor, dayVolume);
+
+                            }
                         }
                     }
                 }
@@ -247,24 +239,25 @@ public class ExchangeToExchangePaymentService {
             calculateDailyVolumes(false);
 
             double athDayVolume = dailyVolumes.values().stream()
-                    .mapToDouble(v -> v.doubleValue())
-                    .max().getAsDouble();
+                .mapToDouble(v -> v.doubleValue())
+                .max().getAsDouble();
 
             return GlobalStats.builder()
-                    .dailyAth(athDayVolume)
-                    .athsPerCorridor(athPerCorridor)
-                    .totalVolume(roundVolume(allTimeVolume))
-                    .todayVolume(roundVolume(todayVolume))
-                    .volumePerCorridor(volumePerCorridor)
-                    .allTimeFrom(repository.getFirstOdl().getDateTime())
-                    .build();
+                .todayVolumePerCorridor(currentDay)
+                .dailyAth(athDayVolume)
+                .athsPerCorridor(athPerCorridor)
+                .totalVolume(roundVolume(allTimeVolume))
+                .todayVolume(roundVolume(todayVolume))
+                .volumePerCorridor(volumePerCorridor)
+                .allTimeFrom(repository.getFirstOdl().getDateTime())
+                .build();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 120000)
     public void forceUpdateAths() {
         calculateDailyVolumes(false);
         globalStats = calculateGlobalStats(true);
@@ -298,19 +291,19 @@ public class ExchangeToExchangePaymentService {
     public OdlPaymentsResponse search(String begin, String end, Currency source, Currency destination, Long tag, int pageSize, int page) {
 
         DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy")
-                .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-                .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-                .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-                .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
-                .parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
-                .toFormatter();
+            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
+            .parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
+            .toFormatter();
 
         CriteriaBuilder criteriaBuilder = entityManager
-                .getCriteriaBuilder();
+            .getCriteriaBuilder();
 
 
         CriteriaQuery<ExchangeToExchangePayment> criteriaQuery = criteriaBuilder
-                .createQuery(ExchangeToExchangePayment.class);
+            .createQuery(ExchangeToExchangePayment.class);
 
         Root<ExchangeToExchangePayment> root = criteriaQuery.from(ExchangeToExchangePayment.class);
 
@@ -326,12 +319,12 @@ public class ExchangeToExchangePaymentService {
 
         if (begin != null) {
             predicates.add(criteriaBuilder.ge(root.get("timestamp"), OffsetDateTime.parse(begin,
-                    DATE_FORMAT).toEpochSecond() * 1000));
+                DATE_FORMAT).toEpochSecond() * 1000));
         }
 
         if (end != null) {
             predicates.add(criteriaBuilder.le(root.get("timestamp"), OffsetDateTime.parse(end,
-                    DATE_FORMAT).toEpochSecond() * 1000));
+                DATE_FORMAT).toEpochSecond() * 1000));
         }
 
         if (tag != null) {
