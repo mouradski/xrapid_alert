@@ -75,6 +75,7 @@ public class ExchangeToExchangePayment extends Payment {
     }
 
     @Transient
+    @JsonIgnore
     private List<Trade> fiatToXrpTrades;
 
     @Transient
