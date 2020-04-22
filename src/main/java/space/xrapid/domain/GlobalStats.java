@@ -16,7 +16,6 @@ import java.util.Map;
         "allTimeFrom",
         "todayVolume",
         "totalVolume",
-        "currentDay",
         "side",
         "dailyAth",
         "athsPerCorridor",
@@ -33,8 +32,6 @@ public class GlobalStats {
     private Map<String, Double> athsPerCorridor;
     @JsonProperty("volumePerCorridor")
     private Map<String, Map<String, Double>> volumePerCorridor;
-    @JsonProperty("currentDay")
-    private Map<String, Double> todayVolumePerCorridor;
     @JsonProperty("allTimeFrom")
     private OffsetDateTime allTimeFrom;
 }
