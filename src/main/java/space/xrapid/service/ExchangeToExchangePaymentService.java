@@ -180,12 +180,6 @@ public class ExchangeToExchangePaymentService {
                 athPerCorridor.putAll(this.globalStats.getAthsPerCorridor());
             }
 
-            double[] volumePerDay = new double[daysNbr];
-            volumePerDay[daysNbr - 1] = roundVolume(todayVolume);
-
-            days[daysNbr - 1] = "Today";
-
-
             Map<String, Map<String, Double>> volumePerCorridor = new TreeMap<>();
 
             for (int i = daysNbr - 2; i >= 0; i--) {
@@ -198,21 +192,6 @@ public class ExchangeToExchangePaymentService {
                     continue;
                 }
 
-                days[daysNbr - 2 - i] = dayString;
-
-
-                Double volume = repository.getVolumeBetween(today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
-
-                if (volume == null) {
-                    volumePerDay[daysNbr - 2 - i] = 0;
-
-                } else {
-                    volumePerDay[daysNbr - 2 - i] = roundVolume(volume);
-                }
-
-                String day = days[daysNbr - 2 - i];
-
-                //TODO per corridor
                 for (String source : currencies) {
                     for (String destination : currencies) {
 
@@ -229,8 +208,8 @@ public class ExchangeToExchangePaymentService {
                         }
 
 
-                        if (!volumePerCorridor.containsKey(day)) {
-                            volumePerCorridor.put(day, new TreeMap<>());
+                        if (!volumePerCorridor.containsKey(dayString)) {
+                            volumePerCorridor.put(dayString, new TreeMap<>());
                         }
 
                         if ((!athPerCorridor.containsKey(corridor) && dayVolume > 0) || (athPerCorridor.containsKey(corridor) && dayVolume > athPerCorridor.get(corridor))) {
@@ -238,8 +217,29 @@ public class ExchangeToExchangePaymentService {
                         }
 
                         if (dayVolume > 0) {
-                            volumePerCorridor.get(day).put(corridor, dayVolume);
+                            volumePerCorridor.get(dayString).put(corridor, dayVolume);
                         }
+                    }
+                }
+            }
+
+
+            Map<String, Double> todayVolumePerCorridor = new HashMap<>();
+
+            for (String source : currencies) {
+                for (String destination : currencies) {
+
+                    if (source.equals(destination)) {
+                        continue;
+                    }
+
+                    String corridor = source + "-" + destination;
+
+                    Double dayVolume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source, destination, today.toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+
+
+                    if (dayVolume!= null && dayVolume > 0) {
+                        todayVolumePerCorridor.put(corridor, dayVolume);
                     }
                 }
             }
@@ -251,6 +251,7 @@ public class ExchangeToExchangePaymentService {
                     .max().getAsDouble();
 
             return GlobalStats.builder()
+                    .todayVolumePerCorridor(todayVolumePerCorridor)
                     .dailyAth(athDayVolume)
                     .athsPerCorridor(athPerCorridor)
                     .totalVolume(roundVolume(allTimeVolume))

@@ -16,12 +16,17 @@ import java.util.Map;
         "allTimeFrom",
         "todayVolume",
         "totalVolume",
+        "todayVolumePerCorridor",
         "side",
         "dailyAth",
         "athsPerCorridor",
         "volumePerCorridor"
 })
 public class GlobalStats {
+
+    @JsonProperty("todayVolumePerCorridor")
+    private Map<String, Double> todayVolumePerCorridor;
+
     @JsonProperty("todayVolume")
     private double todayVolume;
     @JsonProperty("totalVolume")
