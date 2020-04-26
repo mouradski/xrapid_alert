@@ -56,7 +56,7 @@ public class TradesCombinaisonsHelper {
                 double sum = sum(candidates);
                 double diff = calculateDiff(amount, sum, side);
 
-                if (diff <= 0.03005) {
+                if (diff <= 0.04005) {
 
                     if (diff <= 0.02) {
                         return candidates;
