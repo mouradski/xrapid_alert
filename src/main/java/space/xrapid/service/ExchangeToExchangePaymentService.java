@@ -360,15 +360,20 @@ public class ExchangeToExchangePaymentService {
             pageSize = 1000;
         }
 
-        int firstResult = page > 0 ? (page - 1) * pageSize : 0;
+        int firstResult = (page - 1) * pageSize;
 
         typedQuery.setFirstResult(firstResult);
         typedQuery.setMaxResults(pageSize);
 
         List<ExchangeToExchangePayment> payments = typedQuery.getResultList();
 
+        int pages = (int) Math.ceil(count / pageSize);
 
-        return OdlPaymentsResponse.builder().pages((int) Math.ceil(count / pageSize)).currentPage(page).pageSize(pageSize).payments(payments).total(count).build();
+        if (pages == 0) {
+            pages = 1;
+        }
+
+        return OdlPaymentsResponse.builder().pages(pages).currentPage(page).pageSize(pageSize).payments(payments).total(count).build();
 
     }
 

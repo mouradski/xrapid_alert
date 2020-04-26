@@ -52,7 +52,7 @@ public class PaymentsRest {
             throw new UnauthorizedException();
         }
         apiKeyService.validateKey(apiKey);
-        return exchangeToExchangePaymentService.search(from, to, source, destination, tag, size == null ? 300 : size, page == null ? 0 : page);
+        return exchangeToExchangePaymentService.search(from, to, source, destination, tag, size == null ? 300 : size, page == null ? 1 : page);
     }
 
     @GET
@@ -87,7 +87,7 @@ public class PaymentsRest {
     public Response csv(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination,  @QueryParam("tag") Long tag, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
         apiKeyService.validateKey(apiKey);
 
-        String csv = CsvHelper.toCsv(exchangeToExchangePaymentService.search(from, to, source, destination, tag, size == null ? 300 : size, page == null ? 0 : page).getPayments());
+        String csv = CsvHelper.toCsv(exchangeToExchangePaymentService.search(from, to, source, destination, tag, size == null ? 300 : size, page == null ? 1 : page).getPayments());
         Response.ResponseBuilder response = Response.ok(csv);
         response.header("Content-Disposition",
                 "attachment; filename=odl_" + new Date().getTime() + ".xls");
