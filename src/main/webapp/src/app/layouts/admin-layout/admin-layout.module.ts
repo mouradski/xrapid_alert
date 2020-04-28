@@ -12,6 +12,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {DateAgoPipe} from "../../pipes/date-ago.pipe";
 import {BannerComponent} from "../../components/banner/banner.component";
 import {BannerMobileComponent} from "../../components/banner-mobile/banner-mobile.component";
+import {ValidatorComponent} from "../../components/validator/validator.component";
 
 @NgModule({
     imports: [
@@ -26,7 +27,7 @@ import {BannerMobileComponent} from "../../components/banner-mobile/banner-mobil
   ],
   declarations: [
     DashboardComponent,
-    TablesComponent, BannerComponent, BannerMobileComponent,
+    TablesComponent, BannerComponent, BannerMobileComponent, ValidatorComponent,
       DateAgoPipe
   ]
 })
