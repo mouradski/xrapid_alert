@@ -16,6 +16,19 @@
         </expiry>
         <heap unit="entries">1000</heap>
     </cache>
+	
+    <cache alias="apiKey">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+        <heap unit="entries">1000</heap>
+    </cache>
+    <cache alias="apiKeyMaster">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+        <heap unit="entries">1000</heap>
+    </cache>	
 
     <cache alias="tags">
         <expiry>
