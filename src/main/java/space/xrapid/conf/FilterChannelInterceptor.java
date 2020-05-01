@@ -3,7 +3,6 @@ package space.xrapid.conf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
@@ -25,7 +24,6 @@ public class FilterChannelInterceptor extends ChannelInterceptorAdapter {
                 try {
                     apiKeyService.validateKey(apiKey);
                 } catch (Throwable e) {
-                    //return nullMessage(message);
                     System.out.println("return null;");
                     return null;
                 }
@@ -36,25 +34,5 @@ public class FilterChannelInterceptor extends ChannelInterceptorAdapter {
         }
 
         return message;
-    }
-
-
-    void disconnect(Message<?> message) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-        headerAccessor.setDestination("/black/h");
-    }
-
-    private Message<?> nullMessage(Message<?> root) {
-        return new Message() {
-            @Override
-            public Object getPayload() {
-                return "";
-            }
-
-            @Override
-            public MessageHeaders getHeaders() {
-                return root.getHeaders();
-            }
-        };
     }
 }

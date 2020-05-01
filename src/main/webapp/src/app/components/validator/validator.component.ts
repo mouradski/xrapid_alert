@@ -18,10 +18,20 @@ export class ValidatorComponent implements OnInit {
 
     ledgerHash: string;
 
+    lastUpdate: number;
+    
     constructor() {}
 
     ngOnInit() {
+        this.lastUpdate = new Date().getTime();
+
         this.init();
+
+        setInterval(() => {
+            if (new Date().getTime() - this.lastUpdate > 20000) {
+                this.init();
+            }
+        }, 10000)
     }
 
     init() {
@@ -31,6 +41,7 @@ export class ValidatorComponent implements OnInit {
         console.log(this.ekey);
 
         this.websocket.onmessage = (msg) => {
+            this.lastUpdate = new Date().getTime();
             const data = JSON.parse(msg.data);
             if (data.type === 'validation' && (data.data.pubkey === this.ekey || data.data.pubkey === this.key)) {
                 console.log(data.data);
@@ -42,6 +53,7 @@ export class ValidatorComponent implements OnInit {
             } else {
             }
         }
+
 
         this.websocket.onopen = (e) => {
             this.websocket.send('{"command": "subscribe", "streams": ["validations"], "pubkey": "n9LK6xCKVeHi5QiC7ZvUeqotf4m6JKH1oSk8tHBojiPxvXgA9haE"}');
