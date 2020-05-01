@@ -18,11 +18,13 @@ export class ValidatorComponent implements OnInit {
 
     ledgerHash: string;
 
-    constructor() {
-
-    }
+    constructor() {}
 
     ngOnInit() {
+        this.init();
+    }
+
+    init() {
         this.websocket = new WebSocket("wss://livenet.xrpl.org/ws");
 
         console.log(this.key);
