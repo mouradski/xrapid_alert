@@ -19,7 +19,7 @@ export class ValidatorComponent implements OnInit {
     ledgerHash: string;
 
     lastUpdate: number;
-    
+
     constructor() {}
 
     ngOnInit() {
