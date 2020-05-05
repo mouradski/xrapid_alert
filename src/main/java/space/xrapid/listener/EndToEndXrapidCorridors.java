@@ -77,7 +77,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
                     .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                     .filter(payment -> fiatToXrpTradesExists(payment) && xrpToFiatTradesExists(payment))
                     .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
-                    .forEach(payment -> persistPayment(payment));
+                    .forEach(this::persistPayment);
 
         } else {
             payments.stream()

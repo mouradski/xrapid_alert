@@ -76,7 +76,7 @@ public abstract class XrapidCorridors {
             this.tradesIdAlreadyProcessed = usedTradeIds;
         }
 
-        allExchangeAddresses = Arrays.stream(Exchange.values()).map(e -> e.getAddresses()).flatMap(Arrays::stream)
+        allExchangeAddresses = Arrays.stream(Exchange.values()).map(Exchange::getAddresses).flatMap(Arrays::stream)
                 .collect(Collectors.toSet());
     }
 
@@ -142,7 +142,7 @@ public abstract class XrapidCorridors {
 
                 notify(exchangeToFiatPayment);
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("Erreur persisting {}", exchangeToFiatPayment);
         }
 
@@ -225,9 +225,7 @@ public abstract class XrapidCorridors {
 
         if (!exchangeToExchangePayment.isInTradeFound() && SpottedAt.SOURCE_AND_DESTINATION.equals(getSpottedAt())) {
             exchangeToExchangePayment.getFiatToXrpTrades().stream()
-                    .map(Trade::getOrderId).forEach(orderId -> {
-                tradesIdAlreadyProcessed.remove(orderId);
-            });
+                    .map(Trade::getOrderId).forEach(orderId -> tradesIdAlreadyProcessed.remove(orderId));
         }
 
         return exchangeToExchangePayment.isInTradeFound();
