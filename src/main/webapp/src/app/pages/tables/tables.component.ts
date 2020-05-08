@@ -84,8 +84,9 @@ export class TablesComponent implements OnInit {
             _this.client.subscribe('/topic/payments', function (message) {
                 _this.datasets.push(JSON.parse(message.body));
 
-                _this.tablesService.single(message.body);
+
                 _this.payment = JSON.parse(message.body);
+                _this.tablesService.single(_this.payment);
 
                 if (_this.payment.amount > 2000) {
                     _this.notifPayment(_this.payment);
