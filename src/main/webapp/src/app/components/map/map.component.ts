@@ -62,7 +62,9 @@ export class MapComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.zone.runOutsideAngular(() => {
             this.mapChart = am4core.create("mapdiv", am4maps.MapChart);
-
+            this.mapChart.maxZoomLevel = 1;
+            this.mapChart.seriesContainer.draggable = false;
+            this.mapChart.seriesContainer.resizable = false;
             this.mapChart.geodata = am4geodata_worldLow;
             this.mapChart.projection = new am4maps.projections.Miller();
             this.mapChart.homeZoomLevel = 0;
