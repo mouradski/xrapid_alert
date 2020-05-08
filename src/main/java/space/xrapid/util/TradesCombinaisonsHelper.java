@@ -41,7 +41,6 @@ public class TradesCombinaisonsHelper {
 
         double min = 10000;
 
-
         for (int i = 1; i <= maxSize; i++) {
 
             long start = new Date().getTime();

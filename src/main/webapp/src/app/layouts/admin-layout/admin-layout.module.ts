@@ -13,6 +13,7 @@ import {DateAgoPipe} from "../../pipes/date-ago.pipe";
 import {BannerComponent} from "../../components/banner/banner.component";
 import {BannerMobileComponent} from "../../components/banner-mobile/banner-mobile.component";
 import {ValidatorComponent} from "../../components/validator/validator.component";
+import {MapComponent} from "../../components/map/map.component";
 
 @NgModule({
     imports: [
@@ -27,7 +28,7 @@ import {ValidatorComponent} from "../../components/validator/validator.component
   ],
   declarations: [
     DashboardComponent,
-    TablesComponent, BannerComponent, BannerMobileComponent, ValidatorComponent,
+    TablesComponent, BannerComponent, BannerMobileComponent, ValidatorComponent, MapComponent,
       DateAgoPipe
   ]
 })
