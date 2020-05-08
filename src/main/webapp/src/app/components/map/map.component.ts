@@ -163,7 +163,7 @@ export class MapComponent implements AfterViewInit {
 
         this.tablesService.getData().subscribe(data => {
 
-            for (let i = 0; i < data.length && i < 20; i++) {
+            for (let i = 0; i < data.length && i < 5; i++) {
                 console.log(i);
                 _this.queue.enqueue(data[i]);
             }
@@ -176,7 +176,7 @@ export class MapComponent implements AfterViewInit {
             if (data) {
                 _this.notifyOdl(data.sourceFiat, data.destinationFiat);
             }
-        }, 6000);
+        }, 5000);
     }
 
 
