@@ -55,8 +55,10 @@ export class TablesComponent implements OnInit {
         httpClient.get<Payment[]>('/api/payments').subscribe(data => {
             this.tablesService.updateData(data);
 
+
             for (let i = 0; i < data.length; i++) {
                 _this.datasets.push(data[i]);
+
             }
 
             if (data.length > 0) {
@@ -82,6 +84,7 @@ export class TablesComponent implements OnInit {
             _this.client.subscribe('/topic/payments', function (message) {
                 _this.datasets.push(JSON.parse(message.body));
 
+                _this.tablesService.single(message.body);
                 _this.payment = JSON.parse(message.body);
 
                 if (_this.payment.amount > 2000) {

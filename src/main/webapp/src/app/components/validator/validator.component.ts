@@ -37,19 +37,13 @@ export class ValidatorComponent implements OnInit {
     init() {
         this.websocket = new WebSocket("wss://livenet.xrpl.org/ws");
 
-        console.log(this.key);
-        console.log(this.ekey);
-
         this.websocket.onmessage = (msg) => {
             this.lastUpdate = new Date().getTime();
             const data = JSON.parse(msg.data);
             if (data.type === 'validation' && (data.data.pubkey === this.ekey || data.data.pubkey === this.key)) {
-                console.log(data.data);
-
                 this.ledgerIndex = data.data.ledger_index;
                 this.ledgerHash = data.data.ledger_hash;
 
-                console.log(this.ledgerIndex);
             } else {
             }
         }

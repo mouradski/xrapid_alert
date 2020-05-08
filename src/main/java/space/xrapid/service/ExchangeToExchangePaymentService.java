@@ -39,9 +39,7 @@ public class ExchangeToExchangePaymentService {
     @Transactional
     public boolean save(ExchangeToExchangePayment exchangeToExchangePayment) {
 
-        boolean exist = repository.existsByTransactionHash(exchangeToExchangePayment.getTransactionHash());
-
-        if (exist) {
+        if (repository.existsByTransactionHash(exchangeToExchangePayment.getTransactionHash())) {
             return false;
         }
 
@@ -71,13 +69,17 @@ public class ExchangeToExchangePaymentService {
             Set<String> currencies = allUsedCurrencies();
             for (String source : currencies) {
                 for (String destination : currencies) {
+
+                    long startTimestamp = now.minusDays(1).toEpochSecond() * 1000;
+                    long endTimestamp = now.toEpochSecond() * 1000;
+
                     if (source.equals(destination)) {
                         continue;
                     }
 
                     try {
                         Double volume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source, destination,
-                                now.minusDays(1).toEpochSecond() * 1000, now.toEpochSecond() * 1000);
+                                startTimestamp, endTimestamp);
                         if (volume != null) {
                             String key = source + "-" + destination;
                             if (volumes.containsKey(key)) {
@@ -200,7 +202,7 @@ public class ExchangeToExchangePaymentService {
 
                         String corridor = source + "-" + destination;
 
-                        Double dayVolume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source, destination, today.minusDays(1 * (i + 1)).toEpochSecond() * 1000, today.minusDays(1 * (i + 1)).plusDays(1).toEpochSecond() * 1000);
+                        Double dayVolume = repository.getVolumeBySourceFiatAndDestinationFiatBetween(source, destination, today.minusDays(i + 1).toEpochSecond() * 1000, today.minusDays(i + 1).plusDays(1).toEpochSecond() * 1000);
 
                         if (dayVolume == null) {
                             dayVolume = 0d;
@@ -246,7 +248,7 @@ public class ExchangeToExchangePaymentService {
             calculateDailyVolumes(false);
 
             double athDayVolume = dailyVolumes.values().stream()
-                    .mapToDouble(v -> v.doubleValue())
+                    .mapToDouble(Double::doubleValue)
                     .max().getAsDouble();
 
             return GlobalStats.builder()
