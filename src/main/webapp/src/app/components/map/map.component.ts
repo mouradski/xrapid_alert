@@ -35,7 +35,7 @@ export class MapComponent implements AfterViewInit {
     addLine(from, to) : any {
         let line = this.lineSeries.mapLines.create();
         line.imagesToConnect = [from, to];
-        line.line.controlPointDistance = -0.3;
+        line.line.controlPointDistance = -0.2;
 
         return line;
     }
@@ -53,7 +53,7 @@ export class MapComponent implements AfterViewInit {
             console.log("old corridor");
         }
 
-       // console.log(this.addLine(this.currencies.get(source), this.currencies.get(destination)));
+        // console.log(this.addLine(this.currencies.get(source), this.currencies.get(destination)));
 
 
         this.showOdl(this.corridors.get(corridor));
@@ -84,12 +84,60 @@ export class MapComponent implements AfterViewInit {
 
             this.cities = this.mapChart.series.push(new am4maps.MapImageSeries());
             this.cities.mapImages.template.nonScaling = true;
+            this.cities.zIndex = 1;
 
-            let city = this.cities.mapImages.template.createChild(am4core.Circle);
-            city.radius = 10;
+            let citiesTemplate = this.cities.mapImages.template;
+            let city = citiesTemplate.createChild(am4core.Image);
+            city.width = 28;
+            city.height = 28;
             city.fill = this.mapChart.colors.getIndex(0).brighten(-0.2);
-            city.strokeWidth = 2;
-            city.stroke = am4core.color("#28a745");
+            city.nonScaling = true;
+            city.tooltipText = "{title}";
+            city.horizontalCenter = "middle";
+            city.verticalCenter = "middle";
+            city.propertyFields.href = "flag";
+            // Set property fields
+            citiesTemplate.propertyFields.latitude = "latitude";
+            citiesTemplate.propertyFields.longitude = "longitude";
+
+            // Add data for the cities
+            this.cities.data = [{
+                "latitude": -35.2820,
+                "longitude": 149.1286,
+                "title": "Australia",
+                "flag": "https://cdn.countryflags.com/thumbs/australia/flag-3d-round-500.png"
+            }, {
+                "latitude": 42.7392,
+                "longitude": -85.9902,
+                "title": "United-States",
+                "flag": "https://cdn.countryflags.com/thumbs/united-states-of-america/flag-3d-round-500.png"
+            }, {
+                "latitude": 14.6043,
+                "longitude": 120.9822,
+                "title": "Philippines",
+                "flag": "https://cdn.countryflags.com/thumbs/philippines/flag-3d-round-500.png"
+            },  {
+                "latitude": 23.6345,
+                "longitude": -102.5527,
+                "title": "Mexico",
+                "flag": "https://cdn.countryflags.com/thumbs/mexico/flag-3d-round-500.png"
+            },  {
+                "latitude": 13.7367,
+                "longitude": 100.5231,
+                "title": "Thailand",
+                "flag": "https://cdn.countryflags.com/thumbs/thailand/flag-3d-round-500.png"
+            },  {
+                "latitude": 37.5326,
+                "longitude": 127.0246,
+                "title": "Korea",
+                "flag": "https://cdn.countryflags.com/thumbs/south-korea/flag-3d-round-500.png"
+            },  {
+                "latitude": -22.9035,
+                "longitude": -43.2096,
+                "title": "Brasil",
+                "flag": "https://cdn.countryflags.com/thumbs/brazil/flag-3d-round-500.png"
+            }
+            ];
 
 
             this.currencies.set("USD", this.addCity({ "latitude": 42.7392, "longitude":-85.9902 }, "United-States"));
@@ -99,7 +147,6 @@ export class MapComponent implements AfterViewInit {
             this.currencies.set("THB", this.addCity({"latitude": 13.7367,"longitude": 100.5231},  "Thailand"));
             this.currencies.set("KRW", this.addCity({"latitude": 37.5326,"longitude": 127.0246},  "Korea"));
             this.currencies.set("BRL", this.addCity({"latitude": -22.9035,"longitude": -43.2096},  "Brasil"));
-            this.currencies.set("EUR", this.addCity({"latitude": 50.5101,"longitude": 4.2055},  "Europe"));
 
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
@@ -107,7 +154,7 @@ export class MapComponent implements AfterViewInit {
             this.lineSeries.mapLines.template.line.stroke = city.fill;
             this.lineSeries.mapLines.template.line.nonScalingStroke = true;
             this.lineSeries.mapLines.template.line.strokeDasharray = "1,1";
-            this.lineSeries.zIndex = 10;
+            this.lineSeries.zIndex = 0;
         });
     }
 
@@ -134,7 +181,7 @@ export class MapComponent implements AfterViewInit {
 
     }
 
-     showOdl(line) {
+    showOdl(line) {
         let bullet = line.lineObjects.create();
         bullet.nonScaling = true;
         bullet.position = 0;
