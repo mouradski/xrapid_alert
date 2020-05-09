@@ -99,6 +99,7 @@ export class MapComponent implements AfterViewInit {
             this.currencies.set("THB", this.addCity({"latitude": 13.7367,"longitude": 100.5231},  "Thailand"));
             this.currencies.set("KRW", this.addCity({"latitude": 37.5326,"longitude": 127.0246},  "Korea"));
             this.currencies.set("BRL", this.addCity({"latitude": -22.9035,"longitude": -43.2096},  "Brasil"));
+            this.currencies.set("EUR", this.addCity({"latitude": 50.5101,"longitude": 4.2055},  "Europe"));
 
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
