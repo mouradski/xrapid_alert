@@ -85,13 +85,21 @@ export class MapComponent implements AfterViewInit {
 
             let citiesTemplate = this.cityImages.mapImages.template;
             let city = citiesTemplate.createChild(am4core.Image);
-            city.width = 28;
-            city.height = 28;
+
+            if (this.mobile) {
+                city.width = 16;
+                city.height = 16;
+            } else {
+                city.width = 28;
+                city.height = 28;
+            }
+
             city.fill = this.mapChart.colors.getIndex(0).brighten(-0.2);
-            city.nonScaling = true;
+            city.nonScaling = false;
             city.tooltipText = "{title}";
             city.horizontalCenter = "middle";
             city.verticalCenter = "middle";
+            city.zIndex = 10;
             city.propertyFields.href = "flag";
             // Set property fields
             citiesTemplate.propertyFields.latitude = "latitude";
@@ -198,13 +206,19 @@ export class MapComponent implements AfterViewInit {
 
 
         let plane = bullet.createChild(am4core.Sprite);
-        plane.scale = 0.01;
+
+        if (this.mobile) {
+            plane.scale = 0.008;
+        } else {
+            plane.scale = 0.01;
+        }
+
         plane.horizontalCenter = "middle";
         plane.verticalCenter = "middle";
         plane.path = "M983 2240 c-265 -37 -485 -150 -669 -342 -262 -274 -366 -645 -284 -1019 44 -202 135 -371 285 -528 159 -168 350 -274 588 -328 99 -22 345 -22 444 0 238 54 429 160 588 328 91 95 135 157 191 266 83 163 118 313 118 508 0 195 -35 345 -118 508 -156 306 -439 521 -779 593 -88 18 -280 26 -364 14z m-196 -666 c203 -212 238 -236 339 -236 97 0 135 26 339 238 l177 184 99 0 c54 0 99 -3 99 -7 0 -8 -102 -115 -324 -341 -204 -207 -239 -227 -391 -227 -153 0 -188 20 -396 232 -225 229 -319 328 -319 336 0 4 45 7 99 7 l99 0 179 -186z m463 -520 c79 -25 130 -69 369 -316 l233 -243 -103 -3 -103 -3 -188 195 c-169 175 -194 197 -246 216 -42 16 -70 20 -104 16 -94 -10 -123 -32 -318 -234 l-184 -192 -104 0 -104 0 71 78 c39 42 151 159 248 258 142 144 190 187 235 209 93 44 197 51 298 19z";
         plane.fill = am4core.color("#000000");
         plane.strokeOpacity = 0;
-        plane.zIndex = 60;
+        //plane.zIndex = 60;
 
         this.goPlane(bullet, plane);
     }
