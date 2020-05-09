@@ -62,7 +62,7 @@ export class TablesComponent implements OnInit {
             }
 
             if (data.length > 0) {
-                _this.payment = data[data.length - 1];
+                _this.payment = data[0];
                 _this.notifPayment(_this.payment);
             }
 
