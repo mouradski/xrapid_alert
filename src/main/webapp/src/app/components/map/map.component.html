@@ -10,14 +10,14 @@
                     <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> Transactions shown :</span>
                     <!-- google_ad_section_start -->
                     <p class="category">
-                        - Last 5 transactions<br>
+                        - Last ODL transaction<br>
                         - Real-Time ODL transactions<br>
                     </p>
                     <!-- google_ad_section_end -->
                 </div>
             </div>
             <div class="card-body">
-                <div id="mapdiv" style="height: 300px"></div>
+                <div id="mapdiv" [class]="mobile ? 'map-mobile' : 'map-desktop'"></div>
             </div>
         </div>
     </div>
