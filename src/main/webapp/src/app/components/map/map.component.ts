@@ -82,7 +82,6 @@ export class MapComponent implements AfterViewInit {
 
             this.cityImages = this.mapChart.series.push(new am4maps.MapImageSeries());
             this.cityImages.mapImages.template.nonScaling = false;
-            this.cityImages.zIndex = 1;
 
             let citiesTemplate = this.cityImages.mapImages.template;
             let city = citiesTemplate.createChild(am4core.Image);
@@ -93,7 +92,6 @@ export class MapComponent implements AfterViewInit {
             city.tooltipText = "{title}";
             city.horizontalCenter = "middle";
             city.verticalCenter = "middle";
-            city.zIndex = 10;
             city.propertyFields.href = "flag";
             // Set property fields
             citiesTemplate.propertyFields.latitude = "latitude";
