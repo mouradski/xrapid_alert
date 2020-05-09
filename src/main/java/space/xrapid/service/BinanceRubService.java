@@ -23,13 +23,17 @@ public class BinanceRubService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.binance.Trade[]> response = restTemplate.exchange(apiUrl,
+        ResponseEntity<space.xrapid.domain.binance.Trade[]> response = restTemplate.exchange(getApiUrl(),
                 HttpMethod.GET, entity, space.xrapid.domain.binance.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
                 .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
+    }
+
+    protected String getApiUrl() {
+        return apiUrl;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class BinanceRubService implements TradeService {
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochMilli(trade.getTime()), ZoneId.of("UTC"));
 
         return Trade.builder().amount(trade.getQty())
-                .exchange(Exchange.BINANCE_RUB)
+                .exchange(getExchange())
                 .timestamp(date.toEpochSecond() * 1000)
                 .dateTime(date)
                 .orderId(trade.getId().toString())

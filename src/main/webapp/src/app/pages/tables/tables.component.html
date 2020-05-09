@@ -1,215 +1,174 @@
-<!-- The Modal -->
-<div class="modal fade" id="myModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-
-      <div class="modal-header">
-        <h4 class="modal-title">Informations</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-
-      <div class="modal-body">
-        <ul>
-          <li>
-            <span class="modal-desc">Date :</span>
-            {{payment.dateTime | date:'medium'}}
-          </li>
-          <li>
-            <span class="modal-desc">Amount :</span>
-            {{payment.amount | number}} XRP
-          </li>
-          <li>
-            <span class="modal-desc">Usd Value :</span>
-            {{payment.usdValue | currency}}
-          </li>
-          <li>
-            <span class="modal-desc">From :</span>
-            {{payment.source}}
-          </li>
-          <li>
-            <span class="modal-desc">To :</span>
-            {{payment.destination}}
-          </li>
-          <li>
-            <span class="modal-desc">Destination Tag :</span>
-            {{payment.tag}}
-          </li>
-          <li *ngIf="payment.tradeOutIds">
-            <span class="modal-desc">Trades on {{payment.source}} :</span>
-            <div class="tag-w">
-            <span class="trade-tag" *ngFor="let id of payment.fiatToXrpTradeIds">{{id}}</span>
-            </div>
-          </li>
-
-          <li *ngIf="payment.tradeIds">
-            <span class="modal-desc">Trades on {{payment.destination}} :</span>
-            <div class="tag-w">
-            <span class="trade-tag" *ngFor="let id of payment.xrpToFiatTradeIds">{{id}}</span>
-            </div>
-          </li>
-          <li *ngIf="!payment.tradeIds && !payment.tradeOutIds">
-            <span class="modal-desc">
-              ODL based on identified Destination Tag on {{payment.destination}}</span>
-            <br>
-            This tag was involved in hundreds of ODL transactions spotted at end to end.
-          </li>
-          <li>
-            <span class="modal-desc">Transaction Hash :</span>
-            <a href="https://bithomp.com/explorer/{{payment.transactionHash}}" target="_blank">{{payment.transactionHash}}</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
+<odl-map></odl-map>
+<validator [key]="'nHB7VCHGa22LwT9zFCohWwySvzxEswsTtwtZJAQHHGjkFcQB6Uea'"
+           [ekey]="'n9K6Cuv1MCWbk15w7RkyNCcPzYmUMGSVSF5gVFiUzkpzc95J8s5s'"></validator>
 
 <div class=" content">
-  <div class=" row">
-    <div class=" col-md-12">
-      <div class=" card card-plain">
-        <div class="card-header">
-          <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
-          <span class="info-icon">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card card-plain">
+                <div *ngIf="!mobile" align="center">
+                    <ins data-revive-zoneid="1" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
+                </div>
+                <div *ngIf="mobile" align="center">
+                    <ins data-revive-zoneid="3" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
+                </div>
+                <div class="card-header">
+                    <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
+                    <span class="info-icon">
             <i class="far fa-question-circle"></i>
           </span>
 
-          <div id="infoODL" class="alert alert-success" role="alert">
-            <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> We consider a transaction as ODL only when those 4 criteria are met :</span>
-            <p class="category">
-              - XRP initially bought at one exchange in local fiat<br>
-              - XRP being sent across the XRPL<br>
-              - the exact amount of XRP finally sold back at the destination exchange in local fiat<br>
-              - the total timeframe should roughly last  60 seconds<br><br>
+                    <div id="infoODL" class="alert alert-success" role="alert">
+                        <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> We consider a transaction as ODL only when those 4 criteria are met :</span>
+                        <!-- google_ad_section_start -->
+                        <p class="category">
+                            - XRP initially bought at one exchange in local fiat<br>
+                            - XRP being sent across the XRPL<br>
+                            - the exact amount of XRP finally sold back at the destination exchange in local
+                            fiat<br>
+                            - the total timeframe should roughly last 4 minutes<br><br>
 
-              The exchange API allows us to track end-to-end ODL transactions, except for http://coins.ph and all future exchanges without API.<br>
-            </p>
-          </div>
-
-        </div>
-        <div class=" card-body">
-          <div class=" table-responsive">
-            <table class=" table tablesorter" id="">
-              <div class="search-popup" style="display: none">
-
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="inputGroupSelect01">From</label>
-                  </div>
-                  <select class="custom-select" id="inputGroupSelect01">
-                    <option selected>Choose</option>
-                    <option value="1">BITSTAMP</option>
-                    <option value="2">BITSTAMP</option>
-                    <option value="3">BITSTAMP</option>
-                  </select>
-                </div>
-
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="inputGroupSelect01">To</label>
-                  </div>
-                  <select class="custom-select" id="inputGroupSelect01">
-                    <option selected>Choose</option>
-                    <option value="1">BITSTAMP</option>
-                    <option value="2">BITSTAMP</option>
-                    <option value="3">BITSTAMP</option>
-                  </select>
-                </div>
-
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="inputGroupSelect01">Source</label>
-                  </div>
-                  <select class="custom-select" id="inputGroupSelect01">
-                    <option selected>Choose</option>
-                    <option value="1">BITSTAMP</option>
-                    <option value="2">BITSTAMP</option>
-                    <option value="3">BITSTAMP</option>
-                  </select>
-                </div>
-
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="inputGroupSelect01">Target</label>
-                  </div>
-                  <select class="custom-select" id="inputGroupSelect01">
-                    <option selected>Choose</option>
-                    <option value="1">BITSTAMP</option>
-                    <option value="2">BITSTAMP</option>
-                    <option value="3">BITSTAMP</option>
-                  </select>
-                </div>
-
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PM</button>
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="#">AM</a>
+                            The exchange API allows us to track end-to-end ODL transactions, except for
+                            http://coins.ph
+                            and all future exchanges without API.<br>
+                        </p>
+                        <!-- google_ad_section_end -->
                     </div>
-                  </div>
-                  <input placeholder="00:00" type="text" class="form-control" aria-label="Text input with dropdown button">
+
+                </div>
+                <div class=" card-body">
+                    <div class=" table-responsive">
+                        <table class=" table tablesorter" id="">
+                            <thead class=" text-primary">
+                            <tr>
+                                <th class="date">Date</th>
+                                <th class="amount" *ngIf="!mobile">Amount</th>
+                                <th class="value">USD Value</th>
+                                <th *ngIf="!mobile">From</th>
+                                <th *ngIf="!mobile">To</th>
+                                <th>Source Fiat</th>
+                                <th>Target Fiat</th>
+                                <th *ngIf="!mobile"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let payment of currentPage">
+                                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
+                                <td class="amount" *ngIf="!mobile">{{ payment.amount | number}} XRP</td>
+                                <td class="value">{{ payment.usdValue | currency }}</td>
+                                <td *ngIf="!mobile">{{ payment.source }}</td>
+                                <td *ngIf="!mobile">{{ payment.destination }}</td>
+                                <td>{{ payment.sourceFiat }}</td>
+                                <td>{{ payment.destinationFiat }}</td>
+                                <td class="tab-btn" *ngIf="!mobile">
+                                    <button (click)="info([[payment.transactionHash]])" type="button"
+                                            class="btn btn-primary"
+                                            data-toggle="modal" data-target="#myModal">
+                                        Info
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <a href="#" class="align-right btn btn-primary">Valid</a>
-              </div>
+                <div class="pagination-table">
+                    <ul class="pagination">
+                        <li (click)="left()"><</li>
+                        <li>{{pageIndex}}</li>
+                        <li (click)="right()">></li>
+                    </ul>
+                </div>
 
-              <thead class=" text-primary">
-              <tr>
-                <th class="date">Date</th>
-                <th class="amount">Amount</th>
-                <th class="value">USD Value</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Source Fiat</th>
-                <th>Target Fiat</th>
-                <th></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let payment of currentPage">
-                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
-                <td class="amount">{{ payment.amount | number}} XRP</td>
-                <td  class="value">{{ payment.usdValue | currency }}</td>
-                <td>{{ payment.source }}</td>
-                <td>{{ payment.destination }}</td>
-                <td>{{ payment.sourceFiat }}</td>
-                <td>{{ payment.destinationFiat }}</td>
-                <td class="tab-btn">
-                  <button (click)="info([[payment.transactionHash]])" type="button" class="btn btn-primary"
-                          data-toggle="modal" data-target="#myModal">
-                    Info
-                  </button>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
+            </div>
         </div>
-
-        <div class="pagination-table">
-          <ul class="pagination">
-            <li (click)="left()"><</li>
-            <li>{{pageIndex}}</li>
-            <li (click)="right()">></li>
-          </ul>
-        </div>
-
-      </div>
     </div>
-  </div>
 </div>
-<div id="david" [className]="notifClass" >
-  <div class="talk-bubble tri-right round right-in">
-    <div class="talktext">
-      <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>
+<!-- The Modal -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Informations</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        <span class="modal-desc">Date :</span>
+                        {{payment.dateTime | date:'medium'}}
+                    </li>
+                    <li>
+                        <span class="modal-desc">Amount :</span>
+                        {{payment.amount | number}} XRP
+                    </li>
+                    <li>
+                        <span class="modal-desc">Usd Value :</span>
+                        {{payment.usdValue | currency}}
+                    </li>
+                    <li>
+                        <span class="modal-desc">From :</span>
+                        {{payment.source}}
+                    </li>
+                    <li>
+                        <span class="modal-desc">To :</span>
+                        {{payment.destination}}
+                    </li>
+                    <li>
+                        <span class="modal-desc">Destination Tag :</span>
+                        {{payment.tag}}
+                    </li>
+                    <li *ngIf="payment.fiatToXrpTradeIds">
+                        <span class="modal-desc">Trades on {{payment.source}} :</span>
+                        <div class="tag-w">
+                            <span class="trade-tag" *ngFor="let id of payment.fiatToXrpTradeIds">{{id}}</span>
+                        </div>
+                    </li>
+
+                    <li *ngIf="payment.xrpToFiatTradeIds">
+                        <span class="modal-desc">Trades on {{payment.destination}} :</span>
+                        <div class="tag-w">
+                            <span class="trade-tag" *ngFor="let id of payment.xrpToFiatTradeIds">{{id}}</span>
+                        </div>
+                    </li>
+                    <li *ngIf="!payment.fiatToXrpTradeIds && !payment.xrpToFiatTradeIds">
+            <span class="modal-desc">
+              ODL based on identified Destination Tag on {{payment.destination}}</span>
+                        <br>
+                        This tag was involved in hundreds of ODL transactions spotted at end to end.
+                    </li>
+                    <li>
+                        <span class="modal-desc">Transaction Hash :</span>
+                        <a href="https://bithomp.com/explorer/{{payment.transactionHash}}"
+                           target="_blank">{{payment.transactionHash}}</a>
+                    </li>
+                    <li>
+                        <div *ngIf="!mobile" align="center">
+                            <ins data-revive-zoneid="1" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
+                        </div>
+                        <div *ngIf="mobile" align="center">
+                            <ins data-revive-zoneid="3" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
     </div>
-  </div>
-  <div class="david-pop">
+</div>
+<div id="david" [className]="notifClass">
+    <div class="talk-bubble tri-right round right-in">
+        <div class="talktext">
+            <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>
+        </div>
+    </div>
+    <div class="david-pop">
     <span>
       <img src="./assets/images/{{notifier}}pop.gif">
     </span>
-  </div>
+    </div>
 
 </div>
 

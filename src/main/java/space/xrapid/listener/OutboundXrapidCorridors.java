@@ -1,4 +1,4 @@
-package space.xrapid.listener.outbound;
+package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -8,20 +8,24 @@ import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.SpottedAt;
 import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.TradesFoundCacheService;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static space.xrapid.job.Scheduler.transactionHashes;
 
 @Slf4j
 public class OutboundXrapidCorridors extends XrapidCorridors {
 
     private Exchange destinationExchange;
 
-    public OutboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, List<Exchange> exchangesWithApi) {
-        super(exchangeToExchangePaymentService, null, messagingTemplate, exchangesWithApi, null);
+    public OutboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService,
+                                   TradesFoundCacheService tradesFoundCacheService, SimpMessageSendingOperations messagingTemplate,
+                                   Exchange destinationExchange, List<Exchange> exchangesWithApi, String proxyUrl) {
+
+        super(exchangeToExchangePaymentService, tradesFoundCacheService, null, messagingTemplate, exchangesWithApi, null, proxyUrl);
         this.destinationExchange = destinationExchange;
     }
 
@@ -35,15 +39,14 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
 
     @Override
     protected void submit(List<Payment> payments) {
-        List<Payment> paymentsToProcess = payments.stream()
-                .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
-        if (paymentsToProcess.isEmpty()) {
+        if (payments.isEmpty()) {
             return;
         }
 
-        paymentsToProcess.stream()
+        payments.stream()
                 .map(this::mapPayment)
+                .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
                 .filter(this::fiatToXrpTradesExists)
                 .sorted(Comparator.comparing(ExchangeToExchangePayment::getDateTime))
                 .forEach(this::persistPayment);

@@ -1,0 +1,25 @@
+<div>
+    <div class=" content">
+        <div class=" row">
+            <div class=" col-lg-12">
+                <div class="card-summary  card card-chart">
+                    <div class=" card-header">
+                        <h5 class=" card-category">XRPL</h5>
+                        <h3 class=" card-title">
+
+                        </h3>
+                    </div>
+                    <div class=" card-body">
+                        <div class="chart-area last-trx">
+
+                                <p>Our Validator public key : <strong>{{key}} </strong> <a href="https://xrptools.alloy.ee/checktoml?domain=xrp.utility-scan.com&display=html" target="_blank">TOML File</a></p>
+                                <p *ngIf="ledgerIndex">Ledger <strong>{{ledgerIndex}}</strong> just validated : <strong><a href="https://xrpscan.com/ledger/{{ledgerHash}}"
+                                                                                                                  target="_blank">{{ledgerHash}}</a></strong></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

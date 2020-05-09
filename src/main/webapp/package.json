@@ -56,6 +56,7 @@
   "homepage": "https://demos.creative-tim.com/black-dashboard-angular/#/dashboard",
   "private": false,
   "dependencies": {
+    "@amcharts/amcharts4": "^4.9.19",
     "@angular/animations": "8.0.2",
     "@angular/common": "8.0.2",
     "@angular/compiler": "8.0.2",
@@ -73,13 +74,16 @@
     "net": "^1.0.2",
     "ngx-cookie-service": "^2.2.0",
     "ngx-device-detector": "^1.3.16",
+    "ngx-spinner": "^9.0.2",
     "ngx-toastr": "10.0.4",
+    "queue-typescript": "^1.0.1",
     "rxjs": "6.5.2",
+    "serialize-javascript": ">=2.1.1",
     "sockjs-client": "^1.4.0",
     "stompjs": "^2.3.3",
     "tslib": "1.10.0",
-    "zone.js": "0.9.1",
-    "serialize-javascript": ">=2.1.1"
+    "ws": "^7.2.5",
+    "zone.js": "0.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.800.3",

@@ -27,7 +27,7 @@ public class KrakenUsdService implements TradeService {
         ResponseEntity<Trades> response = restTemplate.exchange(apiUrl.replace("{pair}", getPair()),
                 HttpMethod.GET, entity, Trades.class);
 
-        ArrayList<List> trades = (ArrayList)response.getBody().getResult().getAdditionalProperties().values()
+        ArrayList<List> trades = (ArrayList) response.getBody().getResult().getAdditionalProperties().values()
                 .stream()
                 .findFirst().get();
 

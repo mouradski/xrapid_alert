@@ -2,21 +2,26 @@ package space.xrapid.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import space.xrapid.domain.*;
 import space.xrapid.domain.Currency;
+import space.xrapid.domain.Exchange;
+import space.xrapid.domain.Stats;
+import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.listener.endtoend.EndToEndXrapidCorridors;
-import space.xrapid.listener.inbound.InboundXrapidCorridors;
-import space.xrapid.listener.outbound.OutboundXrapidCorridors;
+import space.xrapid.listener.EndToEndXrapidCorridors;
+import space.xrapid.listener.InboundXrapidCorridors;
+import space.xrapid.listener.OutboundXrapidCorridors;
 import space.xrapid.service.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,14 +49,35 @@ public class Scheduler {
     @Autowired
     private RateService rateService;
 
+    @Autowired
+    private TradesFoundCacheService tradesFoundCacheService;
+
+    @Autowired
+    private DestinationTagRepeatService destinationTagRepeatService;
+
+    @Value("${api.proxy:false}")
+    private boolean proxy;
+
+    @Value("${api.proxy.url:}")
+    private String proxyUrl;
+
+    public static Set<String> transactionHashes = new HashSet<>();
+
+    private static int MAX_TRADE_DELAY_IN_MINUTES = 4;
+    private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(7);
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
-    @Scheduled(fixedDelay = 45000)
+    @Scheduled(fixedRate = 56000)
     public void odl() throws Exception {
 
+        if (proxy) {
+            return;
+        }
 
         OffsetDateTime lastWindowEndRollback = lastWindowEnd;
         OffsetDateTime windowStartRollback = windowStart;
@@ -65,15 +91,27 @@ public class Scheduler {
         try {
             updatePaymentsWindows();
 
+            OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
+            OffsetDateTime xrplPaymentsEnd = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES);
+            log.info("Fetching ODL candidates from XRP Ledger, from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
+            List<Payment> payments = xrpLedgerService.fetchOdlCandidatePayments(xrplPaymentsStart, xrplPaymentsEnd, true);
+
+            log.info("{} ODL candidates fetched from XRP Ledger", payments.size());
+
+            if (payments.isEmpty()) {
+                return;
+            }
+
             List<Trade> allTrades = new ArrayList<>();
 
-            tradeServices.stream()
+            tradeServices.parallelStream()
                     .filter(service -> service.getExchange().isConfirmed())
                     .forEach(tradeService -> {
                         try {
-                            List<Trade> trades = tradeService.fetchTrades(windowStart.minusMinutes(4));
+                            OffsetDateTime sellTradesStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES + MAX_TRADE_DELAY_IN_MINUTES);
+                            List<Trade> trades = tradeService.fetchTrades(sellTradesStart);
                             allTrades.addAll(trades);
-                            log.info("{} trades fetched from {}", trades.size(), tradeService.getExchange());
+                            log.info("{} trades fetched from {} from {}", trades.size(), tradeService.getExchange(), sellTradesStart);
                         } catch (Exception e) {
                             log.error("Error fetching {} trades", tradeService.getExchange());
                         }
@@ -81,54 +119,62 @@ public class Scheduler {
 
             double rate = rateService.getXrpUsdRate();
 
-            log.info("Fetching payments from XRP Ledger from {} to {}", windowStart.minusMinutes(8), windowEnd);
-            List<Payment> payments = xrpLedgerService.fetchPayments(windowStart.minusMinutes(8), windowEnd);
-            log.info("{} payments fetched from XRP Ledger", payments.size());
-
-            // Scan all XRPL TRX between exchanges that providing API
-            final Set<String> test = new HashSet<>();
-
+            log.info("Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
             destinationFiats.forEach(fiat -> {
-            availableExchangesWithApi.stream()
+                availableExchangesWithApi.stream()
                         .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                         .forEach(exchange -> {
                             final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(60, 90, 180, 200, 340, 400).forEach(delta -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds)
+                            Arrays.asList(60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
+                                executorService.execute(() -> {
+                                    new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds, proxyUrl)
+                                            .searchXrapidPayments(payments, allTrades, rate);
+                                });
+                            });
+                        });
+            });
+
+
+            log.info("Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
+
+            availableExchangesWithApi.forEach(exchange -> {
+                executorService.execute(() -> {
+
+                    new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                });
+            });
+
+            log.info("Search for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
+            allConfirmedExchange.stream()
+                    .filter(exchange -> !availableExchangesWithApi.contains(exchange))
+                    .forEach(exchange -> {
+                        executorService.execute(() -> {
+
+                            new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades, rate);
+                        });
+                    });
+
+
+            log.info("Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
+            destinationFiats.forEach(fiat -> {
+                availableExchangesWithApi.stream()
+                        .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
+                        .forEach(exchange -> {
+                            executorService.execute(() -> {
+
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, null, proxyUrl)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
                         });
             });
 
-            // Search all XRPL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)
-            availableExchangesWithApi.forEach(exchange -> {
-                new InboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
-            });
-
-            // Search for all XRPL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)
-            allConfirmedExchange.stream()
-                    .filter(exchange -> !availableExchangesWithApi.contains(exchange))
-                    .forEach(exchange -> {
-                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, messagingTemplate, exchange, availableExchangesWithApi).searchXrapidPayments(payments, allTrades, rate);
-                    });
-
-
-
-            destinationFiats.forEach(fiat -> {
-                availableExchangesWithApi.stream()
-                        .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
-                        .forEach(exchange -> {
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, null)
-                                    .searchXrapidPayments(payments, allTrades, rate);
-                        });
-            });
-
-
-            Stats stats = exchangeToExchangePaymentService.calculateStats();
+            Stats stats = exchangeToExchangePaymentService.calculateStats(21);
 
             if (stats != null) {
-                messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats());
+                messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats(21));
             }
+
+            log.info("----------------------------------");
 
         } catch (Exception e) {
             log.error("", e);
@@ -143,12 +189,51 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(200);
+        windowStart = windowEnd.minusMinutes(20);
 
         if (lastWindowEnd != null) {
             windowStart = lastWindowEnd;
         }
 
         lastWindowEnd = windowEnd;
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void tags() {
+        OffsetDateTime end = OffsetDateTime.now(ZoneOffset.UTC);
+        OffsetDateTime start = end.minusHours(24);
+
+        Map<String, List<Payment>> map = xrpLedgerService.fetchOdlCandidatePayments(start, end, false).stream()
+                .filter(p -> p.getDestinationTag() != null && p.getDestinationTag() != 0)
+                .collect(Collectors.groupingBy(p -> new StringBuilder().append(p.getSource()).append(":").append(p.getDestination()).append(":").append(p.getDestinationTag()).toString()));
+
+        destinationTagRepeatService.purge();
+
+        for (Map.Entry<String, List<Payment>> e : map.entrySet()) {
+            String[] key = e.getKey().split(":");
+
+            String sourceAddress = key[0];
+            String destinationAddress = key[1];
+            Long destinationTag = Long.valueOf(key[2]);
+
+            String source = null;
+            String destiantion = null;
+
+            if (Exchange.byAddress(sourceAddress) != null) {
+                source = Exchange.byAddress(sourceAddress).getName();
+            }
+
+            if (Exchange.byAddress(destinationAddress) != null) {
+                destiantion = Exchange.byAddress(destinationAddress).getName();
+            }
+
+            Long todayRepeat = Long.valueOf(e.getValue().size());
+
+            Double sum = e.getValue().stream().mapToDouble(Payment::getAmount).sum();
+
+            if (todayRepeat > 10) {
+                destinationTagRepeatService.add(sourceAddress, destinationAddress, source, destiantion, todayRepeat, destinationTag, sum);
+            }
+        }
     }
 }

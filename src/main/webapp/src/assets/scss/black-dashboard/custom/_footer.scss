@@ -83,7 +83,21 @@
 }
 
 
+.banner{
+  display: flex;
+  align-items: center;
+  padding:20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto;
 
+  .copyright__item{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 10px;
+  }
+}
 
 .border{
   border: 8px solid #666;

@@ -6,21 +6,41 @@
 
     <cache alias="statsCache">
         <expiry>
-            <ttl unit="seconds">120</ttl>
+            <ttl unit="seconds">300</ttl>
         </expiry>
         <heap unit="entries">1</heap>
     </cache>
     <cache alias="lastOdlCache">
         <expiry>
-            <ttl unit="seconds">40</ttl>
+            <ttl unit="seconds">120</ttl>
         </expiry>
         <heap unit="entries">1000</heap>
     </cache>
-
-    <cache alias="tags">
+	
+    <cache alias="apiKey">
         <expiry>
             <ttl unit="seconds">120</ttl>
         </expiry>
         <heap unit="entries">1000</heap>
+    </cache>
+    <cache alias="apiKeyMaster">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+        <heap unit="entries">1000</heap>
+    </cache>	
+
+    <cache alias="tags">
+        <expiry>
+            <ttl unit="seconds">300</ttl>
+        </expiry>
+        <heap unit="entries">1000</heap>
+    </cache>
+
+    <cache alias="tagsrepeat">
+        <expiry>
+            <ttl unit="seconds">4000</ttl>
+        </expiry>
+        <heap unit="entries">1000000</heap>
     </cache>
 </config>

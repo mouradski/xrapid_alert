@@ -29,7 +29,7 @@ public class BraziliexService implements TradeService {
     }
 
     private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
-        long beginTimestamp = begin.minusMinutes(8).toEpochSecond() * 1000;
+        long beginTimestamp = begin.toEpochSecond() * 1000;
         return Arrays.stream(response.getBody())
                 .filter(p -> beginTimestamp < p.getTimestamp())
                 .sorted(Comparator.comparing(space.xrapid.domain.braziliex.Trade::getTimestamp))

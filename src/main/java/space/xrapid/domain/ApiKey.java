@@ -3,9 +3,8 @@ package space.xrapid.domain;
 import lombok.*;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Builder
 @AllArgsConstructor
@@ -14,11 +13,13 @@ import javax.persistence.Id;
 @Data
 @Entity(name = "API_KEYS")
 public class ApiKey {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
+    private Date expiration;
+
+    @Id
     private String key;
 
     private long lastUse;
+
+    private boolean master;
 }

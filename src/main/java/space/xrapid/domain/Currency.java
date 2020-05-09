@@ -7,7 +7,7 @@ public enum Currency {
     PHP,
     YEN,
     BRL,
-    BAHT,
+    THB,
     AUD,
     GBP,
     CAD,
@@ -15,5 +15,9 @@ public enum Currency {
     AED,
     INR,
     RUB,
-    UAH
+    UAH,
+    NZD,
+    IDR,
+    KRW,
+    NGN
 }

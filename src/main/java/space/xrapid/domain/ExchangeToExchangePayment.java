@@ -1,11 +1,14 @@
 package space.xrapid.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Builder
@@ -23,6 +26,7 @@ public class ExchangeToExchangePayment extends Payment {
     private Integer id;
 
     private OffsetDateTime dateTime;
+
     private Long timestamp;
 
     @Enumerated(EnumType.STRING)
@@ -34,19 +38,44 @@ public class ExchangeToExchangePayment extends Payment {
     @Enumerated(EnumType.STRING)
     private Exchange destination;
     private Double amount;
+
+    @JsonIgnore
     private boolean confirmed;
+
     private SpottedAt spottedAt;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String transactionHash;
 
     @Transient
+    @JsonIgnore
     private List<Trade> xrpToFiatTrades;
 
     @Transient
+    @JsonIgnore
     private List<String> xrpToFiatTradeIds;
 
+    @JsonProperty("xrpToFiatTradeIds")
+    public List<String> getXrpToFiatTradeIds() {
+        if (tradeIds == null) {
+            return null;
+        }
+
+        return Arrays.asList(tradeIds.split(";"));
+    }
+
+
+    @JsonProperty("fiatToXrpTradeIds")
+    public List<String> getFiatToXrpTradeIds() {
+        if (tradeOutIds == null) {
+            return null;
+        }
+
+        return Arrays.asList(tradeOutIds.split(";"));
+    }
+
     @Transient
+    @JsonIgnore
     private List<Trade> fiatToXrpTrades;
 
     @Transient
@@ -55,9 +84,11 @@ public class ExchangeToExchangePayment extends Payment {
     private double usdValue;
 
     @Column(length = 500)
+    @JsonIgnore
     private String tradeIds;
 
     @Column(length = 500)
+    @JsonIgnore
     private String tradeOutIds;
 
     @Enumerated(EnumType.STRING)
@@ -69,6 +100,7 @@ public class ExchangeToExchangePayment extends Payment {
     private Long tag;
 
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     private Currency destinationCurrencry;
 
     private boolean inTradeFound = false;
@@ -76,7 +108,7 @@ public class ExchangeToExchangePayment extends Payment {
     private boolean outTradeFound = false;
 
     public String getDateAsString() {
-        return dateFormat.format(timestamp);
+        return timestamp == null ? null : dateFormat.format(timestamp);
     }
 
     @Override
@@ -92,5 +124,10 @@ public class ExchangeToExchangePayment extends Payment {
         sb.append("Trx Hash : ").append(this.transactionHash);
 
         return sb.toString();
+    }
+
+    public String toCsvLine() {
+
+        return dateTime + ";" + timestamp + ";" + sourceAddress + ";" + source + ";" + destinationAddress + ";"  + tag + ";" + destination + ";" + sourceFiat + ";" + destinationFiat + ";" + amount + ";" + usdValue + ";" + transactionHash + ";" + spottedAt;
     }
 }

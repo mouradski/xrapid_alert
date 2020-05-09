@@ -1,11 +1,11 @@
-package space.xrapid.listener.endtoend;
+package space.xrapid.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.*;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.listener.XrapidCorridors;
 import space.xrapid.service.ExchangeToExchangePaymentService;
+import space.xrapid.service.TradesFoundCacheService;
 import space.xrapid.service.XrapidInboundAddressService;
 
 import java.time.OffsetDateTime;
@@ -14,7 +14,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static space.xrapid.job.Scheduler.transactionHashes;
 
 @Slf4j
 public class EndToEndXrapidCorridors extends XrapidCorridors {
@@ -34,10 +35,10 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     }
 
 
-    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, XrapidInboundAddressService xrapidInboundAddressService,
-                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds) {
+    public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService,
+                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds, String proxyUrl) {
 
-        super(exchangeToExchangePaymentService, xrapidInboundAddressService, messagingTemplate, null, tradeIds);
+        super(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, null, tradeIds, proxyUrl);
 
 
         this.buyDelta = buyDelta;
@@ -65,23 +66,21 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
     @Override
     protected void submit(List<Payment> payments) {
-        List<Payment> paymentsToProcess = payments.stream()
-                .filter(this::isXrapidCandidate).collect(Collectors.toList());
 
-        if (paymentsToProcess.isEmpty()) {
+        if (payments.isEmpty()) {
             return;
         }
 
         if (requireEndToEnd) {
-            paymentsToProcess.stream()
+            payments.stream()
                     .map(this::mapPayment)
-                    .filter(this::fiatToXrpTradesExists)
-                    .filter(this::xrpToFiatTradesExists)
+                    .filter(payment -> !transactionHashes.contains(payment.getTransactionHash()))
+                    .filter(payment -> fiatToXrpTradesExists(payment) && xrpToFiatTradesExists(payment))
                     .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
-                    .forEach(payment -> persistPayment(payment));
+                    .forEach(this::persistPayment);
 
         } else {
-            paymentsToProcess.stream()
+            payments.stream()
                     .map(this::mapPayment)
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.sourceFiat))
@@ -102,7 +101,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             OffsetDateTime dateTime = OffsetDateTime.parse(payment.getExecutedTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
             return ExchangeToExchangePayment.builder()
-                    .amount(Double.valueOf(payment.getDeliveredAmount()))
+                    .amount(payment.getDeliveredAmount())
                     .destination(Exchange.byAddress(payment.getDestination()))
                     .source(Exchange.byAddress(payment.getSource(), getSourceFiat()))
                     .sourceAddress(payment.getSource())
