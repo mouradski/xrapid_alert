@@ -1,11 +1,10 @@
-import {AfterViewInit, Component, NgZone } from "@angular/core";
+import {AfterViewInit, Component, NgZone} from "@angular/core";
 import {HttpClient} from '@angular/common/http';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
 import {TablesService} from "../../pages/tables/tables.service";
-import { Queue } from 'queue-typescript';
-import {Payment} from "../../pages/tables/tables.component";
+import {Queue} from 'queue-typescript';
 import {DeviceDetectorService} from "ngx-device-detector";
 
 
@@ -20,14 +19,18 @@ export class MapComponent implements AfterViewInit {
     cities: any;
     cityImages: any;
     lineSeries: any;
+    realtime: boolean = false;
+    oldestTransaction: number;
+    count: number = 0;
+
     public mobile: boolean;
 
-    queue:Queue<any> = new Queue<any>();
+    queue: Queue<any> = new Queue<any>();
 
-    corridors:Map<string, any> = new Map();
-    currencies:Map<string, any> = new Map();
+    corridors: Map<string, any> = new Map();
+    currencies: Map<string, any> = new Map();
 
-    addCity(coords, title) : any {
+    addCity(coords, title): any {
         let city = this.cities.mapImages.create();
         city.latitude = coords.latitude;
         city.longitude = coords.longitude;
@@ -35,7 +38,7 @@ export class MapComponent implements AfterViewInit {
         return city;
     }
 
-    addLine(from, to) : any {
+    addLine(from, to): any {
         let line = this.lineSeries.mapLines.create();
         line.imagesToConnect = [from, to];
         line.line.controlPointDistance = -0.2;
@@ -121,22 +124,22 @@ export class MapComponent implements AfterViewInit {
                 "longitude": 120.9822,
                 "title": "Philippines",
                 "flag": "https://cdn.countryflags.com/thumbs/philippines/flag-3d-round-500.png"
-            },  {
+            }, {
                 "latitude": 23.6345,
                 "longitude": -102.5527,
                 "title": "Mexico",
                 "flag": "https://cdn.countryflags.com/thumbs/mexico/flag-3d-round-500.png"
-            },  {
+            }, {
                 "latitude": 13.7367,
                 "longitude": 100.5231,
                 "title": "Thailand",
                 "flag": "https://cdn.countryflags.com/thumbs/thailand/flag-3d-round-500.png"
-            },  {
+            }, {
                 "latitude": 37.5326,
                 "longitude": 127.0246,
                 "title": "Korea",
                 "flag": "https://cdn.countryflags.com/thumbs/south-korea/flag-3d-round-500.png"
-            },  {
+            }, {
                 "latitude": -22.9035,
                 "longitude": -43.2096,
                 "title": "Brasil",
@@ -155,14 +158,14 @@ export class MapComponent implements AfterViewInit {
             this.cities.mapImages.template.nonScaling = true;
 
 
-            this.currencies.set("USD", this.addCity({ "latitude": 42.7392, "longitude":-85.9902 }, "United-States"));
-            this.currencies.set("PHP", this.addCity({"latitude": 14.6043,"longitude": 120.9822}, "Philippines"));
-            this.currencies.set("MXN", this.addCity({ "latitude": 23.6345, "longitude":  -102.5527 }, "Mexico"));
-            this.currencies.set("AUD", this.addCity({"latitude": -35.2820,"longitude": 149.1286}, "Australia"));
-            this.currencies.set("THB", this.addCity({"latitude": 13.7367,"longitude": 100.5231},  "Thailand"));
-            this.currencies.set("KRW", this.addCity({"latitude": 37.5326,"longitude": 127.0246},  "Korea"));
-            this.currencies.set("BRL", this.addCity({"latitude": -22.9035,"longitude": -43.2096},  "Brasil"));
-            this.currencies.set("EUR", this.addCity({"latitude": 50.5101,"longitude": 4.2055},  "Europe"));
+            this.currencies.set("USD", this.addCity({"latitude": 42.7392, "longitude": -85.9902}, "United-States"));
+            this.currencies.set("PHP", this.addCity({"latitude": 14.6043, "longitude": 120.9822}, "Philippines"));
+            this.currencies.set("MXN", this.addCity({"latitude": 23.6345, "longitude": -102.5527}, "Mexico"));
+            this.currencies.set("AUD", this.addCity({"latitude": -35.2820, "longitude": 149.1286}, "Australia"));
+            this.currencies.set("THB", this.addCity({"latitude": 13.7367, "longitude": 100.5231}, "Thailand"));
+            this.currencies.set("KRW", this.addCity({"latitude": 37.5326, "longitude": 127.0246}, "Korea"));
+            this.currencies.set("BRL", this.addCity({"latitude": -22.9035, "longitude": -43.2096}, "Brasil"));
+            this.currencies.set("EUR", this.addCity({"latitude": 50.5101, "longitude": 4.2055}, "Europe"));
 
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
@@ -174,13 +177,12 @@ export class MapComponent implements AfterViewInit {
         });
     }
 
-    goPlane(b,p) {
+    goPlane(b, p) {
         let from = b.position, to;
         if (from == 0) {
             to = 1;
             p.rotation = 0;
-        }
-        else {
+        } else {
             to = 0;
             p.rotation = 180;
         }
@@ -191,7 +193,7 @@ export class MapComponent implements AfterViewInit {
             property: "position"
         }, 5000, am4core.ease.sinInOut);
 
-        animation.events.on("animationended", function(){
+        animation.events.on("animationended", function () {
             p.dispose();
         });
 
@@ -234,17 +236,35 @@ export class MapComponent implements AfterViewInit {
 
         this.tablesService.getData().subscribe(data => {
 
-            _this.queue.enqueue(data[0]);
+            for (let i = 0; i < data.length; i++) {
+
+                if (Math.floor((new Date().getTime() - data[i].timestamp) / 1000) <= 3600 * 3) {
+                    _this.queue.enqueue(data[i]);
+                    console.log(i);
+                }
+            }
+
+            let historyInterval = setInterval(() => {
+                let data = _this.queue.dequeue();
+
+                if (data) {
+                    _this.notifyOdl(data.sourceFiat, data.destinationFiat);
+                } else {
+                    clearInterval(historyInterval);
+                    _this.realtime = true;
+                    setInterval(() => {
+                        let data = _this.queue.dequeue();
+                        if (data) {
+                            _this.notifyOdl(data.sourceFiat, data.destinationFiat);
+                        }
+                    }, 5000);
+                }
+
+            }, 600);
 
         });
 
-        setInterval(() => {
-            let data = _this.queue.dequeue();
 
-            if (data) {
-                _this.notifyOdl(data.sourceFiat, data.destinationFiat);
-            }
-        }, 5000);
     }
 
 

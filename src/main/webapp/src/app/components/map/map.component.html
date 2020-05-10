@@ -3,15 +3,16 @@
     <div class="col-sm-12">
         <div class="card card-plain">
             <div class="card-header">
-                <h4 class=" card-category">ODL Map</h4>
+                <h4 *ngIf="realtime" class=" card-category">ODL Map : Showing ODL transactions in real time</h4>
+                <h4 *ngIf="!realtime" class=" card-category">ODL Map : Showing ODL transactions for the last 3 hours in accelerated mode</h4>
                 <span class="info-icon">
             <i class="far fa-question-circle"></i></span>
                 <div id="infoODL" class="alert alert-success" role="alert">
                     <span style="font-size: 16px;padding-bottom: 10px;display:flex;font-weight: bold"> Transactions shown :</span>
                     <!-- google_ad_section_start -->
                     <p class="category">
-                        - Last ODL transaction<br>
-                        - Real-Time ODL transactions<br>
+                        - After page loaded, all transactions spotted the last 3 hours are shown in accelerated mode to give an idea on recent ODL trafic<br>
+                        - Then transactions will be shown when spotted in real time<br>
                     </p>
                     <!-- google_ad_section_end -->
                 </div>
