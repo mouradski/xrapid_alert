@@ -47,7 +47,7 @@ export class MapComponent implements AfterViewInit {
     }
 
 
-    private notifyOdl(source: string, destination: string) {
+    private notifyOdl(source: string, destination: string, amount: number) {
 
         let corridor = source + "-" + destination;
 
@@ -60,7 +60,7 @@ export class MapComponent implements AfterViewInit {
         }
 
 
-        this.showOdl(this.corridors.get(corridor));
+        this.showOdl(this.corridors.get(corridor), amount);
     }
 
     ngAfterViewInit(): void {
@@ -199,7 +199,7 @@ export class MapComponent implements AfterViewInit {
 
     }
 
-    showOdl(line) {
+    showOdl(line, amount) {
         let bullet = line.lineObjects.create();
         bullet.nonScaling = true;
         bullet.position = 0;
@@ -212,7 +212,21 @@ export class MapComponent implements AfterViewInit {
         if (this.mobile) {
             plane.scale = 0.008;
         } else {
-            plane.scale = 0.01;
+            if (amount > 100000) {
+                plane.scale = 0.01;
+
+            } else if (amount > 50000) {
+                plane.scale = 0.009;
+
+            } else if (amount > 20000) {
+                plane.scale = 0.008;
+
+            } else if (amount > 5000) {
+                plane.scale = 0.007;
+
+            } else {
+                plane.scale = 0.006;
+            }
         }
 
         plane.horizontalCenter = "middle";
@@ -248,14 +262,14 @@ export class MapComponent implements AfterViewInit {
                 let data = _this.queue.dequeue();
 
                 if (data) {
-                    _this.notifyOdl(data.sourceFiat, data.destinationFiat);
+                    _this.notifyOdl(data.sourceFiat, data.destinationFiat, data.amount);
                 } else {
                     clearInterval(historyInterval);
                     _this.realtime = true;
                     setInterval(() => {
                         let data = _this.queue.dequeue();
                         if (data) {
-                            _this.notifyOdl(data.sourceFiat, data.destinationFiat);
+                            _this.notifyOdl(data.sourceFiat, data.destinationFiat, data.amount);
                         }
                     }, 5000);
                 }
