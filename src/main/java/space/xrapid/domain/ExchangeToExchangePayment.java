@@ -25,6 +25,7 @@ public class ExchangeToExchangePayment extends Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JsonIgnore
     private OffsetDateTime dateTime;
 
     private Long timestamp;

@@ -2,6 +2,9 @@
 <!--<validator [key]="'nHB7VCHGa22LwT9zFCohWwySvzxEswsTtwtZJAQHHGjkFcQB6Uea'"-->
 <!--           [ekey]="'n9K6Cuv1MCWbk15w7RkyNCcPzYmUMGSVSF5gVFiUzkpzc95J8s5s'"></validator>-->
 
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="#fff" type="ball-8bits" [fullScreen]="true"><p
+    style="color: white"> Loading data... </p></ngx-spinner>
+
 <div class=" content">
     <div class=" row">
         <div class=" col-md-12">
@@ -59,7 +62,7 @@
                             </thead>
                             <tbody>
                             <tr *ngFor="let payment of currentPage">
-                                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
+                                <td class="date">{{ payment.timestamp | date:'medium' }}</td>
                                 <td class="amount" *ngIf="!mobile">{{ payment.amount | number}} XRP</td>
                                 <td class="value">{{ payment.usdValue | currency }}</td>
                                 <td *ngIf="!mobile">{{ payment.source }}</td>
@@ -104,7 +107,7 @@
                 <ul>
                     <li>
                         <span class="modal-desc">Date :</span>
-                        {{payment.dateTime | date:'medium'}}
+                        {{payment.timestamp | date:'medium'}}
                     </li>
                     <li>
                         <span class="modal-desc">Amount :</span>

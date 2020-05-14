@@ -14,6 +14,7 @@ import {BannerComponent} from "../../components/banner/banner.component";
 import {BannerMobileComponent} from "../../components/banner-mobile/banner-mobile.component";
 import {ValidatorComponent} from "../../components/validator/validator.component";
 import {MapComponent} from "../../components/map/map.component";
+import {NgxSpinnerModule} from "ngx-spinner";
 
 @NgModule({
     imports: [
@@ -21,7 +22,8 @@ import {MapComponent} from "../../components/map/map.component";
         RouterModule.forChild(AdminLayoutRoutes),
         FormsModule,
         HttpClientModule,
-        NgbModule
+        NgbModule,
+        NgxSpinnerModule
     ],
   exports: [
     TablesComponent
