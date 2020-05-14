@@ -209,7 +209,7 @@ export class MapComponent implements AfterViewInit {
         let odl = bullet.createChild(am4core.Sprite);
 
         if (this.mobile) {
-            odl.scale = 0.008;
+            odl.scale = 0.005;
         } else {
             if (amount > 100000) {
                 odl.scale = 0.01;
