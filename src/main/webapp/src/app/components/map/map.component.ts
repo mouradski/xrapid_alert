@@ -20,7 +20,6 @@ export class MapComponent implements AfterViewInit {
     cityImages: any;
     lineSeries: any;
     realtime: boolean = false;
-    oldestTransaction: number;
     count: number = 0;
 
     public mobile: boolean;
