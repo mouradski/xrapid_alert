@@ -169,7 +169,7 @@
 <div id="david" [className]="notifClass">
     <div class="talk-bubble tri-right round right-in">
         <div class="talktext">
-            <p>OMG !!! ODL transaction of {{(notif ? notif.usdValue : 0) | currency}} just spotted from {{notif.sourceFiat}} currency to {{notif.destinationFiat}} currency </p>
+            <p>OMG !!! ODL transaction of {{(notif ? notif.usdValue : 0) | currency}} just spotted from {{notif ? notif.sourceFiat : ''}} currency to {{notif ? notif.destinationFiat : ''}} currency </p>
         </div>
     </div>
     <div class="david-pop">
