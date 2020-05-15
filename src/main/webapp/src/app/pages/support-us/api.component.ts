@@ -36,7 +36,7 @@ export class ApiComponent implements OnInit {
 
     constructor(private httpClient: HttpClient, private cookieService: CookieService, private tablesService: TablesService, private spinner: NgxSpinnerService) {
 
-
+    console.log("ApiComponent");
     }
 
     requestKey() {
