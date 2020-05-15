@@ -20,7 +20,6 @@ export class MapComponent implements AfterViewInit {
     cityImages: any;
     lineSeries: any;
     realtime: boolean = false;
-    oldestTransaction: number;
     count: number = 0;
 
     public mobile: boolean;
@@ -41,7 +40,7 @@ export class MapComponent implements AfterViewInit {
     addLine(from, to): any {
         let line = this.lineSeries.mapLines.create();
         line.imagesToConnect = [from, to];
-        line.line.controlPointDistance = -0.2;
+        line.line.controlPointDistance = -0.4;
 
         return line;
     }
@@ -177,7 +176,7 @@ export class MapComponent implements AfterViewInit {
         });
     }
 
-    goPlane(b, p) {
+    goOdl(b, p) {
         let from = b.position, to;
         if (from == 0) {
             to = 1;
@@ -207,36 +206,36 @@ export class MapComponent implements AfterViewInit {
         bullet.height = 48;
 
 
-        let plane = bullet.createChild(am4core.Sprite);
+        let odl = bullet.createChild(am4core.Sprite);
 
         if (this.mobile) {
-            plane.scale = 0.008;
+            odl.scale = 0.005;
         } else {
             if (amount > 100000) {
-                plane.scale = 0.01;
+                odl.scale = 0.01;
 
             } else if (amount > 50000) {
-                plane.scale = 0.009;
+                odl.scale = 0.009;
 
             } else if (amount > 20000) {
-                plane.scale = 0.008;
+                odl.scale = 0.008;
 
             } else if (amount > 5000) {
-                plane.scale = 0.007;
+                odl.scale = 0.007;
 
             } else {
-                plane.scale = 0.006;
+                odl.scale = 0.006;
             }
         }
 
-        plane.horizontalCenter = "middle";
-        plane.verticalCenter = "middle";
-        plane.path = "M983 2240 c-265 -37 -485 -150 -669 -342 -262 -274 -366 -645 -284 -1019 44 -202 135 -371 285 -528 159 -168 350 -274 588 -328 99 -22 345 -22 444 0 238 54 429 160 588 328 91 95 135 157 191 266 83 163 118 313 118 508 0 195 -35 345 -118 508 -156 306 -439 521 -779 593 -88 18 -280 26 -364 14z m-196 -666 c203 -212 238 -236 339 -236 97 0 135 26 339 238 l177 184 99 0 c54 0 99 -3 99 -7 0 -8 -102 -115 -324 -341 -204 -207 -239 -227 -391 -227 -153 0 -188 20 -396 232 -225 229 -319 328 -319 336 0 4 45 7 99 7 l99 0 179 -186z m463 -520 c79 -25 130 -69 369 -316 l233 -243 -103 -3 -103 -3 -188 195 c-169 175 -194 197 -246 216 -42 16 -70 20 -104 16 -94 -10 -123 -32 -318 -234 l-184 -192 -104 0 -104 0 71 78 c39 42 151 159 248 258 142 144 190 187 235 209 93 44 197 51 298 19z";
-        plane.fill = am4core.color("#000000");
-        plane.strokeOpacity = 0;
-        //plane.zIndex = 60;
+        odl.horizontalCenter = "middle";
+        odl.verticalCenter = "middle";
+        odl.path = "M983 2240 c-265 -37 -485 -150 -669 -342 -262 -274 -366 -645 -284 -1019 44 -202 135 -371 285 -528 159 -168 350 -274 588 -328 99 -22 345 -22 444 0 238 54 429 160 588 328 91 95 135 157 191 266 83 163 118 313 118 508 0 195 -35 345 -118 508 -156 306 -439 521 -779 593 -88 18 -280 26 -364 14z m-196 -666 c203 -212 238 -236 339 -236 97 0 135 26 339 238 l177 184 99 0 c54 0 99 -3 99 -7 0 -8 -102 -115 -324 -341 -204 -207 -239 -227 -391 -227 -153 0 -188 20 -396 232 -225 229 -319 328 -319 336 0 4 45 7 99 7 l99 0 179 -186z m463 -520 c79 -25 130 -69 369 -316 l233 -243 -103 -3 -103 -3 -188 195 c-169 175 -194 197 -246 216 -42 16 -70 20 -104 16 -94 -10 -123 -32 -318 -234 l-184 -192 -104 0 -104 0 71 78 c39 42 151 159 248 258 142 144 190 187 235 209 93 44 197 51 298 19z";
+        odl.fill = am4core.color("#000000");
+        odl.strokeOpacity = 0;
+        //odl.zIndex = 60;
 
-        this.goPlane(bullet, plane);
+        this.goOdl(bullet, odl);
     }
 
     constructor(private httpClient: HttpClient, private zone: NgZone, private tablesService: TablesService, private deviceService: DeviceDetectorService) {

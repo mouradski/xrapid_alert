@@ -34,19 +34,15 @@ public class XummRest {
             days = 1l;
         }
 
-        double price = 2.9;
+        double price = 1;
 
         if (days >= 180) {
             price = 0.6 * price;
-        } else if (days >= 90) {
-            price = 0.7 * price;
-        } else if (days >= 30) {
+        } else if (days >= 60) {
             price = 0.8 * price;
         }
 
-
         double rate = rateService.getXrpUsdRate();
-
 
         return xummService.requestPayment(Math.ceil((price * days) / rate), "XRP", days, key);
     }

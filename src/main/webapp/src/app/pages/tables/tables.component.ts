@@ -6,6 +6,8 @@ import {HttpClient} from '@angular/common/http';
 import {ViewportScroller} from '@angular/common';
 import {DeviceDetectorService} from "ngx-device-detector";
 import {TablesService} from "./tables.service";
+import {NgxSpinnerService} from "ngx-spinner";
+
 
 
 @Component({
@@ -36,7 +38,8 @@ export class TablesComponent implements OnInit {
 
     public mobile: boolean;
 
-    constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller, private deviceService: DeviceDetectorService, private tablesService: TablesService) {
+    constructor(private httpClient: HttpClient, readonly  viewportScroller: ViewportScroller, private deviceService: DeviceDetectorService, private tablesService: TablesService, private spinner: NgxSpinnerService) {
+        this.spinner.show();
         const _this = this;
         this.payment = new Payment();
         this.pageIndex = 1;
@@ -70,6 +73,8 @@ export class TablesComponent implements OnInit {
             _this.currentPage = _this.paginate(this.datasets, this.pageSize, this.pageIndex);
 
             _this.newConnect();
+
+            _this.spinner.hide();
         });
 
 

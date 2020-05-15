@@ -2,24 +2,25 @@
 <!--<validator [key]="'nHB7VCHGa22LwT9zFCohWwySvzxEswsTtwtZJAQHHGjkFcQB6Uea'"-->
 <!--           [ekey]="'n9K6Cuv1MCWbk15w7RkyNCcPzYmUMGSVSF5gVFiUzkpzc95J8s5s'"></validator>-->
 
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="#fff" type="ball-8bits" [fullScreen]="true"><p
+    style="color: white"> Loading data... </p></ngx-spinner>
+
 <div class=" content">
     <div class=" row">
         <div class=" col-md-12">
             <div class=" card card-plain">
-                <!--
                 <div *ngIf="!mobile" align="center">
                     <ins data-revive-zoneid="1" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
                 </div>
                 <div *ngIf="mobile" align="center">
                     <ins data-revive-zoneid="3" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
                 </div>
-                -->
-                <div *ngIf="!mobile" align="center">
-                    <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>
-                </div>
-                <div *ngIf="mobile" align="center">
-                    <google-mobile-adsense [slotId]="9421450790" [delay]="1000"></google-mobile-adsense>
-                </div>
+<!--                <div *ngIf="!mobile" align="center">-->
+<!--                    <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>-->
+<!--                </div>-->
+<!--                <div *ngIf="mobile" align="center">-->
+<!--                    <google-mobile-adsense [slotId]="9421450790" [delay]="1000"></google-mobile-adsense>-->
+<!--                </div>-->
                 <div class="card-header">
                     <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
                     <span class="info-icon">
@@ -61,7 +62,7 @@
                             </thead>
                             <tbody>
                             <tr *ngFor="let payment of currentPage">
-                                <td class="date">{{ payment.dateTime | date:'medium' }}</td>
+                                <td class="date">{{ payment.timestamp | date:'medium' }}</td>
                                 <td class="amount" *ngIf="!mobile">{{ payment.amount | number}} XRP</td>
                                 <td class="value">{{ payment.usdValue | currency }}</td>
                                 <td *ngIf="!mobile">{{ payment.source }}</td>
@@ -106,7 +107,7 @@
                 <ul>
                     <li>
                         <span class="modal-desc">Date :</span>
-                        {{payment.dateTime | date:'medium'}}
+                        {{payment.timestamp | date:'medium'}}
                     </li>
                     <li>
                         <span class="modal-desc">Amount :</span>
@@ -153,25 +154,22 @@
                            target="_blank">{{payment.transactionHash}}</a>
                     </li>
                     <li>
-                        <!--
                         <div *ngIf="!mobile" align="center">
                             <ins data-revive-zoneid="1" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
                         </div>
                         <div *ngIf="mobile" align="center">
                             <ins data-revive-zoneid="3" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
                         </div>
-                        -->
                     </li>
                 </ul>
             </div>
-
         </div>
     </div>
 </div>
 <div id="david" [className]="notifClass">
     <div class="talk-bubble tri-right round right-in">
         <div class="talktext">
-            <p>OHH DAMN ! {{(notif ? notif.amount : 0) | number}} XRP ! That's amazing !</p>
+            <p>OMG !!! ODL transaction of {{(notif ? notif.usdValue : 0) | currency}} just spotted from {{notif ? notif.sourceFiat : ''}} currency to {{notif ? notif.destinationFiat : ''}} currency </p>
         </div>
     </div>
     <div class="david-pop">
