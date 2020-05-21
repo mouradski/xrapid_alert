@@ -67,10 +67,10 @@ public class TwitterService {
             sb.append("From ").append(volumePerCorridor.getKey().split("-")[0])
                     .append(" ").append("TO ").append(volumePerCorridor.getKey().split("-")[1])
                     .append(" :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(volumePerCorridor.getValue()))
-                    .append("\n\n");
+                    .append("\n");
         });
 
-        sb.append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getVolumePerCorridor().entrySet().stream()
+        sb.append("\n").append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getVolumePerCorridor().entrySet().stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
                 .limit(1)
                 .findFirst()
