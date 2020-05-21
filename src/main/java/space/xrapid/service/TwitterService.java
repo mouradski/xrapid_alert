@@ -56,13 +56,20 @@ public class TwitterService {
         StringBuilder sb = new StringBuilder();
 
         sb.append("#ODL daily summary\n\n");
-        sb.append("TOP 5 Corridors : \n\n");
-        globalStats.getVolumePerCorridor().entrySet().
+
+
+        Map<String, Double> lastDayStats = globalStats.getVolumePerCorridor().entrySet().
                 stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByKey())).findFirst()
-                .get().getValue().entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+                .findFirst().get().getValue();
+
+        int corridorNbr = lastDayStats.size();
+
+        sb.append(String.format("TOP %s Corridors : \n\n", corridorNbr));
+
+        lastDayStats.entrySet().stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .limit(5).forEach(volumePerCorridor -> {
+                .limit(corridorNbr > 5 ? 5 : corridorNbr).forEach(volumePerCorridor -> {
 
             sb.append("From ").append(volumePerCorridor.getKey().split("-")[0])
                     .append(" ").append("TO ").append(volumePerCorridor.getKey().split("-")[1])
@@ -70,13 +77,10 @@ public class TwitterService {
                     .append("\n");
         });
 
-        sb.append("\n").append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getVolumePerCorridor().entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
-                .limit(1)
-                .findFirst()
-                .get().getValue().entrySet().stream()
+        sb.append("\n").append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US)
+                .format(lastDayStats.entrySet().stream()
                     .mapToDouble(e -> e.getValue())
-                .sum()))
+                    .sum()))
                 .append("\n\n");
 
         sb.append("Last Daily ATH :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getDailyAth()));
