@@ -52,7 +52,7 @@ public class TwitterService {
         }
     }
 
-    public void dailySummary(GlobalStats globalStats) {
+public void dailySummary(GlobalStats globalStats) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("#ODL daily summary\n\n");
@@ -73,17 +73,19 @@ public class TwitterService {
 
             sb.append("From ").append(volumePerCorridor.getKey().split("-")[0])
                     .append(" ").append("TO ").append(volumePerCorridor.getKey().split("-")[1])
-                    .append(" :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(volumePerCorridor.getValue()))
+                    .append(" :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(volumePerCorridor.getValue()).replaceAll("\\.[0-9]{2}", ""))
                     .append("\n");
         });
 
-        sb.append("\n").append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US)
+        sb.append("\n").append("ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US)
                 .format(lastDayStats.entrySet().stream()
                     .mapToDouble(e -> e.getValue())
-                    .sum()))
+                    .sum()).replaceAll("\\.[0-9]{2}", ""))
                 .append("\n\n");
 
-        sb.append("Last Daily ATH :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getDailyAth()));
+        sb.append("Last Daily ATH :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getDailyAth()).replaceAll("\\.[0-9]{2}", ""));
+
+        sb.append("\n\nutility-scan.com");
 
         if (sb.toString().length() <= 260) {
             sb.append("\n\n").append("#XRP #XRPCommunity");
