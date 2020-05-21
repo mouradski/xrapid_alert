@@ -53,25 +53,31 @@ public class TwitterService {
     }
 
     public void dailySummary(GlobalStats globalStats) {
-       StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("#ODL daily summary\n\n");
-        sb.append("TOP 5 Corridors : \n");
+        sb.append("TOP 5 Corridors : \n\n");
         globalStats.getVolumePerCorridor().entrySet().
-            stream()
-            .sorted(Collections.reverseOrder(Map.Entry.comparingByKey())).findFirst()
-            .get().getValue().entrySet().stream()
-            .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-            .limit(5).forEach(volumePerCorridor -> {
+                stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByKey())).findFirst()
+                .get().getValue().entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .limit(5).forEach(volumePerCorridor -> {
 
             sb.append("From ").append(volumePerCorridor.getKey().split("-")[0])
-                .append(" ").append("TO ").append(volumePerCorridor.getKey().split("-")[1])
-                .append(" :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(volumePerCorridor.getValue()))
-                .append("\n\n");
+                    .append(" ").append("TO ").append(volumePerCorridor.getKey().split("-")[1])
+                    .append(" :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(volumePerCorridor.getValue()))
+                    .append("\n\n");
         });
 
-        sb.append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getVolumePerCorridor().values().
-            stream().limit(1).findFirst().get().values().stream().mapToDouble(v -> v).sum())).append("\n\n");
+        sb.append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getVolumePerCorridor().entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+                .limit(1)
+                .findFirst()
+                .get().getValue().entrySet().stream()
+                    .mapToDouble(e -> e.getValue())
+                .sum()))
+                .append("\n\n");
 
         sb.append("Last Daily ATH :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getDailyAth()));
 
