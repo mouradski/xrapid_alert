@@ -42,6 +42,8 @@ public class Scheduler {
     @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
 
+    @Autowired
+    private TwitterService twitterService;
 
     @Autowired
     protected SimpMessageSendingOperations messagingTemplate;
@@ -196,6 +198,11 @@ public class Scheduler {
         }
 
         lastWindowEnd = windowEnd;
+    }
+
+    @Scheduled(cron = "0 15 2 1/1 * ?")
+    public void dailyTweetBot() {
+        twitterService.dailySummary(exchangeToExchangePaymentService.calculateGlobalStats(false));
     }
 
     @Scheduled(cron = "0 0 0 * * *")

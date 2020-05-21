@@ -1,5 +1,6 @@
 package space.xrapid.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.GlobalStats;
@@ -10,9 +11,12 @@ import twitter4j.auth.AccessToken;
 
 import javax.annotation.PostConstruct;
 import java.text.NumberFormat;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
+@Slf4j
 public class TwitterService {
 
     @Value("${twitter.consumer.key}")
@@ -38,38 +42,48 @@ public class TwitterService {
         StringBuilder sb = new StringBuilder();
 
         sb.append("New On-Demand-Liquidity Daily All Time High volume : ")
-                .append(NumberFormat.getCurrencyInstance(Locale.US).format(usdValue))
-                .append("\n\n")
-                .append("https://utility-scan.com");
+            .append(NumberFormat.getCurrencyInstance(Locale.US).format(usdValue))
+            .append("\n\n")
+            .append("https://utility-scan.com");
         try {
             twitter.updateStatus(sb.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unable to tweet new ATH", e);
         }
     }
-
-    /*
-    #ODL daily summary  :
-From USD TO MXN :  $9.233.333
-From USD TO PHP :  $5.233.33
-From AUD TO USD:
-From AUD to PHP:
-#ODL daily vol : $15.322.204
-Last ATH :  $16,791,000.88
-     */
 
     public void dailySummary(GlobalStats globalStats) {
         StringBuilder sb = new StringBuilder();
 
+        sb.append("#ODL daily summary\n");
+        sb.append("TOP 5 Corridors : \n");
+        globalStats.getVolumePerCorridor().entrySet().
+            stream()
+            .sorted(Collections.reverseOrder(Map.Entry.comparingByKey())).
+            findFirst()
+            .get().getValue().entrySet().stream()
+            .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+            .limit(5).forEach(volumePerCorridor -> {
+
+            sb.append("From ").append(volumePerCorridor.getKey().split("-")[0])
+                .append(" ").append("TO ").append(volumePerCorridor.getKey().split("-")[1])
+                .append(" :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(volumePerCorridor.getValue()))
+                .append("\n\n");
+        });
+
+        sb.append("#ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getVolumePerCorridor().values().
+            stream().limit(1).findFirst().get().values().stream().mapToDouble(v -> v).sum())).append("\n\n");
+
+        sb.append("Last Daily ATH :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getDailyAth()));
+
+        if (sb.toString().length() <= 260) {
+            sb.append("\n\n").append("#XRP #XRPCommunity");
+        }
 
         try {
             twitter.updateStatus(sb.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unable to tweet summary", e);
         }
-
-
     }
-
-
 }
