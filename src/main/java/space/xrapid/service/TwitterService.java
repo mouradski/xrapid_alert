@@ -53,14 +53,13 @@ public class TwitterService {
     }
 
     public void dailySummary(GlobalStats globalStats) {
-        StringBuilder sb = new StringBuilder();
+       StringBuilder sb = new StringBuilder();
 
-        sb.append("#ODL daily summary\n");
+        sb.append("#ODL daily summary\n\n");
         sb.append("TOP 5 Corridors : \n");
         globalStats.getVolumePerCorridor().entrySet().
             stream()
-            .sorted(Collections.reverseOrder(Map.Entry.comparingByKey())).
-            findFirst()
+            .sorted(Collections.reverseOrder(Map.Entry.comparingByKey())).findFirst()
             .get().getValue().entrySet().stream()
             .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
             .limit(5).forEach(volumePerCorridor -> {
