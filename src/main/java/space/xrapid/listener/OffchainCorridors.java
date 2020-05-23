@@ -86,7 +86,7 @@ public class OffchainCorridors extends XrapidCorridors {
 
                         final double sellAmount = subSellTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                        if (amount - sellAmount <= 0.2) {
+                        if (amount - sellAmount <= 0.001) {
                             persistPayment(buildPayment(subBuyTrades, subSellTrades, amount, this.rate));
                         }
                     });
