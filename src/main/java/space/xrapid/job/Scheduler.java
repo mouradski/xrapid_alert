@@ -128,18 +128,12 @@ public class Scheduler {
             log.info("{} ODL candidates fetched from XRP Ledger", payments.size());
 
 
-
-            List<Trade> allTrades = new ArrayList<>();
-
-
-
-
-
-
             if (payments.isEmpty()) {
                 return;
             }
 
+            List<Trade> allTrades = new ArrayList<>();
+            
             tradeServices.parallelStream()
                 .filter(service -> service.getExchange().isConfirmed())
                 .forEach(tradeService -> {

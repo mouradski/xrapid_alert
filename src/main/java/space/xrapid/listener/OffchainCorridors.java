@@ -53,8 +53,7 @@ public class OffchainCorridors extends XrapidCorridors {
 
         final OffsetDateTime sepDate = firstTradeDate;
 
-        for (int i=0; i<=600; i++) {
-
+        for (int i = 0; i <= 600; i++) {
 
             final int inc = i;
 
@@ -94,12 +93,10 @@ public class OffchainCorridors extends XrapidCorridors {
                 }
             });
         }
-
-        System.out.println("FIN");
     }
 
     private ExchangeToExchangePayment buildPayment(List<Trade> buy, List<Trade> sell, double amount, double rate) {
-        String hash = "0FFCHAIN_" + sell.get(0).getTimestamp() + "_" + buy.get(0).getTimestamp();
+        String hash = new StringBuilder().append("0FFCHAIN_").append(sell.get(0).getTimestamp()).append("_").append(buy.get(0).getTimestamp()).toString();
         return ExchangeToExchangePayment.builder()
             .transactionHash(hash)
             .amount(amount)
