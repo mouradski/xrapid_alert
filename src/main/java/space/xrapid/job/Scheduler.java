@@ -88,7 +88,7 @@ public class Scheduler {
 
         tradeServices.stream().
             filter(service -> service.getExchange().equals(Exchange.BITSTAMP) || service.getExchange().equals(Exchange.BITSTAMP_EUR)).forEach(tradeService -> {
-                trades.addAll(tradeService.fetchTrades(start.minusSeconds(20000)));
+                trades.addAll(tradeService.fetchTrades(start.minusSeconds(90)));
         });
 
         double rate = rateService.getXrpUsdRate();
