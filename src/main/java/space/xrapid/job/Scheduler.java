@@ -144,7 +144,7 @@ public class Scheduler {
                 .filter(service -> service.getExchange().isConfirmed())
                 .forEach(tradeService -> {
                     try {
-                        OffsetDateTime sellTradesStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES + MAX_TRADE_DELAY_IN_MINUTES+1000);
+                        OffsetDateTime sellTradesStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES + MAX_TRADE_DELAY_IN_MINUTES);
                         List<Trade> trades = tradeService.fetchTrades(sellTradesStart);
                         allTrades.addAll(trades);
                         log.info("{} trades fetched from {} from {}", trades.size(), tradeService.getExchange(), sellTradesStart);
