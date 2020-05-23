@@ -14,6 +14,7 @@ import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.EndToEndXrapidCorridors;
 import space.xrapid.listener.InboundXrapidCorridors;
+import space.xrapid.listener.OffchainCorridors;
 import space.xrapid.listener.OutboundXrapidCorridors;
 import space.xrapid.service.*;
 
@@ -64,6 +65,9 @@ public class Scheduler {
     private String proxyUrl;
 
     public static Set<String> transactionHashes = new HashSet<>();
+    public static Set<String> offChainXrpToFiatTradeIds = new HashSet<>();
+    public static Set<String> offChainFiatToXrpTradeIds = new HashSet<>();
+
 
     private static int MAX_TRADE_DELAY_IN_MINUTES = 4;
     private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
@@ -73,6 +77,29 @@ public class Scheduler {
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
+
+
+    @Scheduled(fixedDelay = 20000)
+    public void offchainOdl() {
+        OffsetDateTime start = OffsetDateTime.now(ZoneOffset.UTC);
+
+
+        List<Trade> trades = new ArrayList<>();
+
+        tradeServices.stream().
+            filter(service -> service.getExchange().equals(Exchange.BITSTAMP) || service.getExchange().equals(Exchange.BITSTAMP_EUR)).forEach(tradeService -> {
+                trades.addAll(tradeService.fetchTrades(start.minusSeconds(90)));
+        });
+
+        double rate = rateService.getXrpUsdRate();
+
+
+        new OffchainCorridors(exchangeToExchangePaymentService, messagingTemplate, Exchange.BITSTAMP, Exchange.BITSTAMP_EUR, offChainFiatToXrpTradeIds, offChainXrpToFiatTradeIds).searchXrapidPayments(trades, rate);
+
+        new OffchainCorridors(exchangeToExchangePaymentService, messagingTemplate, Exchange.BITSTAMP_EUR, Exchange.BITSTAMP, offChainFiatToXrpTradeIds, offChainXrpToFiatTradeIds).searchXrapidPayments(trades, rate);
+
+
+    }
 
     @Scheduled(fixedRate = 56000)
     public void odl() throws Exception {
@@ -100,24 +127,26 @@ public class Scheduler {
 
             log.info("{} ODL candidates fetched from XRP Ledger", payments.size());
 
+
             if (payments.isEmpty()) {
                 return;
             }
 
             List<Trade> allTrades = new ArrayList<>();
-
+            
             tradeServices.parallelStream()
-                    .filter(service -> service.getExchange().isConfirmed())
-                    .forEach(tradeService -> {
-                        try {
-                            OffsetDateTime sellTradesStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES + MAX_TRADE_DELAY_IN_MINUTES);
-                            List<Trade> trades = tradeService.fetchTrades(sellTradesStart);
-                            allTrades.addAll(trades);
-                            log.info("{} trades fetched from {} from {}", trades.size(), tradeService.getExchange(), sellTradesStart);
-                        } catch (Exception e) {
-                            log.error("Error fetching {} trades", tradeService.getExchange());
-                        }
-                    });
+                .filter(service -> service.getExchange().isConfirmed())
+                .forEach(tradeService -> {
+                    try {
+                        OffsetDateTime sellTradesStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES + MAX_TRADE_DELAY_IN_MINUTES);
+                        List<Trade> trades = tradeService.fetchTrades(sellTradesStart);
+                        allTrades.addAll(trades);
+                        log.info("{} trades fetched from {} from {}", trades.size(), tradeService.getExchange(), sellTradesStart);
+                    } catch (Exception e) {
+                        log.error("Error fetching {} trades", tradeService.getExchange());
+                    }
+                });
+
 
             double rate = rateService.getXrpUsdRate();
 
