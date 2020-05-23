@@ -62,8 +62,7 @@ public class OffchainCorridors extends XrapidCorridors {
             List<Trade> sellTTrades = trades.stream()
                 .filter(trade -> "sell".equals(trade.getSide()))
                 .filter(trade -> trade.getExchange().equals(destination))
-                .filter(trade -> trade.getDateTime()
-                    .isAfter(sepDate.plusSeconds(inc)))
+                .filter(trade -> trade.getDateTime().isAfter(sepDate.plusSeconds(inc)))
                 .collect(Collectors.toList());
 
             buyTrades.stream()
@@ -71,9 +70,9 @@ public class OffchainCorridors extends XrapidCorridors {
                 .collect(Collectors.groupingBy(Trade::getDateTime)).values().forEach(subBuyTrades -> {
 
                 final long buyTimestamp = subBuyTrades.get(0).getTimestamp();
-                final double amount = subBuyTrades.stream().mapToDouble(Trade::getAmount).sum();
+                final double buyAmount = subBuyTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                if (amount % 1 != 0 && amount > 500) {
+                if (buyAmount % 1 != 0 && buyAmount > 500) {
                     sellTTrades.stream()
                         .filter(trade -> !xrpToFiatTradeIds.contains(trade.getOrderId()))
                         .filter(trade -> (trade.getTimestamp() - buyTimestamp) <= 30 * 1000)
@@ -82,10 +81,10 @@ public class OffchainCorridors extends XrapidCorridors {
 
                         final double sellAmount = subSellTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                        if (amount - sellAmount <= 0.0001) {
+                        if (buyAmount - sellAmount <= 0.000001) {
                             fiatToXrpTradeIds.addAll(subBuyTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
                             xrpToFiatTradeIds.addAll(subSellTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
-                            persistPayment(buildPayment(subBuyTrades, subSellTrades, amount, this.rate));
+                            persistPayment(buildPayment(subBuyTrades, subSellTrades, buyAmount, this.rate));
                         }
                     });
                 }
@@ -113,8 +112,8 @@ public class OffchainCorridors extends XrapidCorridors {
             .outTradeFound(true)
             .fiatToXrpTrades(buy)
             .xrpToFiatTrades(sell)
-            .tradeOutIds(sell.stream().map(Trade::getOrderId).collect(Collectors.joining(";")))
-            .tradeIds(buy.stream().map(Trade::getOrderId).collect(Collectors.joining(";")))
+            .tradeOutIds(buy.stream().map(Trade::getOrderId).collect(Collectors.joining(";")))
+            .tradeIds(sell.stream().map(Trade::getOrderId).collect(Collectors.joining(";")))
             .fiatToXrpTradeIds(buy.stream().map(Trade::getOrderId).collect(Collectors.toList()))
             .xrpToFiatTradeIds(sell.stream().map(Trade::getOrderId).collect(Collectors.toList()))
             .build();
