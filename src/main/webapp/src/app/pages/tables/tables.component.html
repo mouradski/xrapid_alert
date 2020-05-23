@@ -15,12 +15,12 @@
                 <div *ngIf="mobile" align="center">
                     <ins data-revive-zoneid="3" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
                 </div>
-<!--                <div *ngIf="!mobile" align="center">-->
-<!--                    <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>-->
-<!--                </div>-->
-<!--                <div *ngIf="mobile" align="center">-->
-<!--                    <google-mobile-adsense [slotId]="9421450790" [delay]="1000"></google-mobile-adsense>-->
-<!--                </div>-->
+                <!--                <div *ngIf="!mobile" align="center">-->
+                <!--                    <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>-->
+                <!--                </div>-->
+                <!--                <div *ngIf="mobile" align="center">-->
+                <!--                    <google-mobile-adsense [slotId]="9421450790" [delay]="1000"></google-mobile-adsense>-->
+                <!--                </div>-->
                 <div class="card-header">
                     <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
                     <span class="info-icon">
@@ -169,7 +169,8 @@
 <div id="david" [className]="notifClass">
     <div class="talk-bubble tri-right round right-in">
         <div class="talktext">
-            <p>OMG !!! ODL transaction of {{(notif ? notif.usdValue : 0) | currency}} just spotted from {{notif ? notif.sourceFiat : ''}} currency to {{notif ? notif.destinationFiat : ''}} currency </p>
+            <p>OMG !!! ODL transaction of {{(notif ? notif.usdValue : 0) | currency}} just spotted
+                from {{notif ? notif.sourceFiat : ''}} currency to {{notif ? notif.destinationFiat : ''}} currency </p>
         </div>
     </div>
     <div class="david-pop">
