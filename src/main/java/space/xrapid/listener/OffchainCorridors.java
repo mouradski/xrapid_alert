@@ -17,16 +17,12 @@ public class OffchainCorridors extends XrapidCorridors {
     private Exchange source;
     private Exchange destination;
 
-    private SimpMessageSendingOperations messagingTemplate;
-    private ExchangeToExchangePaymentService exchangeToExchangePaymentService;
 
     private Set<String> fiatToXrpTradeIds;
     private Set<String> xrpToFiatTradeIds;
 
 
     public OffchainCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, SimpMessageSendingOperations messagingTemplate, Exchange source, Exchange destination, Set<String> fiatToXrpTradeIds, Set<String> xrpToFiatTradesIds) {
-
-
         super(exchangeToExchangePaymentService, null, null, messagingTemplate, null, null, null);
 
         this.source = source;
@@ -86,7 +82,9 @@ public class OffchainCorridors extends XrapidCorridors {
 
                         final double sellAmount = subSellTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                        if (amount - sellAmount <= 0.001) {
+                        if (amount - sellAmount <= 0.0001) {
+                            fiatToXrpTradeIds.addAll(subBuyTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+                            xrpToFiatTradeIds.addAll(subSellTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
                             persistPayment(buildPayment(subBuyTrades, subSellTrades, amount, this.rate));
                         }
                     });
