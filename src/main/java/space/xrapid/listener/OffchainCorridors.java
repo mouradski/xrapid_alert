@@ -49,7 +49,7 @@ public class OffchainCorridors extends XrapidCorridors {
 
         final OffsetDateTime sepDate = firstTradeDate;
 
-        for (int i = 0; i <= 600; i++) {
+        for (int i = 0; i <= 2000; i++) {
 
             final int inc = i;
 
@@ -81,7 +81,8 @@ public class OffchainCorridors extends XrapidCorridors {
 
                         final double sellAmount = subSellTrades.stream().mapToDouble(Trade::getAmount).sum();
 
-                        if (buyAmount - sellAmount <= 0.000001) {
+                        double diff = buyAmount - sellAmount;
+                        if (diff <= 0.000001 && diff > 0) {
                             fiatToXrpTradeIds.addAll(subBuyTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
                             xrpToFiatTradeIds.addAll(subSellTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
                             persistPayment(buildPayment(subBuyTrades, subSellTrades, buyAmount, this.rate));
