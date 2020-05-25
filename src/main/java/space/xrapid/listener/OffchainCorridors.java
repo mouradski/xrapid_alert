@@ -49,7 +49,7 @@ public class OffchainCorridors extends XrapidCorridors {
 
         final OffsetDateTime sepDate = firstTradeDate;
 
-        for (int i = 0; i <= 2000; i++) {
+        for (int i = 0; i <= 90; i++) {
 
             final int inc = i;
 
