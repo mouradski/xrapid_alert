@@ -149,7 +149,7 @@
                         <br>
                         This tag was involved in hundreds of ODL transactions spotted at end to end.
                     </li>
-                    <li>
+                    <li *ngIf="!payment.transactionHash.startsWith('0FFCHAIN')">
                         <span class="modal-desc">Transaction Hash :</span>
                         <a href="https://bithomp.com/explorer/{{payment.transactionHash}}"
                            target="_blank">{{payment.transactionHash}}</a>
