@@ -41,12 +41,15 @@ public class TwitterService {
     public void newAth(Double usdValue) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("New On-Demand-Liquidity Daily All Time High volume : ")
+        sb.append("\uD83D\uDD25 New #ODL Daily All Time High Volume: ")
             .append(NumberFormat.getCurrencyInstance(Locale.US).format(usdValue))
             .append("\n\n")
-            .append("https://utility-scan.com");
+            .append("https://utility-scan.com")
+            .append("\n\n")
+            .append("#XRP #XRPCommunity #ATH");
         try {
             twitter.updateStatus(sb.toString());
+            Thread.sleep(30000);
         } catch (Exception e) {
             log.error("Unable to tweet new ATH", e);
         }
@@ -57,7 +60,6 @@ public void dailySummary(GlobalStats globalStats) {
 
         sb.append("#ODL daily summary\n\n");
 
-
         Map<String, Double> lastDayStats = globalStats.getVolumePerCorridor().entrySet().
                 stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
@@ -66,6 +68,14 @@ public void dailySummary(GlobalStats globalStats) {
         int corridorNbr = lastDayStats.size();
 
         sb.append(String.format("TOP %s Corridors : \n\n", corridorNbr));
+
+        double lastDayVolume = lastDayStats.entrySet().stream()
+                .mapToDouble(e -> e.getValue())
+                .sum();
+
+        if (lastDayVolume == globalStats.getDailyAth()) {
+            newAth(lastDayVolume);
+        }
 
         lastDayStats.entrySet().stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
@@ -78,9 +88,7 @@ public void dailySummary(GlobalStats globalStats) {
         });
 
         sb.append("\n").append("ODL daily volume :  ").append(NumberFormat.getCurrencyInstance(Locale.US)
-                .format(lastDayStats.entrySet().stream()
-                    .mapToDouble(e -> e.getValue())
-                    .sum()).replaceAll("\\.[0-9]{2}", ""))
+                .format(lastDayVolume).replaceAll("\\.[0-9]{2}", ""))
                 .append("\n\n");
 
         sb.append("Last Daily ATH :  ").append(NumberFormat.getCurrencyInstance(Locale.US).format(globalStats.getDailyAth()).replaceAll("\\.[0-9]{2}", ""));
