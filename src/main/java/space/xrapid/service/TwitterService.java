@@ -49,8 +49,7 @@ public class TwitterService {
             .append("\n\n")
             .append("#XRP #XRPCommunity #ATH");
         try {
-            //twitter.updateStatus(sb.toString());
-            System.out.println(sb.toString());
+            twitter.updateStatus(sb.toString());
         } catch (Exception e) {
             log.error("Unable to tweet new ATH", e);
         }
@@ -100,9 +99,7 @@ public void dailySummary(GlobalStats globalStats) {
         }
 
         try {
-            //twitter.updateStatus(sb.toString());
-            System.out.println(sb.toString());
-
+            twitter.updateStatus(sb.toString());
         } catch (Exception e) {
             log.error("Unable to tweet summary", e);
         }
