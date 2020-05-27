@@ -31,25 +31,26 @@ public class TwitterService {
     private Twitter twitter;
 
     @PostConstruct
-    public void init() throws TwitterException {
+    public void init() {
         this.twitter = TwitterFactory.getSingleton();
         twitter.setOAuthConsumer(consumerKey, consumerSecret);
         AccessToken oauthAccessToken = new AccessToken(accessToken, accessTokenSecret);
         twitter.setOAuthAccessToken(oauthAccessToken);
     }
 
-    public void newAth(Double usdValue) {
+    private void newAth(Double usdValue) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\uD83D\uDD25 New #ODL Daily All Time High Volume: ")
+        sb.append("\uD83D\uDD25 ")
+            .append("New #ODL Daily All Time High Volume: ")
             .append(NumberFormat.getCurrencyInstance(Locale.US).format(usdValue))
             .append("\n\n")
             .append("https://utility-scan.com")
             .append("\n\n")
             .append("#XRP #XRPCommunity #ATH");
         try {
-            twitter.updateStatus(sb.toString());
-            Thread.sleep(30000);
+            //twitter.updateStatus(sb.toString());
+            System.out.println(sb.toString());
         } catch (Exception e) {
             log.error("Unable to tweet new ATH", e);
         }
@@ -60,8 +61,7 @@ public void dailySummary(GlobalStats globalStats) {
 
         sb.append("#ODL daily summary\n\n");
 
-        Map<String, Double> lastDayStats = globalStats.getVolumePerCorridor().entrySet().
-                stream()
+        Map<String, Double> lastDayStats = globalStats.getVolumePerCorridor().entrySet().stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
                 .findFirst().get().getValue();
 
@@ -73,7 +73,7 @@ public void dailySummary(GlobalStats globalStats) {
                 .mapToDouble(e -> e.getValue())
                 .sum();
 
-        if (lastDayVolume == globalStats.getDailyAth()) {
+        if (lastDayVolume >= globalStats.getDailyAth()) {
             newAth(lastDayVolume);
         }
 
@@ -100,7 +100,9 @@ public void dailySummary(GlobalStats globalStats) {
         }
 
         try {
-            twitter.updateStatus(sb.toString());
+            //twitter.updateStatus(sb.toString());
+            System.out.println(sb.toString());
+
         } catch (Exception e) {
             log.error("Unable to tweet summary", e);
         }
