@@ -20,6 +20,13 @@ public enum Exchange {
             "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
             "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD"),
 
+    BITSTAMP_GBP("bitstamp", true, GBP, false,
+            "rrpNnNLKrartuEqfJGpqyDwPj1AFPg9vn1",
+            "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
+            "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
+            "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD"),
+
     BITSO("bitso", true, MXN, true,
             "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
             "rHZaDC6tsGN2JWGeXhjKL6664RNCq5hu4B",
@@ -37,7 +44,7 @@ public enum Exchange {
 
     CEX_IO("cex.io", false, USD, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
     CEX_IO_EUR("cex.io", false, EUR, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
-    CEX_IO_GBP("cex.io", true, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
+    CEX_IO_GBP("cex.io", false, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
 
 
     COINFIELD_USD("coinfield", false, USD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),

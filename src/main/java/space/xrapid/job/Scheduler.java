@@ -79,26 +79,29 @@ public class Scheduler {
     private OffsetDateTime windowEnd;
 
 
-    @Scheduled(fixedDelay = 20000)
+    @Scheduled(fixedDelay = 40000)
     public void offchainOdl() {
         OffsetDateTime start = OffsetDateTime.now(ZoneOffset.UTC);
 
-
         List<Trade> trades = new ArrayList<>();
 
+        List<Exchange> bitstampMarkets = Arrays.asList(Exchange.BITSTAMP, Exchange.BITSTAMP_EUR, Exchange.BITSTAMP_GBP);
+
         tradeServices.stream().
-            filter(service -> service.getExchange().equals(Exchange.BITSTAMP) || service.getExchange().equals(Exchange.BITSTAMP_EUR)).forEach(tradeService -> {
-                trades.addAll(tradeService.fetchTrades(start.minusSeconds(90)));
+            filter(service -> bitstampMarkets.contains(service.getExchange()))
+                .forEach(tradeService -> {
+                    trades.addAll(tradeService.fetchTrades(start.minusSeconds(90)));
         });
 
         double rate = rateService.getXrpUsdRate();
 
-
-        new OffchainCorridors(exchangeToExchangePaymentService, messagingTemplate, Exchange.BITSTAMP, Exchange.BITSTAMP_EUR, offChainFiatToXrpTradeIds, offChainXrpToFiatTradeIds).searchXrapidPayments(trades, rate);
-
-        new OffchainCorridors(exchangeToExchangePaymentService, messagingTemplate, Exchange.BITSTAMP_EUR, Exchange.BITSTAMP, offChainFiatToXrpTradeIds, offChainXrpToFiatTradeIds).searchXrapidPayments(trades, rate);
-
-
+        bitstampMarkets.forEach(sourceMarket -> {
+            bitstampMarkets.stream()
+                    .filter(destinationMarket -> !destinationMarket.equals(sourceMarket))
+                    .forEach(destinationMarket -> {
+                        new OffchainCorridors(exchangeToExchangePaymentService, messagingTemplate, sourceMarket, destinationMarket, offChainFiatToXrpTradeIds, offChainXrpToFiatTradeIds).searchXrapidPayments(trades, rate);
+                    });
+        });
     }
 
     @Scheduled(fixedRate = 56000)
