@@ -39,8 +39,8 @@ public class OffchainCorridors extends XrapidCorridors {
 
         OffsetDateTime firstTradeDate = trades.stream()
             .filter(trade -> "buy".equals(trade.getSide()))
-            .filter(trade -> trade.getExchange().equals(source)
-            ).map(Trade::getDateTime).sorted()
+            .filter(trade -> trade.getExchange().equals(source))
+            .map(Trade::getDateTime).sorted()
             .findFirst().orElse(null);
 
         if (firstTradeDate == null) {
