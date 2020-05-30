@@ -38,11 +38,6 @@ public class ApiKeyService {
     }
 
     private void checkCallLimits(String key, String ip) {
-
-        if (blockedKeys.contains(key)) {
-            throw new MomentarilyBlockedException();
-        }
-
         if (!ips.containsKey(key)) {
             ips.put(key, new HashSet<>());
         }
@@ -61,6 +56,10 @@ public class ApiKeyService {
             throw new UnauthorizedException();
         } else if (ips.get(key).size() >= 2) {
             blockedKeys.add(key);
+            throw new MomentarilyBlockedException();
+        }
+
+        if (blockedKeys.contains(key)) {
             throw new MomentarilyBlockedException();
         }
 
