@@ -90,7 +90,11 @@ public class Scheduler {
         tradeServices.stream().
             filter(service -> bitstampMarkets.contains(service.getExchange()))
                 .forEach(tradeService -> {
-                    trades.addAll(tradeService.fetchTrades(start.minusSeconds(90)));
+                    try {
+                        trades.addAll(tradeService.fetchTrades(start.minusSeconds(90)));
+                    } catch (Exception e) {
+                        log.error("Unable to fetch {} trades", tradeService.getExchange(), e);
+                    }
         });
 
         double rate = rateService.getXrpUsdRate();
