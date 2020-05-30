@@ -11,7 +11,9 @@ import space.xrapid.service.ApiKeyService;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.util.CsvHelper;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
@@ -36,31 +38,27 @@ public class PaymentsRest {
     @GET
     @Produces("application/json")
     public List<ExchangeToExchangePayment> getPayments(@QueryParam("key") String apiKey, @QueryParam("from") Long from, @QueryParam("to") Long to) {
-        if (apiKey != null && from != null && to != null) {
-            apiKeyService.validateKey(apiKey);
-            return exchangeToExchangePaymentService.getPayments(from, to);
-        }
         return exchangeToExchangePaymentService.getLasts();
     }
 
     @GET
     @Produces("application/json")
     @Path("/search")
-    public OdlPaymentsResponse search(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination, @QueryParam("tag") Long tag, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
+    public OdlPaymentsResponse search(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination, @QueryParam("tag") Long tag, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @Context HttpServletRequest request) {
         if (apiKey == null) {
             throw new UnauthorizedException();
         }
-        apiKeyService.validateKey(apiKey);
+        apiKeyService.validateKey(apiKey, getIp(request));
         return exchangeToExchangePaymentService.search(from, to, source, destination, tag, size == null ? 300 : size, page == null ? 1 : page);
     }
 
     @GET
     @Produces("application/json")
     @Path("/stats")
-    public Stats getStats(@QueryParam("key") String apiKey, @QueryParam("size") Integer size) {
+    public Stats getStats(@QueryParam("key") String apiKey, @QueryParam("size") Integer size, @Context HttpServletRequest request) {
 
         if (size != null) {
-            apiKeyService.validateKey(apiKey);
+            apiKeyService.validateKey(apiKey, getIp(request));
         }
 
         if (size == null) {
@@ -72,19 +70,19 @@ public class PaymentsRest {
     @GET
     @Produces("application/json")
     @Path("/stats/all")
-    public GlobalStats getAllStats(@QueryParam("key") String apiKey) {
+    public GlobalStats getAllStats(@QueryParam("key") String apiKey, @Context HttpServletRequest request) {
         if (apiKey == null) {
             throw new UnauthorizedException();
         }
-        apiKeyService.validateKey(apiKey);
+        apiKeyService.validateKey(apiKey, getIp(request));
         return exchangeToExchangePaymentService.calculateGlobalStats(false);
     }
 
     @GET
     @Path("/search/csv")
     @Produces("text/csv")
-    public Response csv(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination,  @QueryParam("tag") Long tag, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
-        apiKeyService.validateKey(apiKey);
+    public Response csv(@QueryParam("key") String apiKey, @QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("source") Currency source, @QueryParam("destination") Currency destination,  @QueryParam("tag") Long tag, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @Context HttpServletRequest request) {
+        apiKeyService.validateKey(apiKey, getIp(request));
 
         String csv = CsvHelper.toCsv(exchangeToExchangePaymentService.search(from, to, source, destination, tag, size == null ? 300 : size, page == null ? 1 : page).getPayments());
         Response.ResponseBuilder response = Response.ok(csv);
@@ -101,6 +99,21 @@ public class PaymentsRest {
             apiKeyService.validateMasterKey(key);
             messagingTemplate.convertAndSend("/top/odl", payment);
         }
+    }
+
+    private String getIp(HttpServletRequest request) {
+        String remoteAddr = request.getRemoteAddr();
+
+        String proxyOrigin;
+
+        if ((proxyOrigin = request.getHeader("x-forwarded-for")) != null) {
+            remoteAddr = proxyOrigin;
+            int idx = remoteAddr.indexOf(',');
+            if (idx > -1) {
+                remoteAddr = remoteAddr.substring(0, idx);
+            }
+        }
+        return remoteAddr;
     }
 
 }
