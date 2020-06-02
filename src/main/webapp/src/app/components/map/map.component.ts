@@ -143,13 +143,17 @@ export class MapComponent implements AfterViewInit {
                 "longitude": -43.2096,
                 "title": "Brasil",
                 "flag": "https://cdn.countryflags.com/thumbs/brazil/flag-3d-round-500.png"
-            },
-                {
+            }, {
                     "latitude": 50.5101,
                     "longitude": 4.2055,
                     "title": "Europe",
                     "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
-                }
+            }, {
+                    "latitude": 9.0777,
+                    "longitude": 8.67745,
+                    "title": "Nigeria",
+                    "flag": "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-500.png"
+            }
             ];
 
 
@@ -165,6 +169,7 @@ export class MapComponent implements AfterViewInit {
             this.currencies.set("KRW", this.addCity({"latitude": 37.5326, "longitude": 127.0246}, "Korea"));
             this.currencies.set("BRL", this.addCity({"latitude": -22.9035, "longitude": -43.2096}, "Brasil"));
             this.currencies.set("EUR", this.addCity({"latitude": 50.5101, "longitude": 4.2055}, "Europe"));
+            this.currencies.set("NGN", this.addCity({"latitude": 9.0777, "longitude": 8.67745}, "Nigeria"));
 
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
