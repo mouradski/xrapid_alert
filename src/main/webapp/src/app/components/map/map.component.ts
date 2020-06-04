@@ -144,20 +144,20 @@ export class MapComponent implements AfterViewInit {
                 "title": "Brasil",
                 "flag": "https://cdn.countryflags.com/thumbs/brazil/flag-3d-round-500.png"
             }, {
-                    "latitude": 48.5101,
-                    "longitude": 8.2055,
-                    "title": "Europe",
-                    "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
+                "latitude": 48.5101,
+                "longitude": 8.2055,
+                "title": "Europe",
+                "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
             }, {
-                    "latitude": 9.0777,
-                    "longitude": 8.6774,
-                    "title": "Nigeria",
-                    "flag": "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-500.png"
+                "latitude": 9.0777,
+                "longitude": 8.6774,
+                "title": "Nigeria",
+                "flag": "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-500.png"
             }, {
-                    "latitude": 54.5085,
-                    "longitude": -4.9257,
-                    "title": "United Kingdom",
-                    "flag": "https://cdn.countryflags.com/thumbs/united-kingdom/flag-3d-round-500.png"
+                "latitude": 54.5085,
+                "longitude": -4.9257,
+                "title": "United Kingdom",
+                "flag": "https://cdn.countryflags.com/thumbs/united-kingdom/flag-3d-round-500.png"
             }
             ];
 
