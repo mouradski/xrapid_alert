@@ -43,7 +43,7 @@ public class CurrencyComService implements TradeService {
                 .dateTime(date)
                 .timestamp(date.toEpochSecond() * 1000)
                 .amount(trade.getQ())
-                .exchange(Exchange.BITCOIN_TRADE)
+                .exchange(getExchange())
                 .rate(trade.getP())
                 .orderId(trade.getA())
                 .side(trade.getM() ? "buy" : "sell")
