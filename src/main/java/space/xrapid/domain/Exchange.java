@@ -84,6 +84,9 @@ public enum Exchange {
     BRAZILIEX("braziliex", false, BRL, false,
             "__UNKNOW__"),
 
+
+    CURRENCY_COM("currency.com", true, BYN, false, "rpUJKigvytgfaM77qC9bNTNQiUZgGemSiB"),
+
     BITCOIN_TRADE("bitcoin_trade", true, BRL, false, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),
 
     LIQUID("liquid", false, JPY, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p", "rMbWmirwEtRr7pNmhN4d4ysTMBvBxdvovs"),
