@@ -10,17 +10,11 @@
         <div class=" col-md-12">
             <div class=" card card-plain">
                 <div *ngIf="!mobile" align="center">
-                    <ins data-revive-zoneid="1" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
+                    <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>
                 </div>
-                <div *ngIf="mobile" align="center">
-                    <ins data-revive-zoneid="3" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
+               <div *ngIf="mobile" align="center">
+                    <google-mobile-adsense [slotId]="9421450790" [delay]="1000"></google-mobile-adsense>
                 </div>
-                <!--                <div *ngIf="!mobile" align="center">-->
-                <!--                    <google-adsense [slotId]="5026269580" [delay]="1000"></google-adsense>-->
-                <!--                </div>-->
-                <!--                <div *ngIf="mobile" align="center">-->
-                <!--                    <google-mobile-adsense [slotId]="9421450790" [delay]="1000"></google-mobile-adsense>-->
-                <!--                </div>-->
                 <div class="card-header">
                     <h4 class=" card-title">Last XRPL transactions spotted as ODL</h4>
                     <span class="info-icon">
@@ -38,8 +32,7 @@
                             - the total timeframe should roughly last 4 minutes<br><br>
 
                             The exchange API allows us to track end-to-end ODL transactions, except for
-                            http://coins.ph
-                            and all future exchanges without API.<br><br>
+                            http://coins.ph and all future exchanges without API.<br><br>
                             <strong>* The Bitstamp exception for EUR-USD market: As Bitstamp offers XRP "on" and "off" ramps for EUR and USD, a single exchange is involved therefore XRP don't have to be transferred via XRPLedger. </strong>
                         </p>
                         <!-- google_ad_section_end -->
@@ -143,24 +136,12 @@
                             <span class="trade-tag" *ngFor="let id of payment.xrpToFiatTradeIds">{{id}}</span>
                         </div>
                     </li>
-                    <li *ngIf="!payment.fiatToXrpTradeIds && !payment.xrpToFiatTradeIds">
-            <span class="modal-desc">
-              ODL based on identified Destination Tag on {{payment.destination}}</span>
-                        <br>
-                        This tag was involved in hundreds of ODL transactions spotted at end to end.
-                    </li>
                     <li *ngIf="!payment.transactionHash.startsWith('0FFCHAIN')">
                         <span class="modal-desc">Transaction Hash :</span>
                         <a href="https://bithomp.com/explorer/{{payment.transactionHash}}"
                            target="_blank">{{payment.transactionHash}}</a>
                     </li>
                     <li>
-                        <div *ngIf="!mobile" align="center">
-                            <ins data-revive-zoneid="1" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
-                        </div>
-                        <div *ngIf="mobile" align="center">
-                            <ins data-revive-zoneid="3" data-revive-id="75e60eea071893e561297aa6d7c25f0a"></ins>
-                        </div>
                     </li>
                 </ul>
             </div>
@@ -171,7 +152,7 @@
     <div class="talk-bubble tri-right round right-in">
         <div class="talktext">
             <p>OMG !!! ODL transaction of {{(notif ? notif.usdValue : 0) | currency}} just spotted
-                from {{notif ? notif.sourceFiat : ''}} to {{notif ? notif.destinationFiat : ''}}</p>
+                from {{notif ? notif.sourceFiat : ''}} to {{notif ? notif.destinationFiat : ''}} </p>
         </div>
     </div>
     <div class="david-pop">

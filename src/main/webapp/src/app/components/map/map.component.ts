@@ -143,21 +143,25 @@ export class MapComponent implements AfterViewInit {
                 "longitude": -43.2096,
                 "title": "Brasil",
                 "flag": "https://cdn.countryflags.com/thumbs/brazil/flag-3d-round-500.png"
-            }, {
-                "latitude": 48.5101,
-                "longitude": 8.2055,
-                "title": "Europe",
-                "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
-            }, {
-                "latitude": 9.0777,
-                "longitude": 8.6774,
-                "title": "Nigeria",
-                "flag": "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-500.png"
-            }, {
-                "latitude": 54.5085,
-                "longitude": -4.9257,
-                "title": "United Kingdom",
-                "flag": "https://cdn.countryflags.com/thumbs/united-kingdom/flag-3d-round-500.png"
+            },
+                {
+                    "latitude": 47.5101,
+                    "longitude": 8.2055,
+                    "title": "Europe",
+                    "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
+                },
+		{
+                    "latitude": 9.0777,
+                    "longitude": 8.67745,
+                    "title": "Nigeria",
+                    "flag": "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-500.png"
+                }
+
+, {
+                    "latitude": 55.5085,
+                    "longitude": -4.9257,
+                    "title": "United Kingdom",
+                    "flag": "https://cdn.countryflags.com/thumbs/united-kingdom/flag-3d-round-500.png"
             }
             ];
 
@@ -173,9 +177,10 @@ export class MapComponent implements AfterViewInit {
             this.currencies.set("THB", this.addCity({"latitude": 13.7367, "longitude": 100.5231}, "Thailand"));
             this.currencies.set("KRW", this.addCity({"latitude": 37.5326, "longitude": 127.0246}, "Korea"));
             this.currencies.set("BRL", this.addCity({"latitude": -22.9035, "longitude": -43.2096}, "Brasil"));
-            this.currencies.set("EUR", this.addCity({"latitude": 48.5101, "longitude": 8.2055}, "Europe"));
-            this.currencies.set("NGN", this.addCity({"latitude": 9.0777, "longitude": 8.6774}, "Nigeria"));
-            this.currencies.set("GBP", this.addCity({"latitude": 54.5085, "longitude": -4.9257}, "United Kingdom"));
+            this.currencies.set("EUR", this.addCity({"latitude": 47.5101, "longitude": 8.2055}, "Europe"));
+            this.currencies.set("GBP", this.addCity({"latitude": 55.5085, "longitude": -4.9257}, "United Kingdom"));
+
+	     this.currencies.set("NGN", this.addCity({"latitude": 9.0777, "longitude": 8.67745}, "Nigeria"));
 
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
