@@ -77,6 +77,8 @@ public enum Exchange {
             "rNTkgxs5WG5mU5Sz26YoDVrHim5Y5ohC7", "r9hUMZBc3MWRc4YdsdZgNCW5Qef8wNSXpb", "rD7XQw67JWBXuo2WPX2gZRsGKNsDUGTbx5", "r9LHiNDZvpLoWPoKnbH2JWjFET8zoYT4Y5",
             "rBF3GWchod3QL8TEYicwSeMu6sjXqKFaQ2", "rDFCAUDVB5QhB61ETGT6tf8Rm1zBsj8LHU", "rDxfhNRgCDNDckm45zT5ayhKDC4Ljm7UoP", "rsdd66csGZkTzk42NDpJun7PNrGsC7WJHv"),
 
+    UPBIT("upbit", true, KRW, true, "rNzT5xopUaJK8L7mHbThUGKaHoct62dNBC", "rN9qNpgnBaZwqCg8CvUZRPqCcPPY7wfWep", "rJYQKfsTi8XCLZ1vGSf9CxiL4prz5bvbtz", "rBszWJzYpNoqoY4xKuGUpN23b6EBT41ocF"),
+
     INDEP_RESERVE("independent reserve", false, NZD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
 
     MERCADO("mercado", true, BRL, false, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
