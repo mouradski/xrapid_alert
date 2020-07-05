@@ -279,7 +279,7 @@ export class MapComponent implements AfterViewInit {
             }
 
             let historyInterval = setInterval(() => {
-                let data = _this.queue.dequeue();
+                let data = _this.queue.removeTail();
 
                 if (data) {
                     _this.notifyOdl(data.sourceFiat, data.destinationFiat, data.amount);
@@ -287,7 +287,7 @@ export class MapComponent implements AfterViewInit {
                     clearInterval(historyInterval);
                     _this.realtime = true;
                     setInterval(() => {
-                        let data = _this.queue.dequeue();
+                        let data = _this.queue.removeTail();
                         if (data) {
                             _this.notifyOdl(data.sourceFiat, data.destinationFiat, data.amount);
                         }
