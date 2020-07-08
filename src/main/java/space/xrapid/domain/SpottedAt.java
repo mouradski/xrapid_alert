@@ -4,5 +4,6 @@ public enum SpottedAt {
     SOURCE,
     DESTINATION,
     SOURCE_AND_DESTINATION,
-    DESTINATION_TAG
+    DESTINATION_TAG,
+    OFF_CHAIN
 }

@@ -22,4 +22,6 @@ public class ApiKey {
     private long lastUse;
 
     private boolean master;
+
+    private boolean ban;
 }

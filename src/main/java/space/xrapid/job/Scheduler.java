@@ -14,6 +14,7 @@ import space.xrapid.domain.Trade;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.listener.EndToEndXrapidCorridors;
 import space.xrapid.listener.InboundXrapidCorridors;
+import space.xrapid.listener.OffchainCorridors;
 import space.xrapid.listener.OutboundXrapidCorridors;
 import space.xrapid.service.*;
 
@@ -42,6 +43,8 @@ public class Scheduler {
     @Autowired
     private XrapidInboundAddressService xrapidInboundAddressService;
 
+    @Autowired
+    private TwitterService twitterService;
 
     @Autowired
     protected SimpMessageSendingOperations messagingTemplate;
@@ -62,6 +65,9 @@ public class Scheduler {
     private String proxyUrl;
 
     public static Set<String> transactionHashes = new HashSet<>();
+    public static Set<String> offChainXrpToFiatTradeIds = new HashSet<>();
+    public static Set<String> offChainFiatToXrpTradeIds = new HashSet<>();
+
 
     private static int MAX_TRADE_DELAY_IN_MINUTES = 4;
     private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
@@ -72,119 +78,154 @@ public class Scheduler {
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
+
+    @Scheduled(fixedDelay = 40000)
+    public void offchainOdl() {
+        OffsetDateTime start = OffsetDateTime.now(ZoneOffset.UTC);
+
+        List<Trade> trades = new ArrayList<>();
+
+        List<Exchange> bitstampMarkets = Arrays.asList(Exchange.BITSTAMP, Exchange.BITSTAMP_EUR, Exchange.BITSTAMP_GBP);
+
+        tradeServices.stream().
+                filter(service -> bitstampMarkets.contains(service.getExchange()))
+                .forEach(tradeService -> {
+                    try {
+                        trades.addAll(tradeService.fetchTrades(start.minusSeconds(90)));
+                    } catch (Exception e) {
+                        log.error("Unable to fetch {} trades", tradeService.getExchange(), e);
+                    }
+                });
+
+        double rate = rateService.getXrpUsdRate();
+
+        bitstampMarkets.forEach(sourceMarket -> {
+            bitstampMarkets.stream()
+                    .filter(destinationMarket -> !destinationMarket.equals(sourceMarket))
+                    .forEach(destinationMarket -> {
+                        new OffchainCorridors(exchangeToExchangePaymentService, messagingTemplate, sourceMarket, destinationMarket, offChainFiatToXrpTradeIds, offChainXrpToFiatTradeIds).searchXrapidPayments(trades, rate);
+                    });
+        });
+    }
+
     @Scheduled(fixedRate = 56000)
-    public void odl() throws Exception {
+    public void odl() {
 
         if (proxy) {
             return;
         }
-
-        OffsetDateTime lastWindowEndRollback = lastWindowEnd;
-        OffsetDateTime windowStartRollback = windowStart;
-        OffsetDateTime windowEndRollback = windowEnd;
 
         List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).collect(Collectors.toList());
         List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).collect(Collectors.toList());
 
         Set<Currency> destinationFiats = availableExchangesWithApi.stream().map(Exchange::getLocalFiat).collect(Collectors.toSet());
 
-        try {
-            updatePaymentsWindows();
+        updatePaymentsWindows();
 
-            OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
-            OffsetDateTime xrplPaymentsEnd = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES);
-            log.info("Fetching ODL candidates from XRP Ledger, from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
-            List<Payment> payments = xrpLedgerService.fetchOdlCandidatePayments(xrplPaymentsStart, xrplPaymentsEnd, true);
+        OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
+        OffsetDateTime xrplPaymentsEnd = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES);
+        log.info("Fetching ODL candidates from XRP Ledger, from {} to {}", xrplPaymentsStart, xrplPaymentsEnd);
+        List<Payment> payments = xrpLedgerService.fetchOdlCandidatePayments(xrplPaymentsStart, xrplPaymentsEnd, true);
 
-            log.info("{} ODL candidates fetched from XRP Ledger", payments.size());
+        log.info("{} ODL candidates fetched from XRP Ledger", payments.size());
 
-            if (payments.isEmpty()) {
-                return;
-            }
+        if (payments.isEmpty()) {
+            return;
+        }
 
-            List<Trade> allTrades = new ArrayList<>();
+        List<Trade> allTrades = fetchTrades();
 
-            tradeServices.parallelStream()
-                    .filter(service -> service.getExchange().isConfirmed())
-                    .forEach(tradeService -> {
-                        try {
-                            OffsetDateTime sellTradesStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES + MAX_TRADE_DELAY_IN_MINUTES);
-                            List<Trade> trades = tradeService.fetchTrades(sellTradesStart);
-                            allTrades.addAll(trades);
-                            log.info("{} trades fetched from {} from {}", trades.size(), tradeService.getExchange(), sellTradesStart);
-                        } catch (Exception e) {
-                            log.error("Error fetching {} trades", tradeService.getExchange());
-                        }
-                    });
+        double rate = rateService.getXrpUsdRate();
 
-            double rate = rateService.getXrpUsdRate();
-
-            log.info("Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
-            destinationFiats.forEach(fiat -> {
-                availableExchangesWithApi.stream()
-                        .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
-                        .forEach(exchange -> {
-                            final Set<String> tradeIds = new HashSet<>();
-                            Arrays.asList(60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
-                                executorService.execute(() -> {
-                                    new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds, proxyUrl)
-                                            .searchXrapidPayments(payments, allTrades, rate);
-                                });
-                            });
-                        });
-            });
+        log.info("Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
+        endToEndSearch(availableExchangesWithApi, destinationFiats, payments, allTrades, rate);
 
 
-            log.info("Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
+        log.info("Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
+        atDestinationSearch(availableExchangesWithApi, payments, allTrades, rate);
 
-            availableExchangesWithApi.forEach(exchange -> {
-                executorService.execute(() -> {
+        log.info("Search for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
+        atSourceSearch(allConfirmedExchange, availableExchangesWithApi, payments, allTrades, rate);
 
-                    new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+
+        log.info("Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
+        byDestinationTagSearch(availableExchangesWithApi, destinationFiats, payments, allTrades, rate);
+
+        Stats stats = exchangeToExchangePaymentService.calculateStats(21);
+
+        if (stats != null) {
+            messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats(21));
+        }
+
+
+    }
+
+    private List<Trade> fetchTrades() {
+        List<Trade> allTrades = new ArrayList<>();
+
+        tradeServices.parallelStream()
+                .filter(service -> service.getExchange().isConfirmed())
+                .forEach(tradeService -> {
+                    try {
+                        OffsetDateTime sellTradesStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES + MAX_TRADE_DELAY_IN_MINUTES);
+                        List<Trade> trades = tradeService.fetchTrades(sellTradesStart);
+                        allTrades.addAll(trades);
+                        log.info("{} trades fetched from {} from {}", trades.size(), tradeService.getExchange(), sellTradesStart);
+                    } catch (Exception e) {
+                        log.error("Error fetching {} trades", tradeService.getExchange());
+                    }
                 });
-            });
+        return allTrades;
+    }
 
-            log.info("Search for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
-            allConfirmedExchange.stream()
-                    .filter(exchange -> !availableExchangesWithApi.contains(exchange))
+    private void byDestinationTagSearch(List<Exchange> availableExchangesWithApi, Set<Currency> destinationFiats, List<Payment> payments, List<Trade> allTrades, double rate) {
+        destinationFiats.forEach(fiat -> {
+            availableExchangesWithApi.stream()
+                    .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
                     .forEach(exchange -> {
                         executorService.execute(() -> {
 
-                            new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades, rate);
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 90, 90, false, null, proxyUrl)
+                                    .searchXrapidPayments(payments, allTrades, rate);
                         });
                     });
+        });
+    }
 
+    private void atSourceSearch(List<Exchange> allConfirmedExchange, List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate) {
+        allConfirmedExchange.stream()
+                .filter(exchange -> !availableExchangesWithApi.contains(exchange))
+                .forEach(exchange -> {
+                    executorService.execute(() -> {
 
-            log.info("Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
-            destinationFiats.forEach(fiat -> {
-                availableExchangesWithApi.stream()
-                        .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
-                        .forEach(exchange -> {
+                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades, rate);
+                    });
+                });
+    }
+
+    private void atDestinationSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate) {
+        availableExchangesWithApi.forEach(exchange -> {
+            executorService.execute(() -> {
+
+                new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+            });
+        });
+    }
+
+    private void endToEndSearch(List<Exchange> availableExchangesWithApi, Set<Currency> destinationFiats, List<Payment> payments, List<Trade> allTrades, double rate) {
+        destinationFiats.forEach(fiat -> {
+            availableExchangesWithApi.stream()
+                    .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
+                    .forEach(exchange -> {
+                        final Set<String> tradeIds = new HashSet<>();
+                        Arrays.asList(60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
                             executorService.execute(() -> {
-
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 60, 60, false, null, proxyUrl)
+                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds, proxyUrl)
                                         .searchXrapidPayments(payments, allTrades, rate);
                             });
                         });
-            });
-
-            Stats stats = exchangeToExchangePaymentService.calculateStats(21);
-
-            if (stats != null) {
-                messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats(21));
-            }
-
-            log.info("----------------------------------");
-
-        } catch (Exception e) {
-            log.error("", e);
-            lastWindowEnd = lastWindowEndRollback;
-            windowStart = windowStartRollback;
-            windowEnd = windowEndRollback;
-
-            Thread.sleep(30000);
-        }
-
+                    });
+        });
     }
 
     private void updatePaymentsWindows() {
@@ -196,6 +237,11 @@ public class Scheduler {
         }
 
         lastWindowEnd = windowEnd;
+    }
+
+    @Scheduled(cron = "0 15 2 1/1 * ?")
+    public void dailyTweetBot() {
+        twitterService.dailySummary(exchangeToExchangePaymentService.calculateGlobalStats(false));
     }
 
     @Scheduled(cron = "0 0 0 * * *")

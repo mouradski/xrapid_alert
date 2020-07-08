@@ -8,6 +8,7 @@ import {Payment} from "../tables/tables.component";
 import {CookieService} from 'ngx-cookie-service';
 import {CurrencyPipe} from '@angular/common';
 import {TablesService} from "../tables/tables.service";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 
 @Component({
@@ -35,8 +36,13 @@ export class DashboardComponent implements OnInit {
   private recInterval = null;
   private socket = null;
 
+  public mobile: boolean;
 
-  constructor(private httpClient: HttpClient, private cookieService: CookieService, private tablesService: TablesService) {
+
+    constructor(private httpClient: HttpClient, private cookieService: CookieService, private tablesService: TablesService, private deviceService: DeviceDetectorService) {
+
+    this.mobile = this.deviceService.isMobile();
+
     const _this = this;
     this.trxSecondsAgo = 0;
 

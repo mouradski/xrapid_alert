@@ -19,5 +19,6 @@ public enum Currency {
     NZD,
     IDR,
     KRW,
-    NGN
+    NGN,
+    BYN
 }

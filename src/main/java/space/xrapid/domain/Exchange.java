@@ -20,6 +20,13 @@ public enum Exchange {
             "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
             "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD"),
 
+    BITSTAMP_GBP("bitstamp", true, GBP, false,
+            "rrpNnNLKrartuEqfJGpqyDwPj1AFPg9vn1",
+            "rGFuMiw48HdbnrUbkRYuitXTmfrDBNTCnX",
+            "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
+            "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+            "rUobSiUpYH2S97Mgb4E7b7HuzQj2uzZ3aD"),
+
     BITSO("bitso", true, MXN, true,
             "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
             "rHZaDC6tsGN2JWGeXhjKL6664RNCq5hu4B",
@@ -37,7 +44,7 @@ public enum Exchange {
 
     CEX_IO("cex.io", false, USD, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
     CEX_IO_EUR("cex.io", false, EUR, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
-    CEX_IO_GBP("cex.io", true, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
+    CEX_IO_GBP("cex.io", false, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
 
 
     COINFIELD_USD("coinfield", false, USD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
@@ -70,12 +77,17 @@ public enum Exchange {
             "rNTkgxs5WG5mU5Sz26YoDVrHim5Y5ohC7", "r9hUMZBc3MWRc4YdsdZgNCW5Qef8wNSXpb", "rD7XQw67JWBXuo2WPX2gZRsGKNsDUGTbx5", "r9LHiNDZvpLoWPoKnbH2JWjFET8zoYT4Y5",
             "rBF3GWchod3QL8TEYicwSeMu6sjXqKFaQ2", "rDFCAUDVB5QhB61ETGT6tf8Rm1zBsj8LHU", "rDxfhNRgCDNDckm45zT5ayhKDC4Ljm7UoP", "rsdd66csGZkTzk42NDpJun7PNrGsC7WJHv"),
 
+    UPBIT("upbit", true, KRW, true, "rNzT5xopUaJK8L7mHbThUGKaHoct62dNBC", "rN9qNpgnBaZwqCg8CvUZRPqCcPPY7wfWep", "rJYQKfsTi8XCLZ1vGSf9CxiL4prz5bvbtz", "rBszWJzYpNoqoY4xKuGUpN23b6EBT41ocF"),
+
     INDEP_RESERVE("independent reserve", false, NZD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
 
     MERCADO("mercado", true, BRL, false, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH", "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
 
     BRAZILIEX("braziliex", false, BRL, false,
             "__UNKNOW__"),
+
+
+    CURRENCY_COM("currency.com", true, BYN, false, "rpUJKigvytgfaM77qC9bNTNQiUZgGemSiB"),
 
     BITCOIN_TRADE("bitcoin_trade", true, BRL, false, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),
 
