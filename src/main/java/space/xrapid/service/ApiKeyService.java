@@ -24,17 +24,25 @@ public class ApiKeyService {
 
 
     @Cacheable(value = "apiKey", key = "#key")
-    public void validateKey(final String key) {
-        if (key == null || !apiKeyRepository.existsByKeyAndExpirationIsAfter(key, new Date())) {
+    public boolean validateKey(final String key) {
+        if (key == null) {
             throw new UnauthorizedException();
         }
+
+        ApiKey apiKey = apiKeyRepository.getByKey(key).orElse(null);
+
+        if (apiKey == null || apiKey.isBan() || apiKey.getExpiration().getTime() < new Date().getTime()) {
+            throw new UnauthorizedException();
+        }
+
+        return apiKey.isMaster();
     }
 
     @Transactional(readOnly = true)
     public void validateKey(final String key, String ip) {
-        checkCallLimits(key, ip);
-
-         validateKey(key);
+        if (!validateKey(key)) {
+            checkCallLimits(key, ip);
+        }
     }
 
     private void checkCallLimits(String key, String ip) {
