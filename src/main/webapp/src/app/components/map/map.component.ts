@@ -147,7 +147,7 @@ export class MapComponent implements AfterViewInit {
                 "latitude": 47.5101,
                 "longitude": 8.2055,
                 "title": "Europe",
-                "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
+                "flag": "https://utility-scan.com/img/europe.png"
             }, {
                 "latitude": 9.0777,
                 "longitude": 8.67745,
