@@ -143,32 +143,32 @@ export class MapComponent implements AfterViewInit {
                 "longitude": -43.2096,
                 "title": "Brasil",
                 "flag": "https://cdn.countryflags.com/thumbs/brazil/flag-3d-round-500.png"
-            },
-                {
-                    "latitude": 47.5101,
-                    "longitude": 8.2055,
-                    "title": "Europe",
-                    "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
-                },
-                {
-                    "latitude": 9.0777,
-                    "longitude": 8.67745,
-                    "title": "Nigeria",
-                    "flag": "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-500.png"
-                }
-
-                , {
-                    "latitude": 55.5085,
-                    "longitude": -4.9257,
-                    "title": "United Kingdom",
-                    "flag": "https://cdn.countryflags.com/thumbs/united-kingdom/flag-3d-round-500.png"
-                },
-                {
-                    "latitude": 35.6895,
-                    "longitude": 139.6917,
-                    "title": "Japan",
-                    "flag": "https://cdn.countryflags.com/thumbs/japan/flag-3d-round-500.png"
-                }
+            }, {
+                "latitude": 47.5101,
+                "longitude": 8.2055,
+                "title": "Europe",
+                "flag": "https://cdn.quincaillerie.pro/images/4f4b0799128b63bf9243/0/0/P211854.png"
+            }, {
+                "latitude": 9.0777,
+                "longitude": 8.67745,
+                "title": "Nigeria",
+                "flag": "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-500.png"
+            }, {
+                "latitude": 55.5085,
+                "longitude": -4.9257,
+                "title": "United Kingdom",
+                "flag": "https://cdn.countryflags.com/thumbs/united-kingdom/flag-3d-round-500.png"
+            }, {
+                "latitude": 35.6895,
+                "longitude": 139.6917,
+                "title": "Japan",
+                "flag": "https://cdn.countryflags.com/thumbs/japan/flag-3d-round-500.png"
+            }, {
+                "latitude": -36.8484,
+                "longitude": 174.7633,
+                "title": "New Zealand",
+                "flag": "https://cdn.countryflags.com/thumbs/new-zealand/flag-3d-round-500.png"
+            }
             ];
 
             this.cities = this.mapChart.series.push(new am4maps.MapImageSeries());
@@ -186,6 +186,7 @@ export class MapComponent implements AfterViewInit {
             this.currencies.set("GBP", this.addCity({"latitude": 55.5085, "longitude": -4.9257}, "United Kingdom"));
             this.currencies.set("JPY", this.addCity({"latitude": 35.6895, "longitude": 139.6917}, "Japan"));
             this.currencies.set("NGN", this.addCity({"latitude": 9.0777, "longitude": 8.67745}, "Nigeria"));
+            this.currencies.set("NZD", this.addCity({"latitude": -36.8484, "longitude": 174.7633}, "New Zealand"));
 
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
