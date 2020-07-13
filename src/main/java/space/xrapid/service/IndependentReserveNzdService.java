@@ -22,7 +22,7 @@ public class IndependentReserveNzdService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<Trades> response = restTemplate.exchange(apiUrl,
+        ResponseEntity<Trades> response = restTemplate.exchange(getApiUrl(),
                 HttpMethod.GET, entity, Trades.class);
 
         return response.getBody().getTrades().stream()
@@ -48,5 +48,9 @@ public class IndependentReserveNzdService implements TradeService {
                 .rate(trade.getSecondaryCurrencyTradePrice())
                 .orderId(String.valueOf(dateTime.toEpochSecond() * 1000))
                 .build();
+    }
+
+    protected String getApiUrl() {
+        return apiUrl;
     }
 }
