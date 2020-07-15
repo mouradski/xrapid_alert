@@ -186,14 +186,6 @@ public abstract class XrapidCorridors {
 
     protected boolean xrpToFiatTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
 
-
-        if ("7A2EB29DC44FA78CFCCB1ADCEE672771842DCF98775B5049634ED2F70D28FC67".equals(exchangeToExchangePayment.getTransactionHash()) ||
-            "97EF92D8D81C212DDC100B3B20208772F9D58220FD0A8FA4BA2C776C21984750".equals(exchangeToExchangePayment.getTransactionHash()) ||
-                "1E288C0DBB0DC9B600291CEE4F48A9A350F368ABE115634556BC1F3E7E529DFD".equals(exchangeToExchangePayment.getTransactionHash())) {
-
-            System.out.println("test");
-        }
-
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
             return false;
         }
