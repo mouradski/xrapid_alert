@@ -53,7 +53,7 @@ public class TradesCombinaisonsHelper {
                 double sum = sum(candidates);
                 double diff = calculateDiff(amount, sum, side);
 
-                if (diff <= 0.04005 || bitstampe(trades, sum, diff)) {
+                if ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff)) {
 
                     if (diff <= 0.02) {
                         return candidates;
@@ -83,6 +83,15 @@ public class TradesCombinaisonsHelper {
         return diff <= sum * 0.05;
     }
 
+    private static boolean bitso(List<Trade> trades, double sum, double diff) {
+        if (!trades.get(0).getExchange().equals(Exchange.BITSO)) {
+            return false;
+        }
+
+
+        return Math.abs(diff) <= sum * 0.02;
+    }
+
     public static List<List<Trade>> sub(List<Trade> trades, int size) {
 
         List<List<Trade>> result = new ArrayList<>();
@@ -104,7 +113,8 @@ public class TradesCombinaisonsHelper {
 
     private static double calculateDiff(double amount, double sum, String side) {
         double diff = "buy".equals(side) ? sum - amount : amount - sum;
-        return diff >= 0 ? diff : Double.POSITIVE_INFINITY;
+        return diff;
+        //return diff >= 0 ? diff : Double.POSITIVE_INFINITY;
     }
 
     private static List<Trade> getClosestGroup(List<List<Trade>> trades, double amount) {
