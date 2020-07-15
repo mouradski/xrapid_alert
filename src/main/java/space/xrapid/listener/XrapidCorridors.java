@@ -80,7 +80,7 @@ public abstract class XrapidCorridors {
                 .collect(Collectors.toSet());
     }
 
-    public abstract Exchange getDestinationExchange();
+    public abstract Exchange getSourceExchange();
 
     public abstract SpottedAt getSpottedAt();
 
@@ -290,8 +290,8 @@ public abstract class XrapidCorridors {
         return trades.stream()
                 .filter(trade -> trade.getOrderId() != null)
                 .filter(trade -> side.equals(trade.getSide()))
-                .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
-                .filter(trade -> trade.getExchange().equals(getDestinationExchange()))
+                .filter(trade -> getSourceExchange().equals(exchangeToExchangePayment.getDestination()))
+                .filter(trade -> trade.getExchange().equals(getSourceExchange()))
                 .filter(filterXrpToFiatTradePerDate(exchangeToExchangePayment))
                 .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
                 .collect(Collectors.toList());

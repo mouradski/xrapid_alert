@@ -20,6 +20,7 @@ import static space.xrapid.job.Scheduler.transactionHashes;
 @Slf4j
 public class EndToEndXrapidCorridors extends XrapidCorridors {
 
+    private Exchange sourceExchange;
     private Exchange destinationExchange;
 
     private Currency destinationFiat;
@@ -27,6 +28,10 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
     private Currency sourceFiat;
 
     private boolean requireEndToEnd;
+
+    public Exchange getSourceExchange() {
+        return sourceExchange;
+    }
 
     public Exchange getDestinationExchange() {
         return destinationExchange;
@@ -40,22 +45,23 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
 
     public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService,
-                                   SimpMessageSendingOperations messagingTemplate, Exchange exchange, Currency destinationFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds, String proxyUrl) {
+                                   SimpMessageSendingOperations messagingTemplate, Exchange sourceExchange, Exchange destinationExchange, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds, String proxyUrl) {
 
         super(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, null, tradeIds, proxyUrl);
-
 
         this.buyDelta = buyDelta;
         this.sellDelta = sellDelta;
 
         this.requireEndToEnd = requireEndToEnd;
 
-        this.destinationFiat = destinationFiat;
-        if (exchange != null) {
-            this.sourceFiat = exchange.getLocalFiat();
+        this.destinationFiat = destinationExchange.getLocalFiat();
+        this.destinationExchange = destinationExchange;
+        if (sourceExchange != null) {
+            this.sourceFiat = sourceExchange.getLocalFiat();
 
         }
-        this.destinationExchange = exchange;
+        this.sourceExchange = sourceExchange;
+        this.destinationExchange = destinationExchange;
     }
 
     public void searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
@@ -90,7 +96,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         } else {
             payments.stream()
                     .map(this::mapPayment)
-                    .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
+                    .filter(payment -> this.getSourceExchange().equals(payment.getDestination()))
                     .peek(payment -> payment.setSourceFiat(this.destinationFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)
                     .peek(payment -> payment.setSpottedAt(SpottedAt.DESTINATION_TAG))
@@ -176,9 +182,11 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             .filter(trade -> trade.getOrderId() != null)
             .filter(trade -> side.equals(trade.getSide()))
             .filter(trade -> trade.getExchange().equals(exchangeToExchangePayment.getDestination()))
+            .filter(trade -> trade.getExchange().equals(getDestinationExchange()))
             .filter(filterXrpToFiatTradePerDate(exchangeToExchangePayment))
             .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
             .collect(Collectors.toList());
 
     }
+
 }

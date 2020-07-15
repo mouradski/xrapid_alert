@@ -34,7 +34,7 @@ public class InboundXrapidCorridors extends XrapidCorridors {
     }
 
     @Override
-    public Exchange getDestinationExchange() {
+    public Exchange getSourceExchange() {
         return destinationExchange;
     }
 

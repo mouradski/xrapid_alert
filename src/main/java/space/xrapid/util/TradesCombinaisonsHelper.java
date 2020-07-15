@@ -75,25 +75,22 @@ public class TradesCombinaisonsHelper {
     }
 
     private static boolean bitstampe(List<Trade> trades, double sum, double diff) {
-        if (!Arrays.asList(Exchange.BITSTAMP, Exchange.BITSTAMP_GBP, Exchange.BITSTAMP_EUR).contains(trades.get(0).getExchange())) {
+        if (!Arrays.asList(Exchange.BITSTAMP, Exchange.BITSTAMP_GBP, Exchange.BITSTAMP_EUR).contains(trades.get(0).getExchange()) || sum < 10000) {
             return false;
         }
-
 
         return diff <= sum * 0.05;
     }
 
     private static boolean bitso(List<Trade> trades, double sum, double diff) {
-        if (!trades.get(0).getExchange().equals(Exchange.BITSO)) {
+        if (!trades.get(0).getExchange().equals(Exchange.BITSO) || sum < 10000) {
             return false;
         }
-
 
         return Math.abs(diff) <= sum * 0.02;
     }
 
     public static List<List<Trade>> sub(List<Trade> trades, int size) {
-
         List<List<Trade>> result = new ArrayList<>();
 
         int index = 0;

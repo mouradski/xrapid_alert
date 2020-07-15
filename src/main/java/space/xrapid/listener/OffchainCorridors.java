@@ -122,7 +122,7 @@ public class OffchainCorridors extends XrapidCorridors {
 
 
     @Override
-    public Exchange getDestinationExchange() {
+    public Exchange getSourceExchange() {
         return null;
     }
 
