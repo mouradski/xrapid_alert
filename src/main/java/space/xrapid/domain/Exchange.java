@@ -1,6 +1,8 @@
 package space.xrapid.domain;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static space.xrapid.domain.Currency.*;
 
@@ -146,6 +148,20 @@ public enum Exchange {
                     .filter(exchange -> exchange.getLocalFiat().equals(fiat))
                     .findAny().orElse(null);
         }
+    }
+
+    public static List<Currency> currencies(String address) {
+        return Arrays.stream(Exchange.values())
+            .filter(exchange -> Arrays.asList(exchange.addresses).contains(address))
+            .map(Exchange::getLocalFiat)
+            .collect(Collectors.toList());
+
+    }
+
+    public static List<Currency> currencies(Exchange exchange) {
+        String adr = exchange.addresses[0];
+        return currencies(adr);
+
     }
 
     public String getName() {

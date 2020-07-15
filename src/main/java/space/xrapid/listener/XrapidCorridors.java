@@ -55,8 +55,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds, String proxyUrl) {
 
-        this.buyDelta = 200;
-        this.sellDelta = 200;
+        this.buyDelta = 60  * 5 ;
+        this.sellDelta = 60 * 5;
 
         this.proxyUrl = proxyUrl;
 
@@ -177,7 +177,7 @@ public abstract class XrapidCorridors {
         };
     }
 
-    private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
+    protected Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             long diff = Math.abs(ChronoUnit.SECONDS.between(trade.getDateTime(), exchangeToExchangePayment.getDateTime()));
             return exchangeToExchangePayment.getDateTime().isBefore(trade.getDateTime()) && diff < buyDelta && diff >= 2;
@@ -185,6 +185,14 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean xrpToFiatTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
+
+
+        if ("7A2EB29DC44FA78CFCCB1ADCEE672771842DCF98775B5049634ED2F70D28FC67".equals(exchangeToExchangePayment.getTransactionHash()) ||
+            "97EF92D8D81C212DDC100B3B20208772F9D58220FD0A8FA4BA2C776C21984750".equals(exchangeToExchangePayment.getTransactionHash()) ||
+                "1E288C0DBB0DC9B600291CEE4F48A9A350F368ABE115634556BC1F3E7E529DFD".equals(exchangeToExchangePayment.getTransactionHash())) {
+
+            System.out.println("test");
+        }
 
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())) {
             return false;
@@ -232,6 +240,7 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean fiatToXrpTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
+
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())
                 || exchangeToExchangePayment.getSource() == null || exchangeToExchangePayment.getDestination() == null) {
             return false;

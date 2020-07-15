@@ -3,17 +3,17 @@ package space.xrapid.listener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.*;
+import space.xrapid.domain.Currency;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradesFoundCacheService;
 import space.xrapid.service.XrapidInboundAddressService;
+import space.xrapid.util.TradesCombinaisonsHelper;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static space.xrapid.job.Scheduler.transactionHashes;
 
@@ -21,6 +21,8 @@ import static space.xrapid.job.Scheduler.transactionHashes;
 public class EndToEndXrapidCorridors extends XrapidCorridors {
 
     private Exchange destinationExchange;
+
+    private Currency destinationFiat;
 
     private Currency sourceFiat;
 
@@ -30,13 +32,15 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         return destinationExchange;
     }
 
-    public Currency getSourceFiat() {
-        return sourceFiat;
+    public Currency getDestinationFiat() {
+        return destinationFiat;
     }
+
+    public Currency getSourceFiat() {return sourceFiat;}
 
 
     public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService,
-                                   SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, Currency sourceFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds, String proxyUrl) {
+                                   SimpMessageSendingOperations messagingTemplate, Exchange exchange, Currency destinationFiat, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds, String proxyUrl) {
 
         super(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, null, tradeIds, proxyUrl);
 
@@ -46,8 +50,12 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
         this.requireEndToEnd = requireEndToEnd;
 
-        this.sourceFiat = sourceFiat;
-        this.destinationExchange = destinationExchange;
+        this.destinationFiat = destinationFiat;
+        if (exchange != null) {
+            this.sourceFiat = exchange.getLocalFiat();
+
+        }
+        this.destinationExchange = exchange;
     }
 
     public void searchXrapidPayments(List<Payment> payments, List<Trade> trades, double rate) {
@@ -83,12 +91,67 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             payments.stream()
                     .map(this::mapPayment)
                     .filter(payment -> this.getDestinationExchange().equals(payment.getDestination()))
-                    .peek(payment -> payment.setSourceFiat(this.sourceFiat))
+                    .peek(payment -> payment.setSourceFiat(this.destinationFiat))
                     .filter(xrapidInboundAddressService::isXrapidDestination)
                     .peek(payment -> payment.setSpottedAt(SpottedAt.DESTINATION_TAG))
                     .sorted(Comparator.comparing(ExchangeToExchangePayment::getTimestamp))
                     .forEach(payment -> persistPayment(payment));
         }
+    }
+
+    @Override
+    protected boolean fiatToXrpTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
+
+        exchangeToExchangePayment.setSource(Exchange.byAddress(exchangeToExchangePayment.getSourceAddress(), this.getSourceFiat()));
+
+        if ("7A2EB29DC44FA78CFCCB1ADCEE672771842DCF98775B5049634ED2F70D28FC67".equals(exchangeToExchangePayment.getTransactionHash()) ||
+            "97EF92D8D81C212DDC100B3B20208772F9D58220FD0A8FA4BA2C776C21984750".equals(exchangeToExchangePayment.getTransactionHash()) ||
+            "1E288C0DBB0DC9B600291CEE4F48A9A350F368ABE115634556BC1F3E7E529DFD".equals(exchangeToExchangePayment.getTransactionHash())) {
+
+            System.out.println("test");
+
+
+            if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())
+                || exchangeToExchangePayment.getSource() == null || exchangeToExchangePayment.getDestination() == null) {
+                return false;
+            }
+        }
+
+        if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())
+            || exchangeToExchangePayment.getSource() == null || exchangeToExchangePayment.getDestination() == null) {
+            return false;
+        }
+
+        Arrays.asList(getAggregatedBuyTrades(exchangeToExchangePayment, "buy"), getAggregatedBuyTrades(exchangeToExchangePayment, "sell"))
+            .forEach(aggregatedTrades -> {
+                if (!aggregatedTrades.isEmpty() && (exchangeToExchangePayment.getFiatToXrpTrades() == null || exchangeToExchangePayment.getFiatToXrpTrades().isEmpty())) {
+
+                    List<Trade> closestTrades = tradesFoundCacheService.getFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange());
+
+                    if (closestTrades == null) {
+                        closestTrades = TradesCombinaisonsHelper.getTrades(aggregatedTrades, exchangeToExchangePayment.getAmount(), "buy");
+
+                        if (!closestTrades.isEmpty()) {
+                            tradesFoundCacheService.addFiatToXrpTrades(exchangeToExchangePayment.getTransactionHash(), aggregatedTrades.get(0).getExchange(), closestTrades);
+                        }
+                    }
+
+                    double sum = closestTrades.stream().mapToDouble(Trade::getAmount).sum();
+
+                    if (sum > 0) {
+
+                        exchangeToExchangePayment.setFiatToXrpTrades(closestTrades);
+                        exchangeToExchangePayment.setFiatToXrpTradeIds(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+                        String tradeIds = closestTrades.stream().map(Trade::getOrderId).collect(Collectors.joining(";"));
+                        exchangeToExchangePayment.setOutTradeFound(true);
+                        exchangeToExchangePayment.setTradeOutIds(tradeIds);
+
+                        tradesIdAlreadyProcessed.addAll(closestTrades.stream().map(Trade::getOrderId).collect(Collectors.toList()));
+                    }
+                }
+            });
+
+        return exchangeToExchangePayment.isOutTradeFound();
     }
 
     @Override
@@ -103,7 +166,7 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
             return ExchangeToExchangePayment.builder()
                     .amount(payment.getDeliveredAmount())
                     .destination(Exchange.byAddress(payment.getDestination()))
-                    .source(Exchange.byAddress(payment.getSource(), getSourceFiat()))
+                    .source(Exchange.byAddress(payment.getSource(), getDestinationFiat()))
                     .sourceAddress(payment.getSource())
                     .destinationAddress(payment.getDestination())
                     .tag(payment.getDestinationTag())
@@ -116,5 +179,19 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
         } catch (Exception e) {
             return null;
         }
+    }
+
+
+    @Override
+    protected List<Trade> getAggregatedSellTrades(ExchangeToExchangePayment exchangeToExchangePayment, String side) {
+
+        return trades.stream()
+            .filter(trade -> trade.getOrderId() != null)
+            .filter(trade -> side.equals(trade.getSide()))
+            .filter(trade -> trade.getExchange().equals(exchangeToExchangePayment.getDestination()))
+            .filter(filterXrpToFiatTradePerDate(exchangeToExchangePayment))
+            .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
+            .collect(Collectors.toList());
+
     }
 }
