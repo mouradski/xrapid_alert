@@ -1,77 +1,51 @@
 package space.xrapid.util;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.paukov.combinatorics3.Generator;
 import org.paukov.combinatorics3.IGenerator;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TradesCombinaisonsHelper {
 
     public static List<Trade> getTrades(List<Trade> trades, double amount, String side) {
-        int maxSize = Math.min(trades.size(), 16);
-
-        if (trades.size() > 20) {
-            List<List<Trade>> candidates = new ArrayList<>();
-
-            sub(trades, 20).parallelStream().forEach(tradeGroup -> {
-                List<Trade> groupCandidate = getTrades(tradeGroup, amount, Math.min(tradeGroup.size(), 16), side);
-                if (!groupCandidate.isEmpty()) {
-                    candidates.add(groupCandidate);
-                }
-            });
-
-            if (!candidates.isEmpty()) {
-                return getClosestGroup(candidates, amount);
-            } else {
-                return new ArrayList<>();
-            }
-        }
-
-
-        return getTrades(trades, amount, maxSize, side);
+        return getTrades2(trades, amount, side);
     }
 
-    private static List<Trade> getTrades(List<Trade> trades, double amount, int maxSize, String side) {
+    private static List<Trade> getTrades2(List<Trade> trades, double amount, String side) {
 
         List<Trade> toReturn = new ArrayList<>();
 
         double min = 10000;
 
-        for (int i = 1; i <= maxSize; i++) {
+        List<Pair<Double, List<Trade>>> tradesByTimestamp = trades.stream().collect(Collectors.groupingBy(Trade::getTimestamp)).values().stream().map(TradesCombinaisonsHelper::sums).collect(Collectors.toList());
 
-            long start = new Date().getTime();
 
-            IGenerator<List<Trade>> combinaisons = Generator.combination(trades).simple(i);
+        for (Pair<Double, List<Trade>> pair : tradesByTimestamp) {
+            double sum = pair.getLeft();
+            double diff = calculateDiff(amount, sum, side);
 
-            Iterator<List<Trade>> iterator = combinaisons.iterator();
+            if ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff)) {
 
-            while (iterator.hasNext()) {
-                List<Trade> candidates = iterator.next();
+                if (diff <= 0.02) {
+                    return pair.getRight();
+                }
 
-                double sum = sum(candidates);
-                double diff = calculateDiff(amount, sum, side);
-
-                if ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff)) {
-
-                    if (diff <= 0.02) {
-                        return candidates;
-                    }
-
-                    if (diff < min) {
-                        toReturn = candidates;
-                        min = diff;
-
-                        if (new Date().getTime() - start > 15000) {
-                            break;
-                        }
-                    }
+                if (diff < min) {
+                    toReturn = pair.getRight();
+                    min = diff;
                 }
             }
         }
 
         return toReturn;
+    }
+
+    private static Pair<Double, List<Trade>> sums(List<Trade> trades) {
+        return Pair.of(sum(trades), trades);
     }
 
     private static boolean bitstampe(List<Trade> trades, double sum, double diff) {
