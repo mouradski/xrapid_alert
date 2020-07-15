@@ -2,12 +2,10 @@ package space.xrapid.util;
 
 import org.paukov.combinatorics3.Generator;
 import org.paukov.combinatorics3.IGenerator;
+import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class TradesCombinaisonsHelper {
 
@@ -55,7 +53,7 @@ public class TradesCombinaisonsHelper {
                 double sum = sum(candidates);
                 double diff = calculateDiff(amount, sum, side);
 
-                if (diff <= 0.04005) {
+                if (diff <= 0.04005 || bitstampe(trades, sum, diff)) {
 
                     if (diff <= 0.02) {
                         return candidates;
@@ -74,6 +72,15 @@ public class TradesCombinaisonsHelper {
         }
 
         return toReturn;
+    }
+
+    private static boolean bitstampe(List<Trade> trades, double sum, double diff) {
+        if (!Arrays.asList(Exchange.BITSTAMP, Exchange.BITSTAMP_GBP, Exchange.BITSTAMP_EUR).contains(trades.get(0).getExchange())) {
+            return false;
+        }
+
+
+        return diff <= sum * 0.05;
     }
 
     public static List<List<Trade>> sub(List<Trade> trades, int size) {
