@@ -7,7 +7,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Stats;
 import space.xrapid.domain.Trade;
@@ -25,6 +24,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static space.xrapid.job.Config.MAX_TRADE_DELAY_IN_MINUTES;
+import static space.xrapid.job.Config.XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES;
 
 @Slf4j
 @EnableScheduling
@@ -69,13 +71,9 @@ public class Scheduler {
     public static Set<String> offChainFiatToXrpTradeIds = new HashSet<>();
 
 
-    private static int MAX_TRADE_DELAY_IN_MINUTES = 4;
-    private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
-
     private ExecutorService executorService = Executors.newFixedThreadPool(7);
 
     private OffsetDateTime lastWindowEnd;
-    private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
 
@@ -118,8 +116,6 @@ public class Scheduler {
         List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).collect(Collectors.toList());
         List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).collect(Collectors.toList());
 
-        Set<Currency> destinationFiats = availableExchangesWithApi.stream().map(Exchange::getLocalFiat).collect(Collectors.toSet());
-
         updatePaymentsWindows();
 
         OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
@@ -137,27 +133,27 @@ public class Scheduler {
 
         double rate = rateService.getXrpUsdRate();
 
-        log.info("Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
-        endToEndSearch(availableExchangesWithApi, destinationFiats, payments, allTrades, rate);
 
+        Set<String> tradesFound = new HashSet<>();
+
+        log.info("Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
+        endToEndSearch(availableExchangesWithApi, payments, allTrades, rate, tradesFound);
 
         log.info("Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
-        atDestinationSearch(availableExchangesWithApi, payments, allTrades, rate);
+        atDestinationSearch(availableExchangesWithApi, payments, allTrades, rate, tradesFound);
 
         log.info("Search for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
-        atSourceSearch(allConfirmedExchange, availableExchangesWithApi, payments, allTrades, rate);
+        atSourceSearch(allConfirmedExchange, availableExchangesWithApi, payments, allTrades, rate, tradesFound);
 
 
         log.info("Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
-        byDestinationTagSearch(availableExchangesWithApi, destinationFiats, payments, allTrades, rate);
+        byDestinationTagSearch(availableExchangesWithApi, payments, allTrades, rate, tradesFound);
 
         Stats stats = exchangeToExchangePaymentService.calculateStats(21);
 
         if (stats != null) {
             messagingTemplate.convertAndSend("/topic/stats", exchangeToExchangePaymentService.calculateStats(21));
         }
-
-
     }
 
     private List<Trade> fetchTrades() {
@@ -178,51 +174,48 @@ public class Scheduler {
         return allTrades;
     }
 
-    private void byDestinationTagSearch(List<Exchange> availableExchangesWithApi, Set<Currency> destinationFiats, List<Payment> payments, List<Trade> allTrades, double rate) {
-        destinationFiats.forEach(fiat -> {
+    private void byDestinationTagSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate, Set<String> tradesFound) {
+        availableExchangesWithApi.forEach(sourceExchange -> {
             availableExchangesWithApi.stream()
-                    .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
-                    .forEach(exchange -> {
+                    .filter(destinationExchange -> !destinationExchange.equals(sourceExchange))
+                    .forEach(destinationExchange -> {
                         executorService.execute(() -> {
-
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, 90, 90, false, null, proxyUrl)
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, sourceExchange, destinationExchange, false, tradesFound, proxyUrl)
                                     .searchXrapidPayments(payments, allTrades, rate);
                         });
                     });
         });
+
     }
 
-    private void atSourceSearch(List<Exchange> allConfirmedExchange, List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate) {
+    private void atSourceSearch(List<Exchange> allConfirmedExchange, List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate, Set<String> tradesFound) {
         allConfirmedExchange.stream()
                 .filter(exchange -> !availableExchangesWithApi.contains(exchange))
                 .forEach(exchange -> {
                     executorService.execute(() -> {
-
-                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades, rate);
+                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, tradesFound)
+                                .searchXrapidPayments(payments, allTrades, rate);
                     });
                 });
     }
 
-    private void atDestinationSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate) {
+    private void atDestinationSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate, Set<String> tradesFound) {
         availableExchangesWithApi.forEach(exchange -> {
             executorService.execute(() -> {
-
-                new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, tradesFound).searchXrapidPayments(payments, allTrades
+                        .stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
             });
         });
     }
 
-    private void endToEndSearch(List<Exchange> availableExchangesWithApi, Set<Currency> destinationFiats, List<Payment> payments, List<Trade> allTrades, double rate) {
-        destinationFiats.forEach(fiat -> {
+    private void endToEndSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate, Set<String> tradesFound) {
+        availableExchangesWithApi.forEach(sourceExchange -> {
             availableExchangesWithApi.stream()
-                    .filter(exchange -> !exchange.getLocalFiat().equals(fiat))
-                    .forEach(exchange -> {
-                        final Set<String> tradeIds = new HashSet<>();
-                        Arrays.asList(60 * MAX_TRADE_DELAY_IN_MINUTES).forEach(delta -> {
-                            executorService.execute(() -> {
-                                new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, exchange, fiat, delta, delta, true, tradeIds, proxyUrl)
-                                        .searchXrapidPayments(payments, allTrades, rate);
-                            });
+                    .filter(destinationExchange -> !destinationExchange.equals(sourceExchange))
+                    .forEach(destinationExchange -> {
+                        executorService.execute(() -> {
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, sourceExchange, destinationExchange, true, tradesFound, proxyUrl)
+                                    .searchXrapidPayments(payments, allTrades, rate);
                         });
                     });
         });
@@ -230,13 +223,6 @@ public class Scheduler {
 
     private void updatePaymentsWindows() {
         windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
-        windowStart = windowEnd.minusMinutes(20);
-
-        if (lastWindowEnd != null) {
-            windowStart = lastWindowEnd;
-        }
-
-        lastWindowEnd = windowEnd;
     }
 
     @Scheduled(cron = "0 15 2 1/1 * ?")

@@ -13,6 +13,7 @@ import space.xrapid.service.TradesFoundCacheService;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import static space.xrapid.job.Scheduler.transactionHashes;
 
@@ -23,9 +24,9 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
 
     public OutboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService,
                                    TradesFoundCacheService tradesFoundCacheService, SimpMessageSendingOperations messagingTemplate,
-                                   Exchange destinationExchange, List<Exchange> exchangesWithApi, String proxyUrl) {
+                                   Exchange destinationExchange, List<Exchange> exchangesWithApi, String proxyUrl, Set<String> tradesFound) {
 
-        super(exchangeToExchangePaymentService, tradesFoundCacheService, null, messagingTemplate, exchangesWithApi, null, proxyUrl);
+        super(exchangeToExchangePaymentService, tradesFoundCacheService, null, messagingTemplate, exchangesWithApi, tradesFound, proxyUrl);
         this.destinationExchange = destinationExchange;
     }
 
@@ -53,7 +54,7 @@ public class OutboundXrapidCorridors extends XrapidCorridors {
     }
 
     @Override
-    public Exchange getDestinationExchange() {
+    public Exchange getSourceExchange() {
         return destinationExchange;
     }
 

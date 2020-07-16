@@ -55,8 +55,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds, String proxyUrl) {
 
-        this.buyDelta = 200;
-        this.sellDelta = 200;
+        this.buyDelta = 60  * 4 ;
+        this.sellDelta = 60 * 4;
 
         this.proxyUrl = proxyUrl;
 
@@ -80,7 +80,7 @@ public abstract class XrapidCorridors {
                 .collect(Collectors.toSet());
     }
 
-    public abstract Exchange getDestinationExchange();
+    public abstract Exchange getSourceExchange();
 
     public abstract SpottedAt getSpottedAt();
 
@@ -177,7 +177,7 @@ public abstract class XrapidCorridors {
         };
     }
 
-    private Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
+    protected Predicate<Trade> filterXrpToFiatTradePerDate(ExchangeToExchangePayment exchangeToExchangePayment) {
         return trade -> {
             long diff = Math.abs(ChronoUnit.SECONDS.between(trade.getDateTime(), exchangeToExchangePayment.getDateTime()));
             return exchangeToExchangePayment.getDateTime().isBefore(trade.getDateTime()) && diff < buyDelta && diff >= 2;
@@ -232,6 +232,7 @@ public abstract class XrapidCorridors {
     }
 
     protected boolean fiatToXrpTradesExists(ExchangeToExchangePayment exchangeToExchangePayment) {
+
         if (exchangesToExclude.contains(exchangeToExchangePayment.getDestination()) && exchangesToExclude.contains(exchangeToExchangePayment.getSource())
                 || exchangeToExchangePayment.getSource() == null || exchangeToExchangePayment.getDestination() == null) {
             return false;
@@ -289,8 +290,8 @@ public abstract class XrapidCorridors {
         return trades.stream()
                 .filter(trade -> trade.getOrderId() != null)
                 .filter(trade -> side.equals(trade.getSide()))
-                .filter(trade -> getDestinationExchange().equals(exchangeToExchangePayment.getDestination()))
-                .filter(trade -> trade.getExchange().equals(getDestinationExchange()))
+                .filter(trade -> getSourceExchange().equals(exchangeToExchangePayment.getDestination()))
+                .filter(trade -> trade.getExchange().equals(getSourceExchange()))
                 .filter(filterXrpToFiatTradePerDate(exchangeToExchangePayment))
                 .filter(trade -> !tradesIdAlreadyProcessed.contains(trade.getOrderId()))
                 .collect(Collectors.toList());

@@ -23,13 +23,13 @@ public class XummService {
 
     private final String apiBase = "https://xumm.app/api/v1/platform/payload";
 
-    @Value("${xumm.api.key}")
+    @Value("${xumm.api.key:}")
     private String apiKey;
 
-    @Value("${xumm.api.secret}")
+    @Value("${xumm.api.secret:}")
     private String secret;
 
-    @Value("${xumm.api.destination}")
+    @Value("${xumm.api.destination:}")
     private String destination;
 
     @Autowired

@@ -1,74 +1,37 @@
 package space.xrapid.util;
 
-import org.paukov.combinatorics3.Generator;
-import org.paukov.combinatorics3.IGenerator;
+import org.apache.commons.lang3.tuple.Pair;
+import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TradesCombinaisonsHelper {
 
     public static List<Trade> getTrades(List<Trade> trades, double amount, String side) {
-        int maxSize = Math.min(trades.size(), 16);
-
-        if (trades.size() > 20) {
-            List<List<Trade>> candidates = new ArrayList<>();
-
-            sub(trades, 20).parallelStream().forEach(tradeGroup -> {
-                List<Trade> groupCandidate = getTrades(tradeGroup, amount, Math.min(tradeGroup.size(), 16), side);
-                if (!groupCandidate.isEmpty()) {
-                    candidates.add(groupCandidate);
-                }
-            });
-
-            if (!candidates.isEmpty()) {
-                return getClosestGroup(candidates, amount);
-            } else {
-                return new ArrayList<>();
-            }
-        }
-
-
-        return getTrades(trades, amount, maxSize, side);
-    }
-
-    private static List<Trade> getTrades(List<Trade> trades, double amount, int maxSize, String side) {
-
         List<Trade> toReturn = new ArrayList<>();
 
         double min = 10000;
 
-        for (int i = 1; i <= maxSize; i++) {
+        List<Pair<Double, List<Trade>>> tradesByTimestamp = trades.stream().collect(Collectors.groupingBy(Trade::getTimestamp)).values().stream().map(TradesCombinaisonsHelper::sums).collect(Collectors.toList());
 
-            long start = new Date().getTime();
 
-            IGenerator<List<Trade>> combinaisons = Generator.combination(trades).simple(i);
+        for (Pair<Double, List<Trade>> pair : tradesByTimestamp) {
+            double sum = pair.getLeft();
+            double diff = calculateDiff(amount, sum, side);
 
-            Iterator<List<Trade>> iterator = combinaisons.iterator();
+            if ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff)) {
 
-            while (iterator.hasNext()) {
-                List<Trade> candidates = iterator.next();
+                if (diff <= 0.02) {
+                    return pair.getRight();
+                }
 
-                double sum = sum(candidates);
-                double diff = calculateDiff(amount, sum, side);
-
-                if (diff <= 0.04005) {
-
-                    if (diff <= 0.02) {
-                        return candidates;
-                    }
-
-                    if (diff < min) {
-                        toReturn = candidates;
-                        min = diff;
-
-                        if (new Date().getTime() - start > 15000) {
-                            break;
-                        }
-                    }
+                if (diff < min) {
+                    toReturn = pair.getRight();
+                    min = diff;
                 }
             }
         }
@@ -76,28 +39,28 @@ public class TradesCombinaisonsHelper {
         return toReturn;
     }
 
-    public static List<List<Trade>> sub(List<Trade> trades, int size) {
+    private static Pair<Double, List<Trade>> sums(List<Trade> trades) {
+        return Pair.of(sum(trades), trades);
+    }
 
-        List<List<Trade>> result = new ArrayList<>();
-
-        int index = 0;
-
-        while (index < trades.size()) {
-            if ((index + size) <= trades.size()) {
-                result.add(trades.subList(index, index + size));
-            } else {
-                result.add(trades.subList(index, trades.size()));
-                break;
-            }
-            index += 10;
+    private static boolean bitstampe(List<Trade> trades, double sum, double diff) {
+        if (!Arrays.asList(Exchange.BITSTAMP, Exchange.BITSTAMP_GBP, Exchange.BITSTAMP_EUR).contains(trades.get(0).getExchange()) || sum < 10000) {
+            return false;
         }
 
-        return result;
+        return diff <= sum * 0.05;
+    }
+
+    private static boolean bitso(List<Trade> trades, double sum, double diff) {
+        if (!trades.get(0).getExchange().equals(Exchange.BITSO) || sum < 10000) {
+            return false;
+        }
+
+        return Math.abs(diff) <= sum * 0.02;
     }
 
     private static double calculateDiff(double amount, double sum, String side) {
-        double diff = "buy".equals(side) ? sum - amount : amount - sum;
-        return diff >= 0 ? diff : Double.POSITIVE_INFINITY;
+        return  "buy".equals(side) ? sum - amount : amount - sum;
     }
 
     private static List<Trade> getClosestGroup(List<List<Trade>> trades, double amount) {

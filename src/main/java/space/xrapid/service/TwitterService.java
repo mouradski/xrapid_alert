@@ -19,13 +19,13 @@ import java.util.Map;
 @Slf4j
 public class TwitterService {
 
-    @Value("${twitter.consumer.key}")
+    @Value("${twitter.consumer.key:}")
     private String consumerKey;
-    @Value("${twitter.consumer.secret}")
+    @Value("${twitter.consumer.secret:}")
     private String consumerSecret;
-    @Value("${twitter.access.token.key}")
+    @Value("${twitter.access.token.key:}")
     private String accessToken;
-    @Value("${twitter.access.token.secret}")
+    @Value("${twitter.access.token.secret:}")
     private String accessTokenSecret;
 
     private Twitter twitter;
