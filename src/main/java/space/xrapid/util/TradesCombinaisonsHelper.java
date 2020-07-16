@@ -23,7 +23,7 @@ public class TradesCombinaisonsHelper {
             double sum = pair.getLeft();
             double diff = calculateDiff(amount, sum, side);
 
-            if ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff)) {
+            if (sum % 1 != 0 && ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff))) {
 
                 if (diff <= 0.02) {
                     return pair.getRight();
