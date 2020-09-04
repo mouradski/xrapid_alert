@@ -43,10 +43,7 @@ public class XummService {
     private Map<String, String> keys = new HashMap<>();
     private Map<String, Date> expirations = new HashMap<>();
     private Map<String, ApiKey> renewedKeys = new HashMap<>();
-
-
-
-
+   
     private RestTemplate restTemplate = new RestTemplate();
 
     @Transactional(readOnly = true)
