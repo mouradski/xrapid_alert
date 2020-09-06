@@ -20,5 +20,6 @@ public enum Currency {
     IDR,
     KRW,
     NGN,
-    BYN
+    BYN,
+    TRY
 }
