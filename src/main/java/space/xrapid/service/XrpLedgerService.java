@@ -8,10 +8,8 @@ import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ripple.Payment;
 import space.xrapid.domain.ripple.Payments;
-import space.xrapid.domain.xumm.Payload;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;

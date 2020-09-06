@@ -11,14 +11,15 @@ import space.xrapid.service.TradesFoundCacheService;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public class InboundXrapidCorridors extends XrapidCorridors {
 
     private Exchange destinationExchange;
 
-    public InboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, List<Exchange> exchangesWithApi, String proxyUrl) {
-        super(exchangeToExchangePaymentService, tradesFoundCacheService, null, messagingTemplate, exchangesWithApi, null, proxyUrl);
+    public InboundXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, SimpMessageSendingOperations messagingTemplate, Exchange destinationExchange, List<Exchange> exchangesWithApi, String proxyUrl, Set<String> tradesFound) {
+        super(exchangeToExchangePaymentService, tradesFoundCacheService, null, messagingTemplate, exchangesWithApi, tradesFound, proxyUrl);
         this.destinationExchange = destinationExchange;
     }
 
