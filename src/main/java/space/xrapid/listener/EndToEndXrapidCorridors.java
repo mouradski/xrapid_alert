@@ -5,7 +5,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import space.xrapid.domain.*;
 import space.xrapid.domain.Currency;
 import space.xrapid.domain.ripple.Payment;
-import space.xrapid.job.Config;
 import space.xrapid.service.ExchangeToExchangePaymentService;
 import space.xrapid.service.TradesFoundCacheService;
 import space.xrapid.service.XrapidInboundAddressService;
@@ -16,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static space.xrapid.job.Config.MAX_TRADE_DELAY_IN_MINUTES;
 import static space.xrapid.job.Scheduler.transactionHashes;
 
 @Slf4j
@@ -45,13 +43,14 @@ public class EndToEndXrapidCorridors extends XrapidCorridors {
 
     public Currency getSourceFiat() {return sourceFiat;}
 
+
     public EndToEndXrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService,
-                                   SimpMessageSendingOperations messagingTemplate, Exchange sourceExchange, Exchange destinationExchange, boolean requireEndToEnd, Set<String> tradeIds, String proxyUrl) {
+                                   SimpMessageSendingOperations messagingTemplate, Exchange sourceExchange, Exchange destinationExchange, long buyDelta, long sellDelta, boolean requireEndToEnd, Set<String> tradeIds, String proxyUrl) {
 
         super(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, null, tradeIds, proxyUrl);
 
-        this.buyDelta = MAX_TRADE_DELAY_IN_MINUTES * 60;
-        this.sellDelta = MAX_TRADE_DELAY_IN_MINUTES * 60;
+        this.buyDelta = buyDelta;
+        this.sellDelta = sellDelta;
 
         this.requireEndToEnd = requireEndToEnd;
 

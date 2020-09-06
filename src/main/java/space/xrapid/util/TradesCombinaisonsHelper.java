@@ -4,9 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TradesCombinaisonsHelper {
@@ -23,7 +21,7 @@ public class TradesCombinaisonsHelper {
             double sum = pair.getLeft();
             double diff = calculateDiff(amount, sum, side);
 
-            if (sum % 1 != 0 && ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff))) {
+            if ((diff >= 0 && (diff <= 0.04005 || bitstampe(trades, sum, diff))) || bitso(trades, sum, diff)) {
 
                 if (diff <= 0.02) {
                     return pair.getRight();
@@ -38,6 +36,7 @@ public class TradesCombinaisonsHelper {
 
         return toReturn;
     }
+
 
     private static Pair<Double, List<Trade>> sums(List<Trade> trades) {
         return Pair.of(sum(trades), trades);
@@ -58,24 +57,9 @@ public class TradesCombinaisonsHelper {
 
         return Math.abs(diff) <= sum * 0.02;
     }
-
+    
     private static double calculateDiff(double amount, double sum, String side) {
         return  "buy".equals(side) ? sum - amount : amount - sum;
-    }
-
-    private static List<Trade> getClosestGroup(List<List<Trade>> trades, double amount) {
-        double minDiff = 5000;
-        List<Trade> result = new ArrayList<>();
-        for (List<Trade> tradeGroup : trades) {
-            double sum = sum(tradeGroup);
-            double diff = Math.abs(sum - amount);
-            if (diff < minDiff) {
-                minDiff = diff;
-                result = tradeGroup;
-            }
-        }
-
-        return result;
     }
 
     public static Double sum(List<Trade> groups) {

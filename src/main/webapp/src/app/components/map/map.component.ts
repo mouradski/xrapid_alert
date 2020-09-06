@@ -168,7 +168,12 @@ export class MapComponent implements AfterViewInit {
                 "longitude": 174.7633,
                 "title": "New Zealand",
                 "flag": "https://cdn.countryflags.com/thumbs/new-zealand/flag-3d-round-500.png"
-            }
+            }, {
+                    "latitude": 39.92077,
+                    "longitude": 32.85411,
+                    "title": "Turkey",
+                    "flag": "https://cdn.countryflags.com/thumbs/turkey/flag-3d-round-500.png"
+                }
             ];
 
             this.cities = this.mapChart.series.push(new am4maps.MapImageSeries());
@@ -187,7 +192,7 @@ export class MapComponent implements AfterViewInit {
             this.currencies.set("JPY", this.addCity({"latitude": 35.6895, "longitude": 139.6917}, "Japan"));
             this.currencies.set("NGN", this.addCity({"latitude": 9.0777, "longitude": 8.67745}, "Nigeria"));
             this.currencies.set("NZD", this.addCity({"latitude": -36.8484, "longitude": 174.7633}, "New Zealand"));
-
+            this.currencies.set("TRY", this.addCity({"latitude": 39.92077, "longitude": 32.85411}, "Turkey"));
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
             this.lineSeries.mapLines.template.line.strokeOpacity = 0.5;

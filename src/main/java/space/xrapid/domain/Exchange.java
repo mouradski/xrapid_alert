@@ -38,6 +38,7 @@ public enum Exchange {
             "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
     BITFINEX("bitfinex", true, USD, true, "rLW9gnQo7BQhU6igk5keqYnH3TVrCxGRzm", "rE3hWEGquaixF2XwirNbA1ds4m55LxNZPk"),
+    BTC_TURK("btcturk", true, TRY, true, "rNEygqkMv4Vnj8M2eWnYT1TDnV1Sc1X5SN", "rGmmsmyspyPsuBT4L5pLvAqTjxYqaFq4U5"),
 
     BX_IN("bx.in.th", false, THB, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
@@ -58,7 +59,7 @@ public enum Exchange {
 
 
     BINANCE_RUB("binance", false, RUB, false, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh", "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
-    BINANCE_US("binanceus", false, USD, false, "rEeEWeP88cpKUddKk37B2EZeiHBGiBXY3", "rMvYS27SYs5dXdFsUgpvv1CSrPsCz7ePF5"),
+    BINANCE_US("binanceus", true, USD, false, "rEeEWeP88cpKUddKk37B2EZeiHBGiBXY3", "rMvYS27SYs5dXdFsUgpvv1CSrPsCz7ePF5"),
 
     WAZIRX("Wazirx", false, INR, false, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit", "rJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 

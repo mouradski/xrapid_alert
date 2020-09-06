@@ -55,8 +55,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds, String proxyUrl) {
 
-        this.buyDelta = 60  * 4 ;
-        this.sellDelta = 60 * 4;
+        this.buyDelta = 60  * 5 ;
+        this.sellDelta = 60 * 5;
 
         this.proxyUrl = proxyUrl;
 
