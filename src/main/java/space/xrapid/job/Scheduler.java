@@ -7,7 +7,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import space.xrapid.domain.Currency;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Stats;
 import space.xrapid.domain.Trade;
@@ -25,6 +24,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static space.xrapid.job.Config.MAX_TRADE_DELAY_IN_MINUTES;
+import static space.xrapid.job.Config.XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES;
 
 @Slf4j
 @EnableScheduling
@@ -68,16 +70,13 @@ public class Scheduler {
     public static Set<String> offChainXrpToFiatTradeIds = new HashSet<>();
     public static Set<String> offChainFiatToXrpTradeIds = new HashSet<>();
 
-
-    private static int MAX_TRADE_DELAY_IN_MINUTES = 6;
-    private static int XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES = 1;
-
     private ExecutorService executorService = Executors.newFixedThreadPool(7);
 
     private OffsetDateTime lastWindowEnd;
     private OffsetDateTime windowStart;
     private OffsetDateTime windowEnd;
 
+    private Set<String> tradesFound = new HashSet<>();
 
     @Scheduled(fixedDelay = 40000)
     public void offchainOdl() {
@@ -118,8 +117,6 @@ public class Scheduler {
         List<Exchange> allConfirmedExchange = Stream.of(Exchange.values()).collect(Collectors.toList());
         List<Exchange> availableExchangesWithApi = tradeServices.stream().map(TradeService::getExchange).collect(Collectors.toList());
 
-        Set<Currency> destinationFiats = availableExchangesWithApi.stream().map(Exchange::getLocalFiat).collect(Collectors.toSet());
-
         updatePaymentsWindows();
 
         OffsetDateTime xrplPaymentsStart = windowEnd.minusMinutes(MAX_TRADE_DELAY_IN_MINUTES + XRPL_PAYMENT_WINDOW_SIZE_IN_MINUTES);
@@ -137,10 +134,8 @@ public class Scheduler {
 
         double rate = rateService.getXrpUsdRate();
 
-
-
         log.info("Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
-        endToEndSearch(availableExchangesWithApi, destinationFiats, payments, allTrades, rate);
+        endToEndSearch(availableExchangesWithApi, payments, allTrades, rate);
 
 
         log.info("Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
@@ -151,7 +146,7 @@ public class Scheduler {
 
 
         log.info("Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
-        byDestinationTagSearch(availableExchangesWithApi, destinationFiats, payments, allTrades, rate);
+        byDestinationTagSearch(availableExchangesWithApi, payments, allTrades, rate);
 
         Stats stats = exchangeToExchangePaymentService.calculateStats(21);
 
@@ -178,7 +173,7 @@ public class Scheduler {
         return allTrades;
     }
 
-    private void byDestinationTagSearch(List<Exchange> availableExchangesWithApi, Set<Currency> destinationFiats, List<Payment> payments, List<Trade> allTrades, double rate) {
+    private void byDestinationTagSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate) {
         availableExchangesWithApi.forEach(sourceExchange -> {
             availableExchangesWithApi.stream()
                     .filter(destinationExchange -> !destinationExchange.equals(sourceExchange))
@@ -197,7 +192,7 @@ public class Scheduler {
                 .filter(exchange -> !availableExchangesWithApi.contains(exchange))
                 .forEach(exchange -> {
                     executorService.execute(() -> {
-                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades, rate);
+                        new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, tradesFound).searchXrapidPayments(payments, allTrades, rate);
                     });
                 });
     }
@@ -205,20 +200,18 @@ public class Scheduler {
     private void atDestinationSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate) {
         availableExchangesWithApi.forEach(exchange -> {
             executorService.execute(() -> {
-                new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
+                new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, tradesFound).searchXrapidPayments(payments, allTrades.stream().filter(trade -> trade.getExchange().equals(exchange)).collect(Collectors.toList()), rate);
             });
         });
     }
 
-    private void endToEndSearch(List<Exchange> availableExchangesWithApi, Set<Currency> destinationFiats, List<Payment> payments, List<Trade> allTrades, double rate) {
-
-
+    private void endToEndSearch(List<Exchange> availableExchangesWithApi, List<Payment> payments, List<Trade> allTrades, double rate) {
         availableExchangesWithApi.forEach(sourceExchange -> {
             availableExchangesWithApi.stream()
                     .filter(destinationExchange -> !destinationExchange.equals(sourceExchange))
                     .forEach(destinationExchange -> {
                         executorService.execute(() -> {
-                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, sourceExchange, destinationExchange, MAX_TRADE_DELAY_IN_MINUTES * 60, MAX_TRADE_DELAY_IN_MINUTES * 60, true, null, proxyUrl)
+                            new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService, xrapidInboundAddressService, messagingTemplate, sourceExchange, destinationExchange, MAX_TRADE_DELAY_IN_MINUTES * 60, MAX_TRADE_DELAY_IN_MINUTES * 60, true, tradesFound, proxyUrl)
                                     .searchXrapidPayments(payments, allTrades, rate);
                         });
                     });

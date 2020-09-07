@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static space.xrapid.job.Config.MAX_TRADE_DELAY_IN_MINUTES;
 import static space.xrapid.job.Scheduler.transactionHashes;
 
 @Slf4j
@@ -55,8 +56,8 @@ public abstract class XrapidCorridors {
 
     public XrapidCorridors(ExchangeToExchangePaymentService exchangeToExchangePaymentService, TradesFoundCacheService tradesFoundCacheService, XrapidInboundAddressService xrapidInboundAddressService, SimpMessageSendingOperations messagingTemplate, List<Exchange> exchangesToExclude, Set<String> usedTradeIds, String proxyUrl) {
 
-        this.buyDelta = 60  * 5 ;
-        this.sellDelta = 60 * 5;
+        this.buyDelta = 60  * MAX_TRADE_DELAY_IN_MINUTES ;
+        this.sellDelta = 60 * MAX_TRADE_DELAY_IN_MINUTES;
 
         this.proxyUrl = proxyUrl;
 
