@@ -49,6 +49,8 @@ public enum Exchange {
     CEX_IO_EUR("cex.io", false, EUR, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
     CEX_IO_GBP("cex.io", false, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
 
+    LUNO("luno", true, ZAR, false, "rsRy14FvipgqudiGmptJBhr1RtpsgfzKMM", "rsbfd5ZYWqy6XXf6hndPbRjDAzfmWc1CeQ"),
+
 
     COINFIELD_USD("coinfield", false, USD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
     COINFIELD_GBP("coinfield", false, GBP, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),

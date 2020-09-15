@@ -173,12 +173,16 @@ export class MapComponent implements AfterViewInit {
                     "longitude": 32.85411,
                     "title": "Turkey",
                     "flag": "https://cdn.countryflags.com/thumbs/turkey/flag-3d-round-500.png"
-                }
+            }, {
+                "latitude": -28.48322,
+                "longitude": 24.676997,
+                "title": "South Africa",
+                "flag": "https://cdn.countryflags.com/thumbs/south-africa/flag-3d-round-500.png"
+            }
             ];
 
             this.cities = this.mapChart.series.push(new am4maps.MapImageSeries());
             this.cities.mapImages.template.nonScaling = true;
-
 
             this.currencies.set("USD", this.addCity({"latitude": 42.7392, "longitude": -85.9902}, "United-States"));
             this.currencies.set("PHP", this.addCity({"latitude": 14.6043, "longitude": 120.9822}, "Philippines"));
@@ -193,6 +197,8 @@ export class MapComponent implements AfterViewInit {
             this.currencies.set("NGN", this.addCity({"latitude": 9.0777, "longitude": 8.67745}, "Nigeria"));
             this.currencies.set("NZD", this.addCity({"latitude": -36.8484, "longitude": 174.7633}, "New Zealand"));
             this.currencies.set("TRY", this.addCity({"latitude": 39.92077, "longitude": 32.85411}, "Turkey"));
+            this.currencies.set("ZAR", this.addCity({"latitude": -28.48322, "longitude": 24.676997}, "South Africa"));
+
             this.lineSeries = this.mapChart.series.push(new am4maps.MapArcSeries());
             this.lineSeries.mapLines.template.line.strokeWidth = 3;
             this.lineSeries.mapLines.template.line.strokeOpacity = 0.5;

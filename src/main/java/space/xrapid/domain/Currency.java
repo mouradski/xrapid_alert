@@ -21,5 +21,6 @@ public enum Currency {
     KRW,
     NGN,
     BYN,
-    TRY
+    TRY,
+    ZAR
 }

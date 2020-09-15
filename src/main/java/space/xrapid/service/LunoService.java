@@ -6,8 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.novadax.Datum;
-import space.xrapid.domain.novadax.Trades;
+import space.xrapid.domain.luno.Trades;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -16,41 +15,42 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class NovadaxService implements TradeService {
-
-    private String apiUrl = "https://api.novadax.com/v1/market/trades?symbol=XRP_BRL&limit=1000";
+public class LunoService implements TradeService {
+    private String apiUrl = "https://api.luno.com/api/1/trades?pair=XRPZAR";
 
     @Override
-    public List<Trade> fetchTrades(OffsetDateTime begin) {
+    public List<space.xrapid.domain.Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
         ResponseEntity<Trades> response = restTemplate.exchange(apiUrl,
                 HttpMethod.GET, entity, Trades.class);
 
-        return response.getBody().getData().stream()
+        return response.getBody().getTrades().stream()
                 .map(this::mapTrade)
                 .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(Datum trade) {
+    @Override
+    public Exchange getExchange() {
+        return Exchange.LUNO;
+    }
+
+    private Trade mapTrade(space.xrapid.domain.luno.Trade trade) {
 
         OffsetDateTime date = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Long.valueOf(trade.getTimestamp() / 1000)), ZoneId.of("UTC"));
 
+        String side = trade.getIsBuy() ? "buy" : "sell";
+
         return Trade.builder()
-                .side(trade.getSide())
+                .side(side)
                 .timestamp(trade.getTimestamp())
                 .rate(trade.getPrice())
-                .amount(trade.getAmount())
+                .amount(trade.getVolume())
                 .exchange(getExchange())
                 .dateTime(date)
                 // Generated ID as the api don't provide one
-                .orderId(new StringBuilder(trade.getSide()).append(trade.getTimestamp()).toString())
+                .orderId(new StringBuilder(side).append("_").append(trade.getTimestamp()).toString())
                 .build();
-    }
-
-    @Override
-    public Exchange getExchange() {
-        return Exchange.NOVADAX;
     }
 }
