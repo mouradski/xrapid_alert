@@ -45,6 +45,7 @@ public class XrapidInboundAddressService {
 
         boolean result = xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), sourceFiat, 100);
         if (result) {
+            payment.setSourceFiat(sourceFiat);
             log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
         }
         return result;
