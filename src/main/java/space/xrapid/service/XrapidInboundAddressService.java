@@ -34,18 +34,15 @@ public class XrapidInboundAddressService {
 
     public boolean isXrapidDestination(ExchangeToExchangePayment payment, Currency sourceFiat) {
 
-        if (payment.getSource() == null) {
-            Exchange source = Exchange.byAddress(payment.getSourceAddress(), sourceFiat);
-            if (source != null) {
-                payment.setSource(source);
-            } else {
-                return false;
-            }
+        Exchange source = Exchange.byAddress(payment.getSourceAddress(), sourceFiat);
+        if (payment.getSource() == null && source == null) {
+           return false;
         }
 
         boolean result = xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), sourceFiat, 100);
         if (result) {
             payment.setSourceFiat(sourceFiat);
+            payment.setSource(source);
             log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
         }
         return result;
