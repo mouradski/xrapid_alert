@@ -91,10 +91,10 @@ public enum Exchange {
   WAZIRX("Wazirx", false, INR, false, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit",
       "rJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
-  KRAKEN_USD("kraken", false, USD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-  KRAKEN_EUR("kraken", false, EUR, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-  KRAKEN_JPY("kraken", false, JPY, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-  KRAKEN_CAD("kraken", false, CAD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_USD("kraken", true, USD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_EUR("kraken", true, EUR, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_JPY("kraken", true, JPY, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_CAD("kraken", true, CAD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
 
   //TODO confirm addresses
   NOVADAX("novadax", true, BRL, true, "rE8aDxrPzx5Xqeppy2hgSXKppwNwpyEMbB",
