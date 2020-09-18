@@ -15,36 +15,43 @@ import space.xrapid.repository.XrapidInboundAddressRepository;
 @Transactional(readOnly = true)
 public class XrapidInboundAddressService {
 
-    @Autowired
-    private XrapidInboundAddressRepository xrapidInboundAddressRepository;
+  @Autowired
+  private XrapidInboundAddressRepository xrapidInboundAddressRepository;
 
-    @Transactional
-    public void add(ExchangeToExchangePayment payment) {
+  @Transactional
+  public void add(ExchangeToExchangePayment payment) {
 
-        XrapidInboundAddress inboundXrapidCorridors = xrapidInboundAddressRepository.getByAddressAndTagAndSourceFiat(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat());
+    XrapidInboundAddress inboundXrapidCorridors = xrapidInboundAddressRepository
+        .getByAddressAndTagAndSourceFiat(payment.getDestinationAddress(), payment.getTag(),
+            payment.getSourceFiat());
 
-        if (inboundXrapidCorridors == null) {
-            inboundXrapidCorridors = XrapidInboundAddress.builder().address(payment.getDestinationAddress()).tag(payment.getTag()).sourceFiat(payment.getSourceFiat()).recurrence(1).build();
-        } else {
-            inboundXrapidCorridors.setRecurrence(inboundXrapidCorridors.getRecurrence() + 1);
-        }
-
-        xrapidInboundAddressRepository.save(inboundXrapidCorridors);
+    if (inboundXrapidCorridors == null) {
+      inboundXrapidCorridors = XrapidInboundAddress.builder()
+          .address(payment.getDestinationAddress()).tag(payment.getTag())
+          .sourceFiat(payment.getSourceFiat()).recurrence(1).build();
+    } else {
+      inboundXrapidCorridors.setRecurrence(inboundXrapidCorridors.getRecurrence() + 1);
     }
 
-    public boolean isXrapidDestination(ExchangeToExchangePayment payment, Currency sourceFiat) {
+    xrapidInboundAddressRepository.save(inboundXrapidCorridors);
+  }
 
-        Exchange source = Exchange.byAddress(payment.getSourceAddress(), sourceFiat);
-        if (payment.getSource() == null && source == null) {
-           return false;
-        }
+  public boolean isXrapidDestination(ExchangeToExchangePayment payment, Currency sourceFiat) {
 
-        boolean result = xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), sourceFiat, 100);
-        if (result) {
-            payment.setSourceFiat(sourceFiat);
-            payment.setSource(source);
-            log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
-        }
-        return result;
+    Exchange source = Exchange.byAddress(payment.getSourceAddress(), sourceFiat);
+    if (payment.getSource() == null && source == null) {
+      return false;
     }
+
+    boolean result = xrapidInboundAddressRepository
+        .existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(),
+            payment.getTag(), sourceFiat, 100);
+    if (result) {
+      payment.setSourceFiat(sourceFiat);
+      payment.setSource(source);
+      log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(),
+          payment.getTag());
+    }
+    return result;
+  }
 }

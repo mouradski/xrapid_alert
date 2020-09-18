@@ -12,27 +12,28 @@ import space.xrapid.service.ApiKeyService;
 @Component
 public class FilterChannelInterceptor extends ChannelInterceptorAdapter {
 
-    @Autowired
-    private ApiKeyService apiKeyService;
+  @Autowired
+  private ApiKeyService apiKeyService;
 
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) && headerAccessor.getDestination().contains("/top/odl")) {
-            if (headerAccessor.getNativeHeader("apiKey") != null) {
-                String apiKey = headerAccessor.getNativeHeader("apiKey").get(0);
-                try {
-                    apiKeyService.validateKey(apiKey);
-                } catch (Throwable e) {
-                    System.out.println("return null;");
-                    return null;
-                }
-            } else {
-                System.out.println("return null;");
-                return null;
-            }
+  @Override
+  public Message<?> preSend(Message<?> message, MessageChannel channel) {
+    StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+    if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) && headerAccessor
+        .getDestination().contains("/top/odl")) {
+      if (headerAccessor.getNativeHeader("apiKey") != null) {
+        String apiKey = headerAccessor.getNativeHeader("apiKey").get(0);
+        try {
+          apiKeyService.validateKey(apiKey);
+        } catch (Throwable e) {
+          System.out.println("return null;");
+          return null;
         }
-
-        return message;
+      } else {
+        System.out.println("return null;");
+        return null;
+      }
     }
+
+    return message;
+  }
 }

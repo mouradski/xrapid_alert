@@ -6,10 +6,14 @@ import space.xrapid.domain.Currency;
 import space.xrapid.domain.XrapidInboundAddress;
 
 @Repository
-public interface XrapidInboundAddressRepository extends JpaRepository<XrapidInboundAddress, Integer> {
-    boolean existsByAddressAndTag(String address, long tag);
+public interface XrapidInboundAddressRepository extends
+    JpaRepository<XrapidInboundAddress, Integer> {
 
-    XrapidInboundAddress getByAddressAndTagAndSourceFiat(String address, long tag, Currency sourceFiat);
+  boolean existsByAddressAndTag(String address, long tag);
 
-    boolean existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(String address, Long tag, Currency sourceFiat, int minRecurrence);
+  XrapidInboundAddress getByAddressAndTagAndSourceFiat(String address, long tag,
+      Currency sourceFiat);
+
+  boolean existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(String address, Long tag,
+      Currency sourceFiat, int minRecurrence);
 }

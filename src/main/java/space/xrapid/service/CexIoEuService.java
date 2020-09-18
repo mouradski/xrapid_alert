@@ -6,12 +6,12 @@ import space.xrapid.domain.Exchange;
 @Service
 public class CexIoEuService extends CexIoUsdService {
 
-    @Override
-    public Exchange getExchange() {
-        return Exchange.CEX_IO_EUR;
-    }
+  @Override
+  public Exchange getExchange() {
+    return Exchange.CEX_IO_EUR;
+  }
 
-    public String getMarket() {
-        return "EUR";
-    }
+  public String getMarket() {
+    return "EUR";
+  }
 }

@@ -6,12 +6,12 @@ import space.xrapid.domain.Exchange;
 @Service
 public class KrakenEurService extends KrakenUsdService {
 
-    protected String getPair() {
-        return "XRPEUR";
-    }
+  protected String getPair() {
+    return "XRPEUR";
+  }
 
-    @Override
-    public Exchange getExchange() {
-        return Exchange.KRAKEN_EUR;
-    }
+  @Override
+  public Exchange getExchange() {
+    return Exchange.KRAKEN_EUR;
+  }
 }

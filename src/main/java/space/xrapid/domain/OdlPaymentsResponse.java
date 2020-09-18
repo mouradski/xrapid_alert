@@ -1,8 +1,11 @@
 package space.xrapid.domain;
 
-import lombok.*;
-
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -10,10 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class OdlPaymentsResponse {
-    private int currentPage;
-    private int pageSize;
-    private Long total;
-    private int pages;
 
-    List<ExchangeToExchangePayment> payments;
+  List<ExchangeToExchangePayment> payments;
+  private int currentPage;
+  private int pageSize;
+  private Long total;
+  private int pages;
 }

@@ -7,18 +7,18 @@ import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "currency",
-        "value",
-        "issuer"
+    "currency",
+    "value",
+    "issuer"
 })
 @Builder
 public class Amount {
 
-    @JsonProperty("currency")
-    private String currency;
-    @JsonProperty("value")
-    private double value;
-    @JsonProperty("issuer")
-    private String issuer;
+  @JsonProperty("currency")
+  private String currency;
+  @JsonProperty("value")
+  private double value;
+  @JsonProperty("issuer")
+  private String issuer;
 
 }

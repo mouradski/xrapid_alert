@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class TradesGroup {
-    private String id;
-    private double sum;
+
+  private String id;
+  private double sum;
 }

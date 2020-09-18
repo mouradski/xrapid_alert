@@ -1,52 +1,56 @@
 package space.xrapid.domain.xumm.webhook;
 
-import com.fasterxml.jackson.annotation.*;
-
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "app",
-        "web"
+    "app",
+    "web"
 })
 public class ReturnUrl {
 
-    @JsonProperty("app")
-    private Object app;
-    @JsonProperty("web")
-    private Object web;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("app")
+  private Object app;
+  @JsonProperty("web")
+  private Object web;
+  @JsonIgnore
+  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("app")
-    public Object getApp() {
-        return app;
-    }
+  @JsonProperty("app")
+  public Object getApp() {
+    return app;
+  }
 
-    @JsonProperty("app")
-    public void setApp(Object app) {
-        this.app = app;
-    }
+  @JsonProperty("app")
+  public void setApp(Object app) {
+    this.app = app;
+  }
 
-    @JsonProperty("web")
-    public Object getWeb() {
-        return web;
-    }
+  @JsonProperty("web")
+  public Object getWeb() {
+    return web;
+  }
 
-    @JsonProperty("web")
-    public void setWeb(Object web) {
-        this.web = web;
-    }
+  @JsonProperty("web")
+  public void setWeb(Object web) {
+    this.web = web;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 
 }
