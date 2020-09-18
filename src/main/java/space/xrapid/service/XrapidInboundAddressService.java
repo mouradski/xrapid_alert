@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import space.xrapid.domain.Currency;
+import space.xrapid.domain.Exchange;
 import space.xrapid.domain.ExchangeToExchangePayment;
 import space.xrapid.domain.XrapidInboundAddress;
 import space.xrapid.repository.XrapidInboundAddressRepository;
@@ -30,8 +32,18 @@ public class XrapidInboundAddressService {
         xrapidInboundAddressRepository.save(inboundXrapidCorridors);
     }
 
-    public boolean isXrapidDestination(ExchangeToExchangePayment payment) {
-        boolean result = xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), payment.getSourceFiat(), 100);
+    public boolean isXrapidDestination(ExchangeToExchangePayment payment, Currency sourceFiat) {
+
+        if (payment.getSource() == null) {
+            Exchange source = Exchange.byAddress(payment.getSourceAddress(), sourceFiat);
+            if (source != null) {
+                payment.setSource(source);
+            } else {
+                return false;
+            }
+        }
+
+        boolean result = xrapidInboundAddressRepository.existsByAddressAndTagAndSourceFiatAndRecurrenceGreaterThan(payment.getDestinationAddress(), payment.getTag(), sourceFiat, 100);
         if (result) {
             log.info("{}:{} is an ODL confirmed destination.", payment.getDestinationAddress(), payment.getTag());
         }
