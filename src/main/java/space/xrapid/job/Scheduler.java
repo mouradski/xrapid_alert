@@ -75,8 +75,6 @@ public class Scheduler {
   private OffsetDateTime windowStart;
   private OffsetDateTime windowEnd;
 
-  private Set<String> tradesFound = new HashSet<>();
-
   @Scheduled(fixedDelay = 40000)
   public void offchainOdl() {
     OffsetDateTime start = OffsetDateTime.now(ZoneOffset.UTC);
@@ -210,7 +208,7 @@ public class Scheduler {
         .forEach(exchange -> {
           executorService.execute(() -> {
             new OutboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService,
-                messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, tradesFound)
+                messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, null)
                 .searchXrapidPayments(payments, allTrades, rate);
           });
         });
@@ -221,7 +219,7 @@ public class Scheduler {
     availableExchangesWithApi.forEach(exchange -> {
       executorService.execute(() -> {
         new InboundXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService,
-            messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, tradesFound)
+            messagingTemplate, exchange, availableExchangesWithApi, proxyUrl, null)
             .searchXrapidPayments(payments,
                 allTrades.stream().filter(trade -> trade.getExchange().equals(exchange))
                     .collect(Collectors.toList()), rate);
@@ -239,7 +237,7 @@ public class Scheduler {
               new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService,
                   xrapidInboundAddressService, messagingTemplate, sourceExchange,
                   destinationExchange, MAX_TRADE_DELAY_IN_MINUTES * 60,
-                  MAX_TRADE_DELAY_IN_MINUTES * 60, true, tradesFound, proxyUrl)
+                  MAX_TRADE_DELAY_IN_MINUTES * 60, true, null, proxyUrl)
                   .searchXrapidPayments(payments, allTrades, rate);
             });
           });
