@@ -64,12 +64,12 @@ public enum Exchange {
 
   BX_IN("bx.in.th", false, THB, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
-  SBI_TRADE("sbi_trade", false, JPY, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",
+  SBI_TRADE("sbi_trade", true, JPY, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",
       "rKcVYzVK1f4PhRFjLhWP7QmteG5FpPgRub"),
 
   CEX_IO("cex.io", false, USD, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
   CEX_IO_EUR("cex.io", false, EUR, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
-  CEX_IO_GBP("cex.io", false, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
+  CEX_IO_GBP("cex.io", true, GBP, false, "rE1sdh25BJQ3qFwngiTBwaq3zPGGYcrjp1"),
 
   LUNO("luno", true, ZAR, false, "rsRy14FvipgqudiGmptJBhr1RtpsgfzKMM",
       "rsbfd5ZYWqy6XXf6hndPbRjDAzfmWc1CeQ"),
@@ -77,7 +77,7 @@ public enum Exchange {
 
   COINFIELD_USD("coinfield", false, USD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_GBP("coinfield", false, GBP, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-  COINFIELD_AED("coinfield", false, AED, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+  COINFIELD_AED("coinfield", true, AED, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_JPY("coinfield", false, JPY, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_CAD("coinfield", false, CAD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_EUR("coinfield", false, EUR, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
@@ -103,7 +103,7 @@ public enum Exchange {
 
   COIN_PH("coin.ph", true, PHP, false, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
-  COINBENE("coinbene", false, BRL, false, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
+  COINBENE("coinbene", true, BRL, false, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
 
   BITHUMB("bithumb", true, KRW, true, "rEtC4xAYJvtwDLJ9jZ4kHRHKbNoLLxSnfb",
       "rPMM1dRp7taeRkbT74Smx2a25kTAHdr4N5",
@@ -118,7 +118,7 @@ public enum Exchange {
 
   INDEP_RESERVE("independent reserve", true, NZD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
 
-  INDEP_RESERVE_AUD("independent reserve", true, AUD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
+  INDEP_RESERVE_AUD("independent reserve", false, AUD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
 
   MERCADO("mercado", true, BRL, false, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH",
       "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),
@@ -131,10 +131,10 @@ public enum Exchange {
 
   BITCOIN_TRADE("bitcoin_trade", true, BRL, false, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),
 
-  LIQUID("liquid", false, JPY, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p",
+  LIQUID("liquid", true, JPY, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p",
       "rMbWmirwEtRr7pNmhN4d4ysTMBvBxdvovs"),
 
-  COINONE("coinone", false, KRW, true, "rp2diYfVtpbgEMyaoWnuaWgFCAkqCAEg28",
+  COINONE("coinone", true, KRW, true, "rp2diYfVtpbgEMyaoWnuaWgFCAkqCAEg28",
       "rPsmHDMkheWZvbAkTA8A9bVnUdadPn7XBK"),
 
   BITREX("bitrex", false, USD, false,
@@ -153,7 +153,7 @@ public enum Exchange {
   BTC_MARKETS("btc_market", true, AUD, true, "r94JFtstbXmyG21h3RHKcNfkAHxAQ6HSGC",
       "rL3ggCUKaiR1iywkGW6PACbn3Y8g5edWiY", "rU7xJs7QmjbiyxpEozNYUFQxaRD5kueY7z"),
 
-  BITBANK("bitbank", false, JPY, true, "rLbKbPyuvs4wc1h13BEPHgbFGsRXMeFGL6",
+  BITBANK("bitbank", true, JPY, true, "rLbKbPyuvs4wc1h13BEPHgbFGsRXMeFGL6",
       "rw7m3CtVHwGSdhFjV4MyJozmZJv3DYQnsA", "rwggnsfxvCmDb3YP9Hs1TaGvrPR7ngrn7Z"),
 
   BITKUB("bitkub", true, THB, false, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW"),
