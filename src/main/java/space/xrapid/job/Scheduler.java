@@ -74,6 +74,8 @@ public class Scheduler {
   private OffsetDateTime lastWindowEnd;
   private OffsetDateTime windowStart;
   private OffsetDateTime windowEnd;
+  
+  private Set<String> proceededTrades = new HashSet<>();
 
   @Scheduled(fixedDelay = 40000)
   public void offchainOdl() {
@@ -237,7 +239,7 @@ public class Scheduler {
               new EndToEndXrapidCorridors(exchangeToExchangePaymentService, tradesFoundCacheService,
                   xrapidInboundAddressService, messagingTemplate, sourceExchange,
                   destinationExchange, MAX_TRADE_DELAY_IN_MINUTES * 60,
-                  MAX_TRADE_DELAY_IN_MINUTES * 60, true, null, proxyUrl)
+                  MAX_TRADE_DELAY_IN_MINUTES * 60, true, proceededTrades, proxyUrl)
                   .searchXrapidPayments(payments, allTrades, rate);
             });
           });
@@ -303,4 +305,10 @@ public class Scheduler {
       }
     }
   }
+
+  @Scheduled(fixedDelay = 10000000)
+  private void purgeProceededTrades() {
+    proceededTrades.clear();
+  }
+
 }
