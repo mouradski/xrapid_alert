@@ -64,7 +64,7 @@ public class TwitterService {
 
     int corridorNbr = lastDayStats.size();
 
-    sb.append(String.format("TOP 5 Corridors : \n\n"));
+    sb.append(String.format("TOP %s Corridors : \n\n", corridorNbr > 5 ? 5 : corridorNbr));
 
     double lastDayVolume = lastDayStats.entrySet().stream()
         .mapToDouble(e -> e.getValue())
