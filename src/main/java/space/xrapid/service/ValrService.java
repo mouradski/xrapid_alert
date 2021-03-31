@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class ValrService implements TradeService {
 
-    private String apiUrl = "https://api.valr.com/v1/public/XRPZAR/trades?skip=0&limit=10";
+    private String apiUrl = "https://api.valr.com/v1/public/XRPZAR/trades?skip=0&limit=100";
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
