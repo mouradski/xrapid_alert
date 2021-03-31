@@ -38,6 +38,9 @@ public enum Exchange {
           "rfEu1Wnr7LxStoFx8DBdzgr8M16FBUbH3K",
           "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
+  VALR_ZAR("valr", true, ZAR, true,
+          "rfrnxmLBiXHj38a2ZUDNzbks3y6yd3wJnV", "rDseVXFK1SkWhFH65cqAxf3HmvHCF6b94t"),
+
   BITFINEX("bitfinex", true, USD, true, "rLW9gnQo7BQhU6igk5keqYnH3TVrCxGRzm",
           "rE3hWEGquaixF2XwirNbA1ds4m55LxNZPk"),
   BTC_TURK("btcturk", true, TRY, true, "rNEygqkMv4Vnj8M2eWnYT1TDnV1Sc1X5SN",
