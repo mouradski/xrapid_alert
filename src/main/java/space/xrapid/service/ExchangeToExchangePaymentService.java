@@ -63,7 +63,7 @@ public class ExchangeToExchangePaymentService {
     return true;
   }
 
-  @Cacheable(value = "statsCache", key = "1")
+  @Cacheable(value = "statsCache", key = "#daysNbr")
   public Stats calculateStats(int daysNbr) {
     try {
       OffsetDateTime today = OffsetDateTime.now(ZoneOffset.UTC).withMinute(0).withHour(0)
