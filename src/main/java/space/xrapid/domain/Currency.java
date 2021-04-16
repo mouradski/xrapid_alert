@@ -23,5 +23,6 @@ public enum Currency {
   BYN,
   TRY,
   ZAR,
-  SGD
+  SGD,
+  MYR
 }

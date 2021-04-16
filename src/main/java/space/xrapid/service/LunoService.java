@@ -16,24 +16,19 @@ import space.xrapid.domain.luno.Trades;
 @Service
 public class LunoService implements TradeService {
 
-  private String apiUrl = "https://api.luno.com/api/1/trades?pair=XRPZAR";
+  private String apiUrl = "https://api.luno.com/api/1/trades?pair=";
 
   @Override
   public List<space.xrapid.domain.Trade> fetchTrades(OffsetDateTime begin) {
     HttpEntity<String> entity = getEntity();
 
-    ResponseEntity<Trades> response = restTemplate.exchange(apiUrl,
+    ResponseEntity<Trades> response = restTemplate.exchange(apiUrl + getMarket(),
         HttpMethod.GET, entity, Trades.class);
 
     return response.getBody().getTrades().stream()
         .map(this::mapTrade)
         .filter(filterTradePerDate(begin))
         .collect(Collectors.toList());
-  }
-
-  @Override
-  public Exchange getExchange() {
-    return Exchange.LUNO;
   }
 
   private Trade mapTrade(space.xrapid.domain.luno.Trade trade) {
@@ -55,4 +50,14 @@ public class LunoService implements TradeService {
         .orderId(new StringBuilder(side).append("_").append(trade.getTimestamp()).toString())
         .build();
   }
+
+  @Override
+  public Exchange getExchange() {
+    return Exchange.LUNO;
+  }
+
+  protected String getMarket() {
+    return "XRPZAR";
+  }
+
 }

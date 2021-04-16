@@ -58,6 +58,12 @@ public enum Exchange {
   LUNO("luno", true, ZAR, false, "rsRy14FvipgqudiGmptJBhr1RtpsgfzKMM",
           "rsbfd5ZYWqy6XXf6hndPbRjDAzfmWc1CeQ"),
 
+  LUNO_NGN("luno", true, NGN, false, "rsRy14FvipgqudiGmptJBhr1RtpsgfzKMM",
+          "rsbfd5ZYWqy6XXf6hndPbRjDAzfmWc1CeQ"),
+
+  LUNO_MYR("luno", true, MYR, false, "rsRy14FvipgqudiGmptJBhr1RtpsgfzKMM",
+          "rsbfd5ZYWqy6XXf6hndPbRjDAzfmWc1CeQ"),
+
 
   COINFIELD_USD("coinfield", false, USD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_GBP("coinfield", false, GBP, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
