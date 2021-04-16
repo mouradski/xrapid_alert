@@ -89,11 +89,11 @@ export class MapComponent implements AfterViewInit {
             let city = citiesTemplate.createChild(am4core.Image);
 
             if (this.mobile) {
-                city.width = 16;
-                city.height = 16;
+                city.width = 13;
+                city.height = 13;
             } else {
-                city.width = 28;
-                city.height = 28;
+                city.width = 22;
+                city.height = 22;
             }
 
             city.fill = this.mapChart.colors.getIndex(0).brighten(-0.2);
