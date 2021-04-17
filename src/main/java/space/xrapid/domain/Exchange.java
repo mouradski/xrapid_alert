@@ -38,6 +38,14 @@ public enum Exchange {
           "rfEu1Wnr7LxStoFx8DBdzgr8M16FBUbH3K",
           "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
 
+  BITSO_USD("bitso", true, USD, true,
+          "rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn",
+          "rHZaDC6tsGN2JWGeXhjKL6664RNCq5hu4B",
+          "raXLsnnJVaLMDixEoXHXe56WQXKczbD8ub",
+          "rGfGdVYLDSbji5mqfMvdpx4c8JyyfqVFgf",
+          "rfEu1Wnr7LxStoFx8DBdzgr8M16FBUbH3K",
+          "rLSn6Z3T8uCxbcd1oxwfGQN1Fdn5CyGujK"),
+
   VALR_ZAR("valr", true, ZAR, true,
           "rfrnxmLBiXHj38a2ZUDNzbks3y6yd3wJnV", "rDseVXFK1SkWhFH65cqAxf3HmvHCF6b94t"),
 

@@ -20,7 +20,7 @@ import space.xrapid.domain.bitso.BitsoXrpTrades;
 @Slf4j
 public class BitsoService implements TradeService {
 
-  private String url = "https://api.bitso.com/v3/trades/?book=xrp_mxn&sort=desc&limit=100";
+  private String url = "https://api.bitso.com/v3/trades/?book=_MARKET_&sort=desc&limit=100";
 
   private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
@@ -30,8 +30,8 @@ public class BitsoService implements TradeService {
 
     HttpEntity<String> entity = getEntity();
 
-    ResponseEntity<BitsoXrpTrades> response = restTemplate.exchange(url,
-        HttpMethod.GET, entity, BitsoXrpTrades.class);
+    ResponseEntity<BitsoXrpTrades> response = restTemplate.exchange(url.replace("_MARKET_", getMarket()),
+            HttpMethod.GET, entity, BitsoXrpTrades.class);
 
     if (response.getBody().getSuccess() && response.getBody() != null) {
       currentPayments = getTrades(begin, response);
@@ -47,8 +47,9 @@ public class BitsoService implements TradeService {
       if (marker == null) {
         break;
       }
-      response = restTemplate.exchange(url + "&marker=" + marker,
-          HttpMethod.GET, entity, BitsoXrpTrades.class);
+
+      response = restTemplate.exchange(url.replace("_MARKET_", getMarket()) + "&marker=" + marker,
+              HttpMethod.GET, entity, BitsoXrpTrades.class);
 
       if (response.getBody().getSuccess() && response.getBody() != null) {
         currentPayments = getTrades(begin, response);
@@ -61,38 +62,38 @@ public class BitsoService implements TradeService {
 
   private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
     return response.getBody().getPayment().stream()
-        .filter(filterBitsoTradePerDate(begin))
-        .map(space.xrapid.domain.bitso.Trade::getTid)
-        .sorted()
-        .findFirst()
-        .orElse(null);
+            .filter(filterBitsoTradePerDate(begin))
+            .map(space.xrapid.domain.bitso.Trade::getTid)
+            .sorted()
+            .findFirst()
+            .orElse(null);
   }
 
   private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
     return response.getBody().getPayment().stream()
-        .sorted(Comparator.comparing(space.xrapid.domain.bitso.Trade::getCreatedAt))
-        .map(this::mapTrade)
-        .filter(filterTradePerDate(begin))
-        .collect(Collectors.toList());
+            .sorted(Comparator.comparing(space.xrapid.domain.bitso.Trade::getCreatedAt))
+            .map(this::mapTrade)
+            .filter(filterTradePerDate(begin))
+            .collect(Collectors.toList());
   }
 
   private Trade mapTrade(space.xrapid.domain.bitso.Trade trade) {
     return Trade.builder().amount(Double.valueOf(trade.getAmount()))
-        .exchange(Exchange.BITSO)
-        .timestamp(
-            OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)
-                .toEpochSecond() * 1000)
-        .dateTime(
-            OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
-        .orderId(trade.getTid().toString())
-        .rate(Double.valueOf(trade.getPrice()))
-        .side(trade.getMakerSide())
-        .build();
+            .exchange(getExchange())
+            .timestamp(
+                    OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter)
+                            .toEpochSecond() * 1000)
+            .dateTime(
+                    OffsetDateTime.parse(trade.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter))
+            .orderId(trade.getTid().toString())
+            .rate(Double.valueOf(trade.getPrice()))
+            .side(trade.getMakerSide())
+            .build();
   }
 
   private Predicate<space.xrapid.domain.bitso.Trade> filterBitsoTradePerDate(OffsetDateTime begin) {
     return p -> begin.isBefore(
-        OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
+            OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
   }
 
   @Override
@@ -100,4 +101,7 @@ public class BitsoService implements TradeService {
     return Exchange.BITSO;
   }
 
+  protected String getMarket() {
+    return "xrp_mxn";
+  }
 }
