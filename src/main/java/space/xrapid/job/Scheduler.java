@@ -94,6 +94,7 @@ public class Scheduler {
                         exchanges.stream()
                                 .filter(destinationMarket -> !destinationMarket.equals(sourceMarket))
                                 .forEach(destinationMarket -> {
+                                    log.info("Searching Offchain ODL TRX within '{}' for {}->{} corridor", sourceMarket.getName(), sourceMarket.getLocalFiat(), destinationMarket.getLocalFiat());
                                     new OffchainCorridors(exchangeToExchangePaymentService, messagingTemplate, sourceMarket,
                                             destinationMarket, offChainFiatToXrpTradeIds, offChainXrpToFiatTradeIds)
                                             .searchXrapidPayments(trades, rate);
@@ -136,19 +137,19 @@ public class Scheduler {
         double rate = rateService.getXrpUsdRate();
 
         log.info(
-                "Search all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
+                "Searching all ODL TRX between exchanges that providing API for new corridors basing on trades sum matching on both exchanges");
         endToEndSearch(availableExchangesWithApi, payments, allTrades, rate);
 
         log.info(
-                "Search all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
+                "Searching all ODL TRX between all exchanges, that are followed by a sell in the local currency (in case source exchange not providing API)");
         atDestinationSearch(availableExchangesWithApi, payments, allTrades, rate);
 
         log.info(
-                "Search for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
+                "Searching for all ODL TRX from exchanges with API to all exchanes (in case destination exchange not providing API)");
         atSourceSearch(allConfirmedExchange, availableExchangesWithApi, payments, allTrades, rate);
 
         log.info(
-                "Search all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
+                "Searching all ODL TRX between exchanges that providing API, basing on confirmed destination tag");
         byDestinationTagSearch(availableExchangesWithApi, payments, allTrades, rate);
 
         Stats stats = exchangeToExchangePaymentService.calculateStats(21);
