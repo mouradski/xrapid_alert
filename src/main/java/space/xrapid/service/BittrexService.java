@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class BittrexService implements TradeService {
 
-    private String apiUrl = "https://api.bittrex.com/api/v1.1/public/getmarkethistory?market=USD-XRP&limit=10";
+    private String apiUrl = "https://api.bittrex.com/api/v1.1/public/getmarkethistory?market=USD-XRP&limit=100";
 
     @Override
     public List<Trade> fetchTrades(OffsetDateTime begin) {
