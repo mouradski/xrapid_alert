@@ -142,6 +142,12 @@ public enum Exchange {
     LIQUID_SGD("liquid", true, SGD, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p",
             "rMbWmirwEtRr7pNmhN4d4ysTMBvBxdvovs", "rENMoQvSHtb8sZwsxfefSGNZ7RQ89pd93H"),
 
+    LIQUID_USD("liquid", true, USD, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p",
+            "rMbWmirwEtRr7pNmhN4d4ysTMBvBxdvovs", "rENMoQvSHtb8sZwsxfefSGNZ7RQ89pd93H"),
+
+    LIQUID_EUR("liquid", true, EUR, true, "rHQ6kEtVUPk6mK9XKnjRoudenoHzJ8ZL9p",
+            "rMbWmirwEtRr7pNmhN4d4ysTMBvBxdvovs", "rENMoQvSHtb8sZwsxfefSGNZ7RQ89pd93H"),
+
     COINONE("coinone", true, KRW, true, "rp2diYfVtpbgEMyaoWnuaWgFCAkqCAEg28",
             "rPsmHDMkheWZvbAkTA8A9bVnUdadPn7XBK"),
 
