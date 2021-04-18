@@ -21,14 +21,12 @@ spring:
 # Build jar
 
 ```
-$ cd xrp_alert
 $ mvn clean install
 ```
 
 # Run with maven & spring-boot
 
 ```
-$ cd xrp_alert
 $ mvn spring-boot:run
 ```
 
