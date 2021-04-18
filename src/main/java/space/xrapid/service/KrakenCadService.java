@@ -6,12 +6,12 @@ import space.xrapid.domain.Exchange;
 @Service
 public class KrakenCadService extends KrakenUsdService {
 
-  protected String getPair() {
-    return "XRPCAD";
-  }
+    protected String getPair() {
+        return "XRPCAD";
+    }
 
-  @Override
-  public Exchange getExchange() {
-    return Exchange.KRAKEN_CAD;
-  }
+    @Override
+    public Exchange getExchange() {
+        return Exchange.KRAKEN_CAD;
+    }
 }

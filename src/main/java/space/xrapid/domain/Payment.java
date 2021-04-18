@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public abstract class Payment {
 
-  private Long timestamp;
-  private Double amount;
-  private String transactionHash;
+    private Long timestamp;
+    private Double amount;
+    private String transactionHash;
 }

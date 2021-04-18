@@ -9,6 +9,6 @@ import lombok.Setter;
 @Builder
 public class TradesGroup {
 
-  private String id;
-  private double sum;
+    private String id;
+    private double sum;
 }

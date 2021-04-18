@@ -1,13 +1,10 @@
 package space.xrapid.domain;
 
-import java.util.Date;
+import lombok.*;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import java.util.Date;
 
 @Builder
 @AllArgsConstructor
@@ -17,14 +14,14 @@ import lombok.NoArgsConstructor;
 @Entity(name = "API_KEYS")
 public class ApiKey {
 
-  private Date expiration;
+    private Date expiration;
 
-  @Id
-  private String key;
+    @Id
+    private String key;
 
-  private long lastUse;
+    private long lastUse;
 
-  private boolean master;
+    private boolean master;
 
-  private boolean ban;
+    private boolean ban;
 }

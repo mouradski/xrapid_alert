@@ -6,12 +6,12 @@ import space.xrapid.domain.Exchange;
 @Service
 public class KrakenJpyService extends KrakenUsdService {
 
-  protected String getPair() {
-    return "XRPJPY";
-  }
+    protected String getPair() {
+        return "XRPJPY";
+    }
 
-  @Override
-  public Exchange getExchange() {
-    return Exchange.KRAKEN_JPY;
-  }
+    @Override
+    public Exchange getExchange() {
+        return Exchange.KRAKEN_JPY;
+    }
 }
