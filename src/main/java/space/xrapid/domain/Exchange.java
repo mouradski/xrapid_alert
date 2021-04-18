@@ -116,7 +116,12 @@ public enum Exchange {
 
   INDEP_RESERVE("independent reserve", true, NZD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
 
-  INDEP_RESERVE_AUD("independent reserve", false, AUD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
+  INDEP_RESERVE_AUD("independent reserve", true, AUD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
+
+  INDEP_RESERVE_SGD("independent reserve", true, SGD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
+
+  INDEP_RESERVE_USD("independent reserve", true, USD, false, "r33hypJXDs47LVpmvta7hMW9pR8DYeBtkW"),
+
 
   MERCADO("mercado", true, BRL, false, "rnW8je5SsuFjkMSWkgfXvqZH3gLTpXxfFH",
           "rHLndqCyNeEKY2PoDmSvUf5hVX5mgUZteB"),

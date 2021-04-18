@@ -19,4 +19,5 @@ public class IndependentReserveAudService extends IndependentReserveNzdService {
   public String getApiUrl() {
     return apiUrl;
   }
+
 }
