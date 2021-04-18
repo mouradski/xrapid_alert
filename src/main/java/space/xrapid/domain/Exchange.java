@@ -75,7 +75,7 @@ public enum Exchange {
 
   COINFIELD_USD("coinfield", false, USD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_GBP("coinfield", false, GBP, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
-  COINFIELD_AED("coinfield", true, AED, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
+  COINFIELD_AED("coinfield", false, AED, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_JPY("coinfield", false, JPY, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_CAD("coinfield", false, CAD, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
   COINFIELD_EUR("coinfield", false, EUR, false, "rK7D3QnTrYdkp1fGKKzHFNXZpqN8dUCfaf"),
@@ -83,16 +83,16 @@ public enum Exchange {
 
   BINANCE_RUB("binance", false, RUB, false, "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh",
           "rJb5KsHsDHF1YS5B5DU6QCkH5NsPaKQTcy", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"),
-  BINANCE_US("binanceus", true, USD, false, "rEeEWeP88cpKUddKk37B2EZeiHBGiBXY3",
+  BINANCE_US("binanceus", false, USD, false, "rEeEWeP88cpKUddKk37B2EZeiHBGiBXY3",
           "rMvYS27SYs5dXdFsUgpvv1CSrPsCz7ePF5"),
 
   WAZIRX("Wazirx", false, INR, false, "rwuAm7XdcP3SBwgJrVthCvCzU7kETJUUit",
           "rJXcrnAS8XoBwjvd5VrShrLMY8buPuiuC5"),
 
-  KRAKEN_USD("kraken", true, USD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-  KRAKEN_EUR("kraken", true, EUR, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-  KRAKEN_JPY("kraken", true, JPY, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
-  KRAKEN_CAD("kraken", true, CAD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_USD("kraken", false, USD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_EUR("kraken", false, EUR, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_JPY("kraken", false, JPY, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
+  KRAKEN_CAD("kraken", false, CAD, false, "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh"),
 
   //TODO confirm addresses
   NOVADAX("novadax", true, BRL, true, "rE8aDxrPzx5Xqeppy2hgSXKppwNwpyEMbB",
@@ -213,7 +213,6 @@ public enum Exchange {
   public static List<Currency> currencies(Exchange exchange) {
     String adr = exchange.addresses[0];
     return currencies(adr);
-
   }
 
   public String getName() {
