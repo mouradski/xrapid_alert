@@ -53,6 +53,9 @@ public enum Exchange {
     BTC_TURK("btcturk", true, TRY, true, "rNEygqkMv4Vnj8M2eWnYT1TDnV1Sc1X5SN",
             "rGmmsmyspyPsuBT4L5pLvAqTjxYqaFq4U5"),
 
+    BTC_TURK_USD("btcturk", true, USD, true, "rNEygqkMv4Vnj8M2eWnYT1TDnV1Sc1X5SN",
+            "rGmmsmyspyPsuBT4L5pLvAqTjxYqaFq4U5"),
+
     BX_IN("bx.in.th", false, THB, false, "rp7Fq2NQVRJxQJvUZ4o8ZzsTSocvgYoBbs"),
 
     SBI_TRADE("sbi_trade", true, JPY, false, "rDDyH5nfvozKZQCwiBrWfcE528sWsBPWET",

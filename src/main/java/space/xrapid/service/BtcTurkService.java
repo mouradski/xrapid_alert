@@ -29,7 +29,7 @@ public class BtcTurkService implements TradeService {
         RestTemplate bxRestTemplate = new RestTemplate();
         bxRestTemplate.getMessageConverters().add(new MessageConverter());
 
-        ResponseEntity<Trades> response = bxRestTemplate.exchange(apiUrl,
+        ResponseEntity<Trades> response = bxRestTemplate.exchange(getApiUrl(),
                 HttpMethod.GET, entity, Trades.class);
 
         return response.getBody().getData().stream()
@@ -41,6 +41,10 @@ public class BtcTurkService implements TradeService {
     @Override
     public Exchange getExchange() {
         return Exchange.BTC_TURK;
+    }
+
+    protected String getApiUrl() {
+        return apiUrl;
     }
 
     private Trade mapTrade(Datum trade) {
