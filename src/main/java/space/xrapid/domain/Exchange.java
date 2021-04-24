@@ -132,6 +132,10 @@ public enum Exchange {
             "__UNKNOW__"),
 
 
+    B2BX_USD("b2bx", true, USD, false, "rh1Qs81SBNLXzg1hQppVH53FDqfoE9NZFd"),
+
+    B2BX_EUR("b2bx", true, EUR, false, "rh1Qs81SBNLXzg1hQppVH53FDqfoE9NZFd"),
+
     CURRENCY_COM("currency.com", true, BYN, false, "rpUJKigvytgfaM77qC9bNTNQiUZgGemSiB"),
 
     BITCOIN_TRADE("bitcoin_trade", true, BRL, false, "r4ZQiz7r4vnM6tAMLu1NhxcDa7TNMdFLGt"),

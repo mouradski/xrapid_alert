@@ -51,7 +51,7 @@ public class XrpLedgerService {
 
             payments.addAll(response.getBody().getPayments().stream()
                     .filter(this::filterRoundAmount)
-                    .filter(p -> p.getAmount() > 80)
+                    .filter(p -> p.getAmount() > 29)
                     .filter(filterPayments(odlCandidateOnly))
                     .collect(Collectors.toList()));
 
