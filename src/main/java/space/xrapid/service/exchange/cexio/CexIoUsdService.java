@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.cexio.MessageConverter;
+import space.xrapid.domain.exchange.cexio.MessageConverter;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;
@@ -30,23 +30,23 @@ public class CexIoUsdService implements TradeService {
         RestTemplate cexRestTemplate = new RestTemplate();
         cexRestTemplate.getMessageConverters().add(new MessageConverter());
 
-        ResponseEntity<space.xrapid.domain.cexio.Trade[]> response = cexRestTemplate
+        ResponseEntity<space.xrapid.domain.exchange.cexio.Trade[]> response = cexRestTemplate
                 .exchange(apiUrl.replace("{market}", getMarket()),
-                        HttpMethod.GET, entity, space.xrapid.domain.cexio.Trade[].class);
+                        HttpMethod.GET, entity, space.xrapid.domain.exchange.cexio.Trade[].class);
 
         return getTrades(begin, response);
     }
 
     private List<Trade> getTrades(OffsetDateTime begin,
-                                  ResponseEntity<space.xrapid.domain.cexio.Trade[]> response) {
+                                  ResponseEntity<space.xrapid.domain.exchange.cexio.Trade[]> response) {
         return Stream.of(response.getBody())
-                .sorted(Comparator.comparing(space.xrapid.domain.cexio.Trade::getDate))
+                .sorted(Comparator.comparing(space.xrapid.domain.exchange.cexio.Trade::getDate))
                 .map(this::mapTrade)
                 .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(space.xrapid.domain.cexio.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.cexio.Trade trade) {
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))

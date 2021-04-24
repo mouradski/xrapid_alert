@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.bitkub.Trades;
+import space.xrapid.domain.exchange.bitkub.Trades;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;

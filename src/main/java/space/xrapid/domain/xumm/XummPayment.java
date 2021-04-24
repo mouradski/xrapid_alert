@@ -2,20 +2,11 @@ package space.xrapid.domain.xumm;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "TransactionType",
-        "Account",
-        "Destination",
-        "Amount",
-        "DestinationTag"
-})
 @Builder
 public class XummPayment {
-
     @JsonProperty("TransactionType")
     private String transactionType;
     @JsonProperty("Destination")
@@ -52,6 +43,4 @@ public class XummPayment {
     public void setAmount(Amount amount) {
         this.amount = amount;
     }
-
-
 }

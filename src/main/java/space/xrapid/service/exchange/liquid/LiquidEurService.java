@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 
 @Service
-public class LiquidEurService  extends LiquidJpyService {
+public class LiquidEurService extends LiquidJpyService {
     @Override
     protected String getProductId() {
         return "85";

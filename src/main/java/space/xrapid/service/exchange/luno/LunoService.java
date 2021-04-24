@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.luno.Trades;
+import space.xrapid.domain.exchange.luno.Trades;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;
@@ -33,7 +33,7 @@ public class LunoService implements TradeService {
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(space.xrapid.domain.luno.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.luno.Trade trade) {
 
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(Long.valueOf(trade.getTimestamp() / 1000)),

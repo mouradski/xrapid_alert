@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.liquid.Trades;
+import space.xrapid.domain.exchange.liquid.Trades;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;
@@ -42,7 +42,7 @@ public class LiquidJpyService implements TradeService {
         return Exchange.LIQUID;
     }
 
-    private Trade mapTrade(space.xrapid.domain.liquid.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.liquid.Trade trade) {
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(Long.valueOf(trade.getCreatedAt())), ZoneId.of("UTC"));
         return Trade.builder()

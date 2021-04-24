@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class PaymentRequestInformation {
-
     private String paymentId;
     private String qrCodeUrl;
 }

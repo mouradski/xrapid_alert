@@ -24,8 +24,8 @@ public class CurrencyComService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.currencycom.Trade[]> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, space.xrapid.domain.currencycom.Trade[].class);
+        ResponseEntity<space.xrapid.domain.exchange.currencycom.Trade[]> response = restTemplate.exchange(apiUrl,
+                HttpMethod.GET, entity, space.xrapid.domain.exchange.currencycom.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
@@ -37,7 +37,7 @@ public class CurrencyComService implements TradeService {
         return Exchange.CURRENCY_COM;
     }
 
-    private Trade mapTrade(space.xrapid.domain.currencycom.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.currencycom.Trade trade) {
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(trade.getT()), ZoneId.of("UTC"));
 

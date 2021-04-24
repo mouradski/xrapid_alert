@@ -26,9 +26,9 @@ public class BitstampUsdService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.bitstamp.Trade[]> response = restTemplate
+        ResponseEntity<space.xrapid.domain.exchange.bitstamp.Trade[]> response = restTemplate
                 .exchange(firstCall ? apiUrl + "?time=day" : apiUrl,
-                        HttpMethod.GET, entity, space.xrapid.domain.bitstamp.Trade[].class);
+                        HttpMethod.GET, entity, space.xrapid.domain.exchange.bitstamp.Trade[].class);
 
         firstCall = false;
 
@@ -38,7 +38,7 @@ public class BitstampUsdService implements TradeService {
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(space.xrapid.domain.bitstamp.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.bitstamp.Trade trade) {
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))

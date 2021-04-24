@@ -23,8 +23,8 @@ public class QuidaxService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.quidax.Trade[]> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, space.xrapid.domain.quidax.Trade[].class);
+        ResponseEntity<space.xrapid.domain.exchange.quidax.Trade[]> response = restTemplate.exchange(apiUrl,
+                HttpMethod.GET, entity, space.xrapid.domain.exchange.quidax.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
@@ -32,7 +32,7 @@ public class QuidaxService implements TradeService {
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(space.xrapid.domain.quidax.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.quidax.Trade trade) {
         OffsetDateTime date = OffsetDateTime
                 .parse(trade.getCreatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 

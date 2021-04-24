@@ -1,18 +1,14 @@
 package space.xrapid.domain.xumm;
 
 import com.fasterxml.jackson.annotation.*;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "qr_png",
-        "qr_matrix",
-        "qr_uri_quality_opts",
-        "websocket_status"
-})
+@Getter
 public class Refs {
 
     @JsonProperty("qr_png")

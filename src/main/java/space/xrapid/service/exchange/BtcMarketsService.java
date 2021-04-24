@@ -24,8 +24,8 @@ public class BtcMarketsService implements TradeService {
 
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.btcmarkets.Trade[]> response = restTemplate.exchange(url,
-                HttpMethod.GET, entity, space.xrapid.domain.btcmarkets.Trade[].class);
+        ResponseEntity<space.xrapid.domain.exchange.btcmarkets.Trade[]> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, space.xrapid.domain.exchange.btcmarkets.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
@@ -39,7 +39,7 @@ public class BtcMarketsService implements TradeService {
     }
 
 
-    private Trade mapTrade(space.xrapid.domain.btcmarkets.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.btcmarkets.Trade trade) {
 
         String stringDate = transformDate(trade.getTimestamp());
         OffsetDateTime date = OffsetDateTime.parse(stringDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.bx.MessageConverter;
-import space.xrapid.domain.bx.Response;
+import space.xrapid.domain.exchange.bx.MessageConverter;
+import space.xrapid.domain.exchange.bx.Response;
 import space.xrapid.service.TradeService;
 
 import java.time.OffsetDateTime;
@@ -38,7 +38,7 @@ public class BxService implements TradeService {
     }
 
 
-    private Trade mapTrade(space.xrapid.domain.bx.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.bx.Trade trade) {
         //TODO check if exchange using UTC
         OffsetDateTime date = OffsetDateTime.parse(trade.getTradeDate().replace(" ", "T") + "+00:00",
                 DateTimeFormatter.ISO_DATE_TIME);

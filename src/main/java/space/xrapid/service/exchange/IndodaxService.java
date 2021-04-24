@@ -24,8 +24,8 @@ public class IndodaxService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.indodax.Trade[]> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, space.xrapid.domain.indodax.Trade[].class);
+        ResponseEntity<space.xrapid.domain.exchange.indodax.Trade[]> response = restTemplate.exchange(apiUrl,
+                HttpMethod.GET, entity, space.xrapid.domain.exchange.indodax.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
@@ -38,7 +38,7 @@ public class IndodaxService implements TradeService {
         return Exchange.INDODAX;
     }
 
-    private Trade mapTrade(space.xrapid.domain.indodax.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.indodax.Trade trade) {
 
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(trade.getDate()), ZoneId.of("UTC"));

@@ -68,11 +68,11 @@ public class Scheduler {
 
     @Scheduled(fixedDelay = 40000)
     public void offchainOdl() {
-        
+
         if (proxy) {
             return;
         }
-        
+
         OffsetDateTime start = OffsetDateTime.now(ZoneOffset.UTC);
 
         double rate = rateService.getXrpUsdRate();

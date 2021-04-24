@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.bittrex.Trades;
+import space.xrapid.domain.exchange.bittrex.Trades;
 import space.xrapid.service.TradeService;
 
 import java.time.OffsetDateTime;
@@ -24,7 +24,7 @@ public class BittrexService implements TradeService {
         HttpEntity<String> entity = getEntity();
 
         ResponseEntity<Trades> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, space.xrapid.domain.bittrex.Trades.class);
+                HttpMethod.GET, entity, space.xrapid.domain.exchange.bittrex.Trades.class);
 
         return response.getBody().getResult().stream()
                 .map(this::mapTrade)
@@ -37,7 +37,7 @@ public class BittrexService implements TradeService {
         return Exchange.BITTREX;
     }
 
-    private Trade mapTrade(space.xrapid.domain.bittrex.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.bittrex.Trade trade) {
         OffsetDateTime dateTime;
 
         if (trade.getTimeStamp().contains(".")) {

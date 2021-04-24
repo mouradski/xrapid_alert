@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.bitbank.Transaction;
-import space.xrapid.domain.bitbank.Transactions;
+import space.xrapid.domain.exchange.bitbank.Transaction;
+import space.xrapid.domain.exchange.bitbank.Transactions;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;

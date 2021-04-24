@@ -9,11 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Payload {
-
     @JsonProperty("txjson")
     private XummPayment txjson;
-
-
     @JsonProperty("custom_meta")
     private CustomMeta customMeta;
 }

@@ -24,8 +24,8 @@ public class UpbitService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.upbit.Trade[]> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, space.xrapid.domain.upbit.Trade[].class);
+        ResponseEntity<space.xrapid.domain.exchange.upbit.Trade[]> response = restTemplate.exchange(apiUrl,
+                HttpMethod.GET, entity, space.xrapid.domain.exchange.upbit.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
@@ -38,7 +38,7 @@ public class UpbitService implements TradeService {
         return Exchange.UPBIT;
     }
 
-    private Trade mapTrade(space.xrapid.domain.upbit.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.upbit.Trade trade) {
 
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(trade.getTimestamp() / 1000), ZoneId.of("UTC"));

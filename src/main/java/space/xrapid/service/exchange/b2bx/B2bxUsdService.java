@@ -24,9 +24,9 @@ public class B2bxUsdService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.b2bx.Trade[]> response = restTemplate
+        ResponseEntity<space.xrapid.domain.exchange.b2bx.Trade[]> response = restTemplate
                 .exchange(apiUrl.replace("QUOTE", getQuoteAsset()),
-                        HttpMethod.GET, entity, space.xrapid.domain.b2bx.Trade[].class);
+                        HttpMethod.GET, entity, space.xrapid.domain.exchange.b2bx.Trade[].class);
 
         return Arrays.stream(response.getBody())
                 .map(this::mapTrade)
@@ -43,7 +43,7 @@ public class B2bxUsdService implements TradeService {
         return "USD";
     }
 
-    private Trade mapTrade(space.xrapid.domain.b2bx.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.b2bx.Trade trade) {
         OffsetDateTime date = OffsetDateTime
                 .ofInstant(Instant.ofEpochSecond(Long.valueOf(trade.getTradeTimestamp())), ZoneId.of("UTC"));
         return Trade.builder()

@@ -23,8 +23,8 @@ public class WazirxService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.wazirx.Trade[]> response = restTemplate.exchange(apiUrl,
-                HttpMethod.GET, entity, space.xrapid.domain.wazirx.Trade[].class);
+        ResponseEntity<space.xrapid.domain.exchange.wazirx.Trade[]> response = restTemplate.exchange(apiUrl,
+                HttpMethod.GET, entity, space.xrapid.domain.exchange.wazirx.Trade[].class);
 
         return Stream.of(response.getBody())
                 .map(this::mapTrade)
@@ -32,7 +32,7 @@ public class WazirxService implements TradeService {
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(space.xrapid.domain.wazirx.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.wazirx.Trade trade) {
         return Trade.builder().amount(trade.getVolume())
                 .exchange(Exchange.WAZIRX)
                 .timestamp(

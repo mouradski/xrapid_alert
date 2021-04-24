@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.exmo.Trades;
-import space.xrapid.domain.exmo.XRPUAH;
+import space.xrapid.domain.exchange.exmo.Trades;
+import space.xrapid.domain.exchange.exmo.XRPUAH;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;

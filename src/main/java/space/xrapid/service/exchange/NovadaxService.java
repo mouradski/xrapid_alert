@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.novadax.Datum;
-import space.xrapid.domain.novadax.Trades;
+import space.xrapid.domain.exchange.novadax.Datum;
+import space.xrapid.domain.exchange.novadax.Trades;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;

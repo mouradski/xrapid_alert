@@ -24,23 +24,23 @@ public class BraziliexService implements TradeService {
         String urlGet = apiUrl.replace("{TIMESTAMP}",
                 String.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond() * 1000));
 
-        ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response = restTemplate.exchange(urlGet,
-                HttpMethod.GET, getEntity(), space.xrapid.domain.braziliex.Trade[].class);
+        ResponseEntity<space.xrapid.domain.exchange.braziliex.Trade[]> response = restTemplate.exchange(urlGet,
+                HttpMethod.GET, getEntity(), space.xrapid.domain.exchange.braziliex.Trade[].class);
 
         return getTrades(begin, response);
     }
 
     private List<Trade> getTrades(OffsetDateTime begin,
-                                  ResponseEntity<space.xrapid.domain.braziliex.Trade[]> response) {
+                                  ResponseEntity<space.xrapid.domain.exchange.braziliex.Trade[]> response) {
         long beginTimestamp = begin.toEpochSecond() * 1000;
         return Arrays.stream(response.getBody())
                 .filter(p -> beginTimestamp < p.getTimestamp())
-                .sorted(Comparator.comparing(space.xrapid.domain.braziliex.Trade::getTimestamp))
+                .sorted(Comparator.comparing(space.xrapid.domain.exchange.braziliex.Trade::getTimestamp))
                 .map(this::mapTrade)
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(space.xrapid.domain.braziliex.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.braziliex.Trade trade) {
         return Trade.builder().amount(Double.valueOf(trade.getAmount())).exchange(Exchange.BRAZILIEX)
                 .build();
     }

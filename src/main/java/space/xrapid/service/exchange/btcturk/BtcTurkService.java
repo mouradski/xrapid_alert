@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.btcturk.Datum;
-import space.xrapid.domain.btcturk.Trades;
-import space.xrapid.domain.bx.MessageConverter;
+import space.xrapid.domain.exchange.btcturk.Datum;
+import space.xrapid.domain.exchange.btcturk.Trades;
+import space.xrapid.domain.exchange.bx.MessageConverter;
 import space.xrapid.service.TradeService;
 
 import java.time.Instant;

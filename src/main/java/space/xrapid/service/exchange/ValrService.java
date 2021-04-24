@@ -23,9 +23,9 @@ public class ValrService implements TradeService {
     public List<Trade> fetchTrades(OffsetDateTime begin) {
         HttpEntity<String> entity = getEntity();
 
-        ResponseEntity<space.xrapid.domain.valr.Trade[]> response = restTemplate
+        ResponseEntity<space.xrapid.domain.exchange.valr.Trade[]> response = restTemplate
                 .exchange(apiUrl,
-                        HttpMethod.GET, entity, space.xrapid.domain.valr.Trade[].class);
+                        HttpMethod.GET, entity, space.xrapid.domain.exchange.valr.Trade[].class);
 
 
         return Arrays.stream(response.getBody())
@@ -39,7 +39,7 @@ public class ValrService implements TradeService {
         return Exchange.VALR_ZAR;
     }
 
-    private Trade mapTrade(space.xrapid.domain.valr.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.valr.Trade trade) {
 
         OffsetDateTime tratedAt = OffsetDateTime.parse(trade.getTradedAt().replace("Z", "+00:00"),
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME);

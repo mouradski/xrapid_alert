@@ -3,7 +3,7 @@ package space.xrapid.service;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import space.xrapid.domain.bitstamp.Ticker;
+import space.xrapid.domain.exchange.bitstamp.Ticker;
 
 import java.util.Arrays;
 

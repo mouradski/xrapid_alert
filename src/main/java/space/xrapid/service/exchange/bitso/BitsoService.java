@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import space.xrapid.domain.Exchange;
 import space.xrapid.domain.Trade;
-import space.xrapid.domain.bitso.BitsoXrpTrades;
+import space.xrapid.domain.exchange.bitso.BitsoXrpTrades;
 import space.xrapid.service.TradeService;
 
 import java.time.OffsetDateTime;
@@ -65,7 +65,7 @@ public class BitsoService implements TradeService {
     private Integer getMarker(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
                 .filter(filterBitsoTradePerDate(begin))
-                .map(space.xrapid.domain.bitso.Trade::getTid)
+                .map(space.xrapid.domain.exchange.bitso.Trade::getTid)
                 .sorted()
                 .findFirst()
                 .orElse(null);
@@ -73,13 +73,13 @@ public class BitsoService implements TradeService {
 
     private List<Trade> getTrades(OffsetDateTime begin, ResponseEntity<BitsoXrpTrades> response) {
         return response.getBody().getPayment().stream()
-                .sorted(Comparator.comparing(space.xrapid.domain.bitso.Trade::getCreatedAt))
+                .sorted(Comparator.comparing(space.xrapid.domain.exchange.bitso.Trade::getCreatedAt))
                 .map(this::mapTrade)
                 .filter(filterTradePerDate(begin))
                 .collect(Collectors.toList());
     }
 
-    private Trade mapTrade(space.xrapid.domain.bitso.Trade trade) {
+    private Trade mapTrade(space.xrapid.domain.exchange.bitso.Trade trade) {
         return Trade.builder().amount(Double.valueOf(trade.getAmount()))
                 .exchange(getExchange())
                 .timestamp(
@@ -93,7 +93,7 @@ public class BitsoService implements TradeService {
                 .build();
     }
 
-    private Predicate<space.xrapid.domain.bitso.Trade> filterBitsoTradePerDate(OffsetDateTime begin) {
+    private Predicate<space.xrapid.domain.exchange.bitso.Trade> filterBitsoTradePerDate(OffsetDateTime begin) {
         return p -> begin.isBefore(
                 OffsetDateTime.parse(p.getCreatedAt().replace("0000", "00:00"), dateTimeFormatter));
     }
