@@ -104,6 +104,8 @@ public enum Exchange {
     COIN_PH("coin.ph", true, PHP, false, "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA"),
 
     COINBENE("coinbene", true, BRL, false, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
+    
+    FOXBIT("foxbit", true, BRL, false, "rLkhKQPc2Jrik1j5PSfBqoDDUTq9oX5mz1"),
 
     BITHUMB("bithumb", true, KRW, true, "rEtC4xAYJvtwDLJ9jZ4kHRHKbNoLLxSnfb",
             "rPMM1dRp7taeRkbT74Smx2a25kTAHdr4N5",
