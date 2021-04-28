@@ -176,7 +176,7 @@ public enum Exchange {
     BITBANK("bitbank", true, JPY, true, "rLbKbPyuvs4wc1h13BEPHgbFGsRXMeFGL6",
             "rw7m3CtVHwGSdhFjV4MyJozmZJv3DYQnsA", "rwggnsfxvCmDb3YP9Hs1TaGvrPR7ngrn7Z"),
 
-    BITKUB("bitkub", true, THB, false, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW"),
+    BITKUB("bitkub", true, THB, false, "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW", "rDnLSfDv8nG7D7P59QXi78XdnRJ6GHroFJ", "rE3Cc3i6163Qzo7oc6avFQAxQE4gyCWhGP"),
 
     INDODAX("indodax", false, IDR, true, "KUZ3ZFwzgaDGjKBysADByzxvohQ3C",
             "rDDrTcmnCxeTV1hycGdXiaEynYcU1QnSUg", "rB46Pb2mxdCk2zn68MNwZnFQ7Wv2Kjtddr"),
