@@ -125,7 +125,7 @@ public enum Exchange {
 
     COIN_PH("coin.ph", true, PHP,
             "rU2mEJSLqBRkYLVTv55rFTgQajkLTnT6mA", "rPCJsXSrKz2p8frowjJr9ezjCp6Txa5Pr4",
-            ,"rskGqcqqvCz9xQt5TH7NXFV4tsXHntLcEC", "rHSvYuhn95wdr6u7n2yMjL6uaa9gTyaeHu"),
+            "rskGqcqqvCz9xQt5TH7NXFV4tsXHntLcEC", "rHSvYuhn95wdr6u7n2yMjL6uaa9gTyaeHu"),
 
     COINBENE("coinbene", true, BRL, "r9CcrhpV7kMcTu1SosKaY8Pq9g5XiiHLvS"),
     
