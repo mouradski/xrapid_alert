@@ -171,7 +171,7 @@ public enum Exchange {
             "rHXvKUCTzsu2CB8Y5tydaG7B2ABc4CCBYz"),
 
     BTC_MARKETS("btc_market", true, AUD, true, "r94JFtstbXmyG21h3RHKcNfkAHxAQ6HSGC",
-            "rL3ggCUKaiR1iywkGW6PACbn3Y8g5edWiY", "rU7xJs7QmjbiyxpEozNYUFQxaRD5kueY7z"),
+            "rL3ggCUKaiR1iywkGW6PACbn3Y8g5edWiY", "rU7xJs7QmjbiyxpEozNYUFQxaRD5kueY7z", "rwWZxJQ8R2mvvtaFUJHhF6kfV64atBiPww"),
 
     BITBANK("bitbank", true, JPY, true, "rLbKbPyuvs4wc1h13BEPHgbFGsRXMeFGL6",
             "rw7m3CtVHwGSdhFjV4MyJozmZJv3DYQnsA", "rwggnsfxvCmDb3YP9Hs1TaGvrPR7ngrn7Z"),
