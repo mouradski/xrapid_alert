@@ -377,6 +377,10 @@ public class ExchangeToExchangePaymentService {
             pageSize = 1000;
         }
 
+        if (page <= 0) {
+            page = 1;
+        }
+
         int firstResult = (page - 1) * pageSize;
 
         typedQuery.setFirstResult(firstResult);
@@ -384,13 +388,9 @@ public class ExchangeToExchangePaymentService {
 
         List<ExchangeToExchangePayment> payments = typedQuery.getResultList();
 
-        Double pages = Math.ceil(count / pageSize);
-
-        if (pages == 0d) {
-            pages = 1d;
-        }
-
-        return OdlPaymentsResponse.builder().pages(pages.intValue()).currentPage(page)
+        int pages = (int) Math.ceil((double) count / pageSize);
+        
+        return OdlPaymentsResponse.builder().pages(pages).currentPage(page)
                 .pageSize(pageSize).payments(payments).total(count).build();
 
     }
