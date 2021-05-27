@@ -223,8 +223,6 @@ export default {
 
         container.width = innerWidth / (innerWidth > 1280 ? 2.2 : 1);
         container.height = innerHeight / 2.1;
-        console.log(container.width);
-        console.log(container.height);
         container.style.width = `${container.width}px`;
         container.style.height = `${container.height}px`;
         this.camera.aspect = container.width / container.height;

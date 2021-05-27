@@ -109,7 +109,6 @@ export default {
 
     HTTP.get(`api/payments`)
       .then((response) => {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>> X_333");
         this.payments = response.data.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 0);
 
         this.lastODLSpotted = this.payments[0].timestamp;
@@ -176,8 +175,6 @@ export default {
       });
     },
     isMobile() {
-    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-    console.log(window.innerWidth);
       if (
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
           navigator.userAgent
