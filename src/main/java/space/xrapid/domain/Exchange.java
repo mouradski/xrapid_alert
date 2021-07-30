@@ -208,7 +208,7 @@ public enum Exchange {
 
     BITKUB("bitkub", true, THB,
             "rpXTzCuXtjiPDFysxq8uNmtZBe9Xo97JbW", "rDnLSfDv8nG7D7P59QXi78XdnRJ6GHroFJ",
-            "rE3Cc3i6163Qzo7oc6avFQAxQE4gyCWhGP"),
+            "rE3Cc3i6163Qzo7oc6avFQAxQE4gyCWhGP", "rHN1mKrGtB5WmQfBjzD9hEbqm6XYh1cBHW"),
 
     INDODAX("indodax", false, IDR,
             "KUZ3ZFwzgaDGjKBysADByzxvohQ3C", "rDDrTcmnCxeTV1hycGdXiaEynYcU1QnSUg",
